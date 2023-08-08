@@ -1,0 +1,9 @@
+node_modules
+*.DS_Store
+credentials.json
+config.ts
+dist
+*.bak
+index.html
+devItems.json
+iframeTransformer.js

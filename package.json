@@ -1,0 +1,49 @@
+{
+  "name": "xeno",
+  "version": "1.0.0",
+  "dependencies": {
+    "fabricate.js": "^2.9.0"
+  },
+  "devDependencies": {
+    "@chris-lewis/eslint-config": "^1.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "http-server": "^14.1.1",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "./scripts/build.sh",
+    "build:site": "npm run clean && webpack --mode production",
+    "build:site:dev": "npm run clean && webpack --mode development",
+    "start": "npm run build:site && npm run build:site:dev && http-server"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@chris-lewis/eslint-config",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "settings": {
+      "import/resolver": {
+        "typescript": {}
+      }
+    },
+    "rules": {
+      "import/extensions": 0,
+      "no-param-reassign": 0
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/C-D-Lewis/xeno.git"
+  },
+  "keywords": [],
+  "author": "C-D-Lewis"
+}
