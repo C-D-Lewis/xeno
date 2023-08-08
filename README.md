@@ -2,6 +2,8 @@
 
 Lightweight Reddit browser.
 
+![](assets/screenshot.png)
+
 ## Run
 
 Install dependencies:
