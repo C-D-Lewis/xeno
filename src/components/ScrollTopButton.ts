@@ -24,7 +24,7 @@ const ScrollTopButton = () => {
       transition: '0.5s',
       position: 'fixed',
       top: '-100px',
-      left: fabricate.isNarrow() ? '33%' : '50%',
+      left: fabricate.isNarrow() ? '33%' : '45%',
       borderRadius: '5px',
       width: '120px',
       zIndex: '9999',
