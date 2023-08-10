@@ -1,7 +1,6 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js/types/fabricate';
 import CommentsList from '../components/CommentsList';
 import { AppState } from '../types';
-import { APP_NAV_BAR_HEIGHT } from '../components/AppNavBar';
 import GalleryPost from '../components/GalleryPost';
 
 declare const fabricate: Fabricate<AppState>;
@@ -14,11 +13,9 @@ declare const fabricate: Fabricate<AppState>;
 export const PostPage = () => fabricate('Column')
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '50vw',
-    margin: '10px auto',
+    margin: '0px auto',
+    padding: '10px 0px',
     overflowY: 'scroll',
-    minHeight: '93vh',
-    maxHeight: '93vh',
-    paddingTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
   })
   .onCreate((el, { selectedPost }) => {
     if (!selectedPost) return;

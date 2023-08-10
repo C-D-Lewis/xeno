@@ -15,6 +15,7 @@ Lightweight Reddit browser.
 * Simple post ful view.
 * Collapsible comment tree.
 * Navigation by post author or subreddit name.
+* Simple inline image and video where extractable.
 
 ## Setup
 

@@ -120,7 +120,6 @@ export const SettingsPage = () => fabricate('Column')
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '50vw',
     margin: '15px auto',
-    marginTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
   })
   .setChildren([CredentialsCard()]);
 

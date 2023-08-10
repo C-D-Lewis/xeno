@@ -8,6 +8,7 @@ import SettingsPage from './pages/SettingsPage';
 import { checkSavedForNew, ensureAccessToken, fetchPosts } from './services/ApiService';
 import Theme from './theme';
 import { AppState } from './types';
+import ScrollTopButton from './components/ScrollTopButton';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -19,6 +20,7 @@ declare const fabricate: Fabricate<AppState>;
 const App = () => fabricate('Column')
   .setStyles({ backgroundColor: Theme.palette.background })
   .setChildren([
+    ScrollTopButton(),
     RateLimitBar(),
     AppNavBar(),
     fabricate('Column')
@@ -58,11 +60,11 @@ const App = () => fabricate('Column')
         await fetchPosts(tokenNow, startQuery, sortMode);
 
         // Keep note of last reload time for 'isNew' calculations without replacing it
-        await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
         fabricate.update({
           newSinceTime: lastReloadTime,
           lastReloadTime: Date.now(),
         });
+        await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
       } catch (e) {
         // Stored credentials were invalid
         localStorage.clear();

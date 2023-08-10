@@ -3,7 +3,6 @@ import { AppState } from '../types';
 import GalleryPost from '../components/GalleryPost';
 import ListPost from '../components/ListPost';
 import AppLoader from '../components/AppLoader';
-import { APP_NAV_BAR_HEIGHT } from '../components/AppNavBar';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -95,10 +94,7 @@ const ListPage = () => {
   return fabricate('Column')
     .setStyles({
       overflowY: 'scroll',
-      minHeight: '93vh',
-      maxHeight: '93vh',
       width: '100vw',
-      paddingTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
     })
     .setChildren([
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
