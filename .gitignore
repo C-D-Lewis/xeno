@@ -4,6 +4,7 @@ credentials.json
 config.ts
 dist
 *.bak
-index.html
 devItems.json
 iframeTransformer.js
+.terraform
+

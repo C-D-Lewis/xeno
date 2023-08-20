@@ -17,10 +17,9 @@
   },
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "./scripts/build.sh",
-    "build:site": "npm run clean && webpack --mode production",
+    "build": "npm run clean && webpack --mode production",
     "build:site:dev": "npm run clean && webpack --mode development",
-    "start": "npm run build:site && npm run build:site:dev && http-server"
+    "start": "npm run build:site:dev && http-server"
   },
   "eslintConfig": {
     "extends": [
