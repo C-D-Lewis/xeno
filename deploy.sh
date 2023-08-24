@@ -29,6 +29,8 @@ HAS_BUILD=$(cat package.json | jq -r '.scripts.build')
 if [[ "$HAS_BUILD" != 'null' ]]; then
   npm run build
 fi
+
+git status
   
 # Check no changes resulted
 if [[ ! -z $(git status -s) ]]; then
