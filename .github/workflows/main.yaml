@@ -28,7 +28,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Install dependencies
-        run: npm i  # not 'ci' due to package-lock.json sync error here
+        run: npm ci
       
       - name: Build and deploy
         run: ./deploy.sh ${{ vars.SITE_DOMAIN }}
