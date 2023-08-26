@@ -173,7 +173,7 @@ const UserInfoRow = () => {
     })
     .onClick(() => {
       localStorage.clear();
-      window.location.href = '/';
+      window.location.reload();
     });
 
   return fabricate('Row')
