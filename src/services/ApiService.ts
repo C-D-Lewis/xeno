@@ -13,7 +13,7 @@ declare const CLIENT_SECRET: string;
 /** Redirect URL */
 const REDIRECT_URI = 'https://xeno.chrislewis.me.uk';
 /** Requested scopes */
-const SCOPE_STRING = 'identity read';
+const SCOPE_STRING = 'identity read history';
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
