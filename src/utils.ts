@@ -110,3 +110,12 @@ export const getNextSortMode = (mode: SortMode) => {
  * @returns {number} Sort order;
  */
 export const sortByDate = (a: Post, b: Post) => a.created < b.created;
+
+/**
+ * Get a query param.
+ *
+ * @param {string} name - Param name.
+ * @returns {string} Value of param.
+ */
+export const getQueryParam = (name: string) => new URLSearchParams(window.location.search)
+  .get(name);

@@ -7,6 +7,17 @@ import {
 import { sortByDate } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
+declare const CLIENT_ID: string;
+declare const CLIENT_SECRET: string;
+
+/** Redirect URL */
+const REDIRECT_URI = 'http://localhost:8080';
+/** Requested scopes */
+const SCOPE_STRING = 'identity read';
+
+/** Login URL */
+export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
+state=${Date.now()}&redirect_uri=${REDIRECT_URI}&duration=permanent&scope=${SCOPE_STRING}`;
 
 /**
  * Make a request to the Reddit API.
@@ -40,47 +51,37 @@ const apiRequest = async (accessToken: string, route: string) => {
 /**
  * Fetch a user-less access token.
  *
- * @param {string} clientId - Saved client ID.
- * @param {string} clientSecret - Saved client secret.
+ * @param {string} refreshToken - Refresh token.
  * @returns {Promise<string>} The access token.
  */
-const fetchAppToken = async (clientId: string, clientSecret: string) => {
+const refreshAppToken = async (refreshToken: string) => {
   const res = await fetch('https://www.reddit.com/api/v1/access_token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+      Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
     },
-    body: 'grant_type=client_credentials',
+    body: `grant_type=refresh_token&refresh_token=${refreshToken}`,
   });
 
   if (res.status >= 400) throw new Error(`fetchAppToken failed: ${res.status} ${(await res.text()).slice(0, 256)}`);
 
-  const json = await res.json();
-  // console.log(json);
-  return json.access_token;
+  const { access_token: accessToken } = await res.json();
+  return accessToken;
 };
 
 /**
  * Ensure an app token exists and is valid.
  *
- * @param {string} clientId - Saved client ID.
- * @param {string} clientSecret - Saved client secret.
  * @param {string} accessToken - Token saved in AppState.
+ * @param {string} refreshToken - Token saved in AppState.
  * @returns {Promise<string>} The now-valid token for immediate use.
  */
 export const ensureAccessToken = async (
-  clientId: string,
-  clientSecret: string,
   accessToken: string,
+  refreshToken: string,
 ) => {
   let token = accessToken;
-
-  // No token yet
-  if (!token) {
-    console.log('Fetching initial access token');
-    token = await fetchAppToken(clientId, clientSecret);
-  }
 
   try {
     // Test saved token
@@ -88,7 +89,7 @@ export const ensureAccessToken = async (
     console.log('Existing token is valid');
   } catch (e) {
     // Generate a new one
-    token = await fetchAppToken(clientId, clientSecret);
+    token = await refreshAppToken(refreshToken);
     console.log('Got new access token');
   }
 
@@ -353,4 +354,36 @@ export const checkSavedForNew = async (
       console.warn(`Failed to checkSavedForNew for ${query}`);
     }
   }));
+};
+
+/**
+ * Get an access token.
+ *
+ * @param {string} code - Code from login flow.
+ */
+export const getAccessToken = async (code: string) => {
+  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+    },
+    body: `grant_type=authorization_code&code=${code}&redirect_uri=${REDIRECT_URI}`,
+  });
+
+  if (res.status >= 400) throw new Error(`fetchAppToken failed: ${res.status} ${(await res.text()).slice(0, 256)}`);
+
+  const { access_token: accessToken, refresh_token: refreshToken } = await res.json();
+  return { accessToken, refreshToken };
+};
+
+/**
+ * Get user name.
+ *
+ * @param {string} accessToken - Access token.
+ * @returns {string} Username.
+ */
+export const getUsername = async (accessToken: string) => {
+  const json = await apiRequest(accessToken, '/api/v1/me');
+  return json.subreddit.display_name.replace('u_', '');
 };

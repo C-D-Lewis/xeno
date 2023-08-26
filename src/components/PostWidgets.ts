@@ -36,6 +36,8 @@ export const PostAuthorLink = ({
         : Theme.palette.transparent,
     })
     .onClick((el, { accessToken, sortMode }) => {
+      if (!accessToken) return;
+
       delayedScrollTop();
       fabricate.update({ page: 'ListPage' });
 
@@ -61,6 +63,8 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     margin: '0px 5px',
   })
   .onClick((el, { accessToken, sortMode }) => {
+    if (!accessToken) return;
+
     delayedScrollTop();
     fabricate.update({ page: 'ListPage' });
 

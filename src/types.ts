@@ -38,18 +38,18 @@ export type AppState = {
   [key: string]: any;
 
   // Persisted
-  accessToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
+  username: string | null;
   query: string;
   displayMode: 'gallery' | 'list';
   savedItems: string[];
-  clientId: string | null;
-  clientSecret: string | null;
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
 
   // Other
-  page: 'ListPage' | 'PostPage' | 'SettingsPage';
+  page: 'ListPage' | 'PostPage' | 'CredentialsPage' | 'LoginPage';
   selectedPost: Post | null;
   posts: Post[];
   drawerVisible: boolean;

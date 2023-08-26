@@ -5,6 +5,7 @@ import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import Input from './Input';
+import { RATE_LIMIT_BAR_HEIGHT } from './RateLimitBar';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -50,7 +51,7 @@ const BackButton = () => ImageButton({ src: 'assets/back.png' })
 const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
   .setStyles({
     marginLeft: '5px',
-    maxWidth: '170px',
+    maxWidth: '150px',
     backgroundColor: Theme.palette.widgetPanel,
   })
   .onUpdate((el, { query }) => {
@@ -58,6 +59,8 @@ const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
     input.value = query;
   }, ['query'])
   .onEvent('keydown', (el, { accessToken, sortMode }, event) => {
+    if (!accessToken) return;
+
     const e = event as KeyboardEvent;
     if (e.key !== 'Enter') return;
 
@@ -99,6 +102,10 @@ const AppNavBar = () => fabricate('Row')
     backgroundColor: Theme.palette.widgetBackground,
     padding: '0px 10px',
     alignItems: 'center',
+    position: 'fixed',
+    top: `${RATE_LIMIT_BAR_HEIGHT}px`,
+    left: '0',
+    right: '0',
     zIndex: '999',
     boxShadow: Theme.styles.boxShadow,
   })

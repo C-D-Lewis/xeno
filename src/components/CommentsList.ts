@@ -124,7 +124,7 @@ const CommentsList = () => fabricate('Column')
     }));
   }, ['selectedPost', 'postComments'])
   .onCreate((el, { selectedPost, accessToken }) => {
-    if (!selectedPost) return;
+    if (!selectedPost || !accessToken) return;
 
     fetchPostComments(accessToken, selectedPost.id);
   })

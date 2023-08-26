@@ -49,6 +49,8 @@ const DrawerItem = ({ query }: { query: string }) => {
    * @param {AppState} state - App state.
    */
   const onClick = (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
+    if (!accessToken) return;
+
     delayedScrollTop();
     fabricate.update({ drawerVisible: false });
 
@@ -109,20 +111,6 @@ export const DisplayModeToggle = () => ImageButton({ src: 'assets/listpost.png' 
   });
 
 /**
- * SettingsButton component.
- *
- * @returns {FabricateComponent} SettingsButton component.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const SettingsButton = () => ImageButton({ src: 'assets/settings.png' })
-  .setStyles({ marginLeft: 'auto' })
-  .onClick(() => fabricate.update({
-    page: 'SettingsPage',
-    selectedPost: null,
-    drawerVisible: false,
-  }));
-
-/**
  * SortModeToggle component.
  *
  * @returns {FabricateComponent} SortModeToggle component.
@@ -133,6 +121,8 @@ const SortModeToggle = () => ImageButton({ src: 'assets/top.png' })
     ['fabricate:init', 'sortMode'],
   )
   .onClick((el, { accessToken, query, sortMode }) => {
+    if (!accessToken) return;
+
     const nextMode = getNextSortMode(sortMode);
     fabricate.update({ sortMode: nextMode });
 
@@ -148,15 +138,59 @@ const QuickToggleRow = () => fabricate('Row')
   .setStyles({
     marginBottom: '10px',
     backgroundColor: Theme.palette.widgetBackground,
-    padding: '10px 5px 5px 5px',
+    padding: '5px',
     boxShadow: Theme.styles.boxShadow,
     alignItems: 'center',
   })
   .setChildren([
     DisplayModeToggle(),
     SortModeToggle(),
-    // SettingsButton(),  bring this back if other settings are added there
   ]);
+
+/**
+ * UserInfo component.
+ *
+ * @returns {FabricateComponent} UserInfo component.
+ */
+const UserInfoRow = () => {
+  const usernameText = fabricate('Text')
+    .setStyles({
+      color: Theme.palette.text,
+      marginLeft: '8px',
+      fontSize: '1rem',
+      cursor: 'default',
+    })
+    .onUpdate((el, { username }) => {
+      el.setText(username || '-');
+    }, ['fabricate:init', 'username']);
+
+  const logoutButton = ImageButton({ src: 'assets/logout.png' })
+    .setStyles({
+      backgroundColor: '#c12525',
+      width: '22px',
+      height: '22px',
+      marginLeft: 'auto',
+    })
+    .onClick(() => {
+      localStorage.clear();
+      window.location.href = '/';
+    });
+
+  return fabricate('Row')
+    .setStyles({
+      padding: '8px',
+      alignItems: 'center',
+    })
+    .setChildren([
+      fabricate('Image', { src: 'assets/user.png' })
+        .setStyles({
+          width: '24px',
+          height: '24px',
+        }),
+      usernameText,
+      logoutButton,
+    ]);
+};
 
 /**
  * Drawer component.
@@ -188,13 +222,17 @@ export const Drawer = () => {
       zIndex: '1',
     })
     .setChildren([
+      UserInfoRow(),
       QuickToggleRow(),
       DrawerItem({ query: '/r/all' }),
       savedItemsList.displayWhen(hasSavedItems),
       noItemsText.displayWhen((state) => !hasSavedItems(state)),
     ])
     .onUpdate((el, { drawerVisible, savedItems }, keysChanged) => {
-      el.setStyles({ left: drawerVisible ? '0px' : '-300px' });
+      el.setStyles({
+        left: drawerVisible ? '0px' : '-300px',
+        boxShadow: drawerVisible ? '2px 0px 16px black' : 'none',
+      });
 
       const shouldCreateItems = ['savedItems', 'fabricate:init'].some(
         (k) => keysChanged.includes(k),

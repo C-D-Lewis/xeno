@@ -1,4 +1,4 @@
-import { Fabricate, FabricateComponent } from '../../node_modules/fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { APP_NAV_BAR_HEIGHT } from '../components/AppNavBar';
 import Card from '../components/Card';
 import Header from '../components/Header';
@@ -36,7 +36,8 @@ const TestText = () => {
 
     // Test them
     try {
-      await ensureAccessToken(clientId, clientSecret, accessToken);
+      // HACK - incompatible with LoginPage changes
+      // await ensureAccessToken(clientId, clientSecret, accessToken);
       el.setStyles({ color: Theme.palette.success });
       el.setText('Credentials OK!');
 
@@ -114,13 +115,14 @@ const CredentialsCard = () => Card()
   ]);
 
 /**
- * SettingsPage component.
+ * CredentialsPage component.
  */
-export const SettingsPage = () => fabricate('Column')
+export const CredentialsPage = () => fabricate('Column')
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '50vw',
     margin: '15px auto',
+    marginTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
   })
   .setChildren([CredentialsCard()]);
 
-export default SettingsPage;
+export default CredentialsPage;

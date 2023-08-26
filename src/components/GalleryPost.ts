@@ -223,7 +223,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       if (page !== 'PostPage') return;
 
       // Always wide on PostPage (Depends on container width)
-      el.setStyles({ width: fabricate.isNarrow() ? '95vw' : '48vw' });
+      el.setStyles({ width: '48vw' });
 
       // Show body text only on detail page
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
