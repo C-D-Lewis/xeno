@@ -58,9 +58,6 @@ aws s3 sync feed $BUCKET/feed || true
 aws s3 sync dist $BUCKET/dist || true
 aws s3 cp favicon.ico $BUCKET || true
 
-# SPECIAL
-aws s3 cp env.js $BUCKET/env.js
-
 # Restore template
 mv index.html.bak index.html
 

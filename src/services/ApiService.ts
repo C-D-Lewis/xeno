@@ -11,7 +11,7 @@ declare const CLIENT_ID: string;
 declare const CLIENT_SECRET: string;
 
 /** Redirect URL */
-const REDIRECT_URI = 'http://localhost:8080';
+const REDIRECT_URI = 'https://xeno.chrislewis.me.uk';
 /** Requested scopes */
 const SCOPE_STRING = 'identity read';
 
