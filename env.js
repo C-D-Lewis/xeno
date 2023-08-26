@@ -1,2 +1,0 @@
-window.CLIENT_ID = 'ERRugKJncYPST1U9YvELfw';
-window.CLIENT_SECRET = '6jgxZp4nLc3AdHA7CkPIRJXetq1rDQ';
