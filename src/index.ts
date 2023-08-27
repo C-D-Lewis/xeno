@@ -78,7 +78,6 @@ const App = () => fabricate('Column')
         });
       } catch (e) {
         // Stored credentials were invalid
-        localStorage.clear();
         fabricate.update({ page: AUTH_PAGE });
       }
     }

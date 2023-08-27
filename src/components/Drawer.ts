@@ -173,9 +173,11 @@ const UserInfoRow = () => {
     })
     .onClick(() => {
       // Only clear login stuff
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('username');
+      fabricate.update({
+        accessToken: null,
+        refreshToken: null,
+        username: null,
+      });
 
       setTimeout(() => {
         window.location.reload();
