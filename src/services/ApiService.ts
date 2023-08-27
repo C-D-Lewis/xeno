@@ -9,9 +9,8 @@ import { sortByDate } from '../utils';
 declare const fabricate: Fabricate<AppState>;
 declare const CLIENT_ID: string;
 declare const CLIENT_SECRET: string;
+declare const REDIRECT_URI: string;
 
-/** Redirect URL */
-const REDIRECT_URI = 'https://xeno.chrislewis.me.uk';
 /** Requested scopes */
 const SCOPE_STRING = 'identity read history';
 
