@@ -172,7 +172,10 @@ const UserInfoRow = () => {
       marginLeft: 'auto',
     })
     .onClick(() => {
-      localStorage.clear();
+      // Only clear login stuff
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('username');
 
       setTimeout(() => {
         window.location.reload();
