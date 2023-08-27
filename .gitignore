@@ -8,3 +8,6 @@ devItems.json
 iframeTransformer.js
 .terraform
 env.js
+env-prod.js
+env-local.js
+
