@@ -4,6 +4,7 @@ import GalleryPost from '../components/GalleryPost';
 import ListPost from '../components/ListPost';
 import AppLoader from '../components/AppLoader';
 import AppPage from '../components/AppPage';
+import { fetchPosts } from '../services/ApiService';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -75,6 +76,12 @@ const ListPage = () => {
         scrollToPost(found);
       }, SCROLL_INTERVAL_MS);
     }
+
+    // Reload data if returning from settings page
+    const { accessToken, query, sortMode } = state;
+    if (!accessToken) return;
+
+    fetchPosts(accessToken, query, sortMode);
   };
 
   const postContainerRow = fabricate('Row')

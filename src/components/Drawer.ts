@@ -164,24 +164,14 @@ const UserInfoRow = () => {
       el.setText(username || '-');
     }, ['fabricate:init', 'username']);
 
-  const logoutButton = ImageButton({ src: 'assets/logout.png' })
+  const settingsButton = ImageButton({ src: 'assets/settings.png' })
     .setStyles({
-      backgroundColor: '#c12525',
       width: '22px',
       height: '22px',
       marginLeft: 'auto',
     })
     .onClick(() => {
-      // Only clear login stuff
-      fabricate.update({
-        accessToken: null,
-        refreshToken: null,
-        username: null,
-      });
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+      fabricate.update({ page: 'SettingsPage', drawerVisible: false });
     });
 
   return fabricate('Row')
@@ -196,7 +186,7 @@ const UserInfoRow = () => {
           height: '24px',
         }),
       usernameText,
-      logoutButton,
+      settingsButton,
     ]);
 };
 

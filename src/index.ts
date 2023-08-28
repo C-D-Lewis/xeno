@@ -2,10 +2,11 @@ import { Fabricate, FabricateComponent, FabricateOptions } from 'fabricate.js';
 import AppNavBar from './components/AppNavBar';
 import { Drawer } from './components/Drawer';
 import RateLimitBar from './components/RateLimitBar';
+import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
-import LoginPage from './pages/LoginPage';
-import { checkSavedForNew, ensureAccessToken, fetchPosts } from './services/ApiService';
+import SettingsPage from './pages/SettingsPage';
+import { checkSavedForNew, ensureAccessToken } from './services/ApiService';
 import Theme from './theme';
 import { AppState } from './types';
 
@@ -39,12 +40,11 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: s
   if (keys.includes('fabricate:init')) {
     try {
       // Test stored credentials
-      const tokenNow = await ensureAccessToken(accessToken, refreshToken);
+      await ensureAccessToken(accessToken, refreshToken);
 
       // Success
       const startQuery = query || '/r/all';
       fabricate.update({ query: startQuery });
-      await fetchPosts(tokenNow, startQuery, sortMode);
 
       // Keep note of last reload time for 'isNew' calculations without replacing it
       await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
@@ -71,6 +71,10 @@ const App = () => fabricate('Column')
     AppNavBar(),
     Drawer(),
     fabricate.conditional(
+      ({ page }) => page === 'LoginPage',
+      LoginPage,
+    ),
+    fabricate.conditional(
       ({ page }) => page === 'ListPage',
       ListPage,
     ),
@@ -79,8 +83,8 @@ const App = () => fabricate('Column')
       PostPage,
     ),
     fabricate.conditional(
-      ({ page }) => page === 'LoginPage',
-      LoginPage,
+      ({ page }) => page === 'SettingsPage',
+      SettingsPage,
     ),
   ])
   .onUpdate(onInit, ['fabricate:init', 'page']);
