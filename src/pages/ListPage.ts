@@ -1,9 +1,9 @@
-import { Fabricate, FabricateComponent } from 'fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import GalleryPost from '../components/GalleryPost';
 import ListPost from '../components/ListPost';
 import AppLoader from '../components/AppLoader';
-import { APP_NAV_BAR_HEIGHT } from '../components/AppNavBar';
+import AppPage from '../components/AppPage';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -51,8 +51,6 @@ const ListPage = () => {
     el: FabricateComponent<AppState>,
     { posts, displayMode }: AppState,
   ) => {
-    el.setStyles({ width: !fabricate.isNarrow() && displayMode === 'list' ? '50vw' : '95vw' });
-
     el.setChildren(
       posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
     );
@@ -84,7 +82,6 @@ const ListPage = () => {
       padding: '5px 0px',
       flex: '1',
       flexWrap: 'wrap',
-      width: '95vw',
       margin: 'auto',
     })
     .onCreate(onCreate)
@@ -92,14 +89,7 @@ const ListPage = () => {
       updateLayoutAndPosts(el, state);
     }, ['displayMode', 'posts']);
 
-  return fabricate('Column')
-    .setStyles({
-      overflowY: 'scroll',
-      minHeight: '93vh',
-      maxHeight: '93vh',
-      width: '100vw',
-      paddingTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
-    })
+  return AppPage()
     .setChildren([
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       postContainerRow,

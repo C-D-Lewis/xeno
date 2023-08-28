@@ -1,4 +1,4 @@
-import { Fabricate, FabricateComponent } from 'fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
 import ImageButton from './ImageButton';
@@ -222,8 +222,8 @@ const GalleryPost = ({ post }: { post: Post }) => {
     .onCreate((el, { page }) => {
       if (page !== 'PostPage') return;
 
-      // Always wide on PostPage (Depends on container width)
-      el.setStyles({ width: fabricate.isNarrow() ? '93vw' : '48vw' });
+      // Always wide on PostPage
+      el.setStyles({ width: fabricate.isNarrow() ? '95vw' : '48vw' });
 
       // Show body text only on detail page
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);

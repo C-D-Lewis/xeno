@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import { Fabricate } from 'fabricate.js/types/fabricate';
+import { Fabricate } from 'fabricate.js';
 import {
   AppState, Comment, Post, RedditApiComment, RedditApiCommentTree, RedditApiPost, SortMode,
 } from '../types';

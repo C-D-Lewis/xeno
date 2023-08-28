@@ -1,10 +1,9 @@
-import { Fabricate, FabricateOptions } from 'fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent, FabricateOptions } from 'fabricate.js';
 import AppNavBar from './components/AppNavBar';
 import { Drawer } from './components/Drawer';
 import RateLimitBar from './components/RateLimitBar';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
-import CredentialsPage from './pages/CredentialsPage';
 import LoginPage from './pages/LoginPage';
 import { checkSavedForNew, ensureAccessToken, fetchPosts } from './services/ApiService';
 import Theme from './theme';
@@ -16,6 +15,51 @@ declare const fabricate: Fabricate<AppState>;
 const AUTH_PAGE = 'LoginPage';
 
 /**
+ * When app initialises.
+ *
+ * @param {FabricateComponent} el - App element.
+ * @param {AppState} state - App state.
+ * @param {string[]} keys - List of keys updated.
+ * @returns {Promise<void>}
+ */
+const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: string[]) => {
+  const {
+    accessToken, refreshToken, query, page, sortMode, lastReloadTime, savedItems,
+  } = state;
+
+  // Go to Login
+  if ((!accessToken || !refreshToken)) {
+    if (page !== AUTH_PAGE) {
+      fabricate.update({ page: AUTH_PAGE });
+    }
+    return;
+  }
+
+  // Restore query on app relaunch
+  if (keys.includes('fabricate:init')) {
+    try {
+      // Test stored credentials
+      const tokenNow = await ensureAccessToken(accessToken, refreshToken);
+
+      // Success
+      const startQuery = query || '/r/all';
+      fabricate.update({ query: startQuery });
+      await fetchPosts(tokenNow, startQuery, sortMode);
+
+      // Keep note of last reload time for 'isNew' calculations without replacing it
+      await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
+      fabricate.update({
+        newSinceTime: lastReloadTime,
+        lastReloadTime: Date.now(),
+      });
+    } catch (e) {
+      // Stored credentials were invalid
+      fabricate.update({ page: AUTH_PAGE });
+    }
+  }
+};
+
+/**
  * App top-level component.
  *
  * @returns {HTMLElement} Fabricate component
@@ -25,63 +69,21 @@ const App = () => fabricate('Column')
   .setChildren([
     RateLimitBar(),
     AppNavBar(),
-    fabricate('Column')
-      .setChildren([
-        Drawer(),
-        fabricate.conditional(
-          ({ page }) => page === 'ListPage',
-          ListPage,
-        ),
-        fabricate.conditional(
-          ({ page }) => page === 'PostPage',
-          PostPage,
-        ),
-        fabricate.conditional(
-          ({ page }) => page === 'CredentialsPage',
-          CredentialsPage,
-        ),
-        fabricate.conditional(
-          ({ page }) => page === 'LoginPage',
-          LoginPage,
-        ),
-      ]),
+    Drawer(),
+    fabricate.conditional(
+      ({ page }) => page === 'ListPage',
+      ListPage,
+    ),
+    fabricate.conditional(
+      ({ page }) => page === 'PostPage',
+      PostPage,
+    ),
+    fabricate.conditional(
+      ({ page }) => page === 'LoginPage',
+      LoginPage,
+    ),
   ])
-  .onUpdate(async (el, state, keys) => {
-    const {
-      accessToken, refreshToken, query, page, sortMode, lastReloadTime, savedItems,
-    } = state;
-
-    // Go to Login
-    if ((!accessToken || !refreshToken)) {
-      if (page !== AUTH_PAGE) {
-        fabricate.update({ page: AUTH_PAGE });
-      }
-      return;
-    }
-
-    // Restore query on app relaunch
-    if (keys.includes('fabricate:init')) {
-      try {
-        // Test stored credentials
-        const tokenNow = await ensureAccessToken(accessToken, refreshToken);
-
-        // Success
-        const startQuery = query || '/r/all';
-        fabricate.update({ query: startQuery });
-        await fetchPosts(tokenNow, startQuery, sortMode);
-
-        // Keep note of last reload time for 'isNew' calculations without replacing it
-        await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
-        fabricate.update({
-          newSinceTime: lastReloadTime,
-          lastReloadTime: Date.now(),
-        });
-      } catch (e) {
-        // Stored credentials were invalid
-        fabricate.update({ page: AUTH_PAGE });
-      }
-    }
-  }, ['fabricate:init', 'page']);
+  .onUpdate(onInit, ['fabricate:init', 'page']);
 
 /**
  * The main function.
@@ -95,8 +97,6 @@ const main = async () => {
     query: '/r/all',
     displayMode: 'list',
     savedItems: [],
-    clientId: null,
-    clientSecret: null,
     sortMode: 'top',
     lastReloadTime: Date.now(),
 
@@ -125,8 +125,6 @@ const main = async () => {
       'query',
       'displayMode',
       'savedItems',
-      'clientId',
-      'clientSecret',
       'sortMode',
       'lastReloadTime',
     ],

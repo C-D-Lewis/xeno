@@ -1,4 +1,4 @@
-import { Fabricate } from 'fabricate.js/types/fabricate';
+import { Fabricate } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
 import {
@@ -110,7 +110,7 @@ const PostSummary = ({ post }: { post: Post }) => {
  * @returns {HTMLElement} Fabricate component.
  */
 const ListPost = ({ post }: { post: Post }) => Card()
-  .setStyles({ width: fabricate.isNarrow() ? '95vw' : '50vw' })
+  .setStyles({ width: '100%' })
   .setChildren([PostSummary({ post })]);
 
 export default ListPost;

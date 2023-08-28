@@ -7,11 +7,11 @@ import AppPage from '../components/AppPage';
 declare const fabricate: Fabricate<AppState>;
 
 /**
- * PostPage component.
+ * SettingsPage component.
  *
- * @returns {FabricateComponent} PostPage component.
+ * @returns {FabricateComponent} SettingsPage component.
  */
-export const PostPage = () => AppPage()
+export const SettingsPage = () => AppPage()
   .onCreate((el, { selectedPost }) => {
     if (!selectedPost) return;
 
@@ -24,4 +24,4 @@ export const PostPage = () => AppPage()
     ]);
   });
 
-export default PostPage;
+export default SettingsPage;

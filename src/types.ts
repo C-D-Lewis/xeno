@@ -49,7 +49,7 @@ export type AppState = {
   newSinceTime: number;
 
   // Other
-  page: 'ListPage' | 'PostPage' | 'CredentialsPage' | 'LoginPage';
+  page: 'ListPage' | 'PostPage' | 'LoginPage';
   selectedPost: Post | null;
   posts: Post[];
   drawerVisible: boolean;

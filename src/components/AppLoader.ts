@@ -1,4 +1,4 @@
-import { Fabricate, FabricateComponent } from 'fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState } from '../types';
 

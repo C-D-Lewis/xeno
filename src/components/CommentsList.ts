@@ -1,4 +1,4 @@
-import { Fabricate, FabricateComponent } from 'fabricate.js/types/fabricate';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPostComments } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Comment } from '../types';
