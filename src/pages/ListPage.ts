@@ -64,8 +64,6 @@ const ListPage = () => {
    * @param {AppState} state - App state.
    */
   const onCreate = (el: FabricateComponent<AppState>, state: AppState) => {
-    updateLayoutAndPosts(el, state);
-
     // If navigating back, scroll to the viewed post
     const { selectedPost } = state;
     if (selectedPost) {
@@ -94,7 +92,7 @@ const ListPage = () => {
     .onCreate(onCreate)
     .onUpdate((el, state) => {
       updateLayoutAndPosts(el, state);
-    }, ['displayMode', 'posts']);
+    }, ['posts']);
 
   return AppPage()
     .setChildren([

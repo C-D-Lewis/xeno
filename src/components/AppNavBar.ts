@@ -5,7 +5,6 @@ import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import Input from './Input';
-import { RATE_LIMIT_BAR_HEIGHT } from './RateLimitBar';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -103,7 +102,7 @@ const AppNavBar = () => fabricate('Row')
     padding: '0px 10px',
     alignItems: 'center',
     position: 'fixed',
-    top: `${RATE_LIMIT_BAR_HEIGHT}px`,
+    top: '0',
     left: '0',
     right: '0',
     zIndex: '999',

@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState } from '../types';
-import { delayedScrollTop, getNextSortMode, hasSavedItems } from '../utils';
+import { delayedScrollTop, hasSavedItems } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
 
@@ -96,58 +96,6 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
   });
 
 /**
- * DisplayModeToggle component.
- *
- * @returns {FabricateComponent} Fabricate component.
- */
-export const DisplayModeToggle = () => ImageButton({ src: 'assets/listpost.png' })
-  .setStyles({ marginLeft: '0px' })
-  .onUpdate(
-    (el, { displayMode }) => el.setAttributes({ src: `assets/${displayMode}post.png` }),
-    ['fabricate:init', 'displayMode'],
-  )
-  .onClick((el, { displayMode }) => {
-    fabricate.update({ displayMode: displayMode === 'gallery' ? 'list' : 'gallery' });
-  });
-
-/**
- * SortModeToggle component.
- *
- * @returns {FabricateComponent} SortModeToggle component.
- */
-const SortModeToggle = () => ImageButton({ src: 'assets/top.png' })
-  .onUpdate(
-    (el, { sortMode }) => el.setAttributes({ src: `assets/${sortMode}.png` }),
-    ['fabricate:init', 'sortMode'],
-  )
-  .onClick((el, { accessToken, query, sortMode }) => {
-    if (!accessToken) return;
-
-    const nextMode = getNextSortMode(sortMode);
-    fabricate.update({ sortMode: nextMode });
-
-    fetchPosts(accessToken, query, nextMode);
-  });
-
-/**
- * QuickToggleRow component.
- *
- * @returns {FabricateComponent} QuickToggleRow component.
- */
-const QuickToggleRow = () => fabricate('Row')
-  .setStyles({
-    marginBottom: '10px',
-    backgroundColor: Theme.palette.widgetBackground,
-    padding: '5px',
-    boxShadow: Theme.styles.boxShadow,
-    alignItems: 'center',
-  })
-  .setChildren([
-    DisplayModeToggle(),
-    SortModeToggle(),
-  ]);
-
-/**
  * UserInfo component.
  *
  * @returns {FabricateComponent} UserInfo component.
@@ -221,7 +169,6 @@ export const Drawer = () => {
     })
     .setChildren([
       UserInfoRow(),
-      QuickToggleRow(),
       DrawerItem({ query: '/r/all' }),
       savedItemsList.displayWhen(hasSavedItems),
       noItemsText.displayWhen((state) => !hasSavedItems(state)),

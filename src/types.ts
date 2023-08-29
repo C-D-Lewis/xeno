@@ -47,6 +47,7 @@ export type AppState = {
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
+  checkForNewPosts: boolean;
 
   // Other
   page: 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage';

@@ -5,7 +5,7 @@ import { AppState } from '../types';
 declare const fabricate: Fabricate<AppState>;
 
 /** Bar height */
-export const RATE_LIMIT_BAR_HEIGHT = 3;
+const RATE_LIMIT_BAR_HEIGHT = 3;
 
 /**
  * RateLimitBar component.
@@ -18,17 +18,13 @@ const RateLimitBar = () => fabricate('div')
     backgroundColor: Theme.palette.primary,
     width: '0px',
     transition: '0.3s',
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    right: '0',
-    zIndex: '999',
+    padding: '0px 4px 0px 0px',
   })
-  .onUpdate((el, { rateLimitInfo }) => {
+  .onCreate((el, { rateLimitInfo }) => {
     const { used, remaining } = rateLimitInfo;
     const widthPerc = (used / (used + remaining)) * 100;
 
     el.setStyles({ width: `${100 - widthPerc}%` });
-  }, ['rateLimitInfo']);
+  });
 
 export default RateLimitBar;

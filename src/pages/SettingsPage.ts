@@ -3,9 +3,22 @@ import { AppState } from '../types';
 import AppPage from '../components/AppPage';
 import Theme from '../theme';
 import Card from '../components/Card';
-import Header from '../components/Header';
+import RateLimitBar from '../components/RateLimitBar';
 
 declare const fabricate: Fabricate<AppState>;
+
+/**
+ * Header component.
+ *
+ * @returns {FabricateComponent} Header component.
+ */
+const Header = () => fabricate('Text')
+  .setStyles({
+    fontSize: '1rem',
+    color: Theme.palette.text,
+    fontWeight: 'bold',
+    margin: '5px auto',
+  });
 
 /**
  * LogoutButton component.
@@ -35,7 +48,7 @@ const LogoutButton = () => fabricate('Button', {
 type OptionProps = {
   label: string;
   setting: string;
-  value: string;
+  value: string | boolean;
 };
 
 /**
@@ -55,7 +68,7 @@ const Option = ({ label, setting, value }: OptionProps) => {
     const isSelected = state[setting] === value;
 
     el.setStyles({
-      backgroundColor: isSelected ? Theme.palette.primary : Theme.palette.transparent,
+      backgroundColor: isSelected ? Theme.palette.primary : Theme.palette.widgetPanel,
       fontWeight: isSelected ? 'bold' : 'initial',
     });
   };
@@ -77,58 +90,92 @@ const Option = ({ label, setting, value }: OptionProps) => {
     .onUpdate(onCreateOrUpdate, [setting]);
 };
 
+/** SettingsWrapper prop types */
+type SettingsWrapperProps = {
+  title: string;
+  children: FabricateComponent<AppState>[];
+};
+
+/**
+ * Wrapper for a group of settings options.
+ *
+ * @param {SettingsWrapperProps} props - Component props.
+ * @returns {FabricateComponent} SettingsWrapper component.
+ */
+const SettingsWrapper = ({ title, children }: SettingsWrapperProps) => fabricate('Column')
+  .setStyles({ padding: '0px 8px' })
+  .setChildren([
+    Header().setText(title),
+    fabricate('Row').setChildren(children),
+  ]);
+
 /**
  * ViewModeSetting component.
  *
  * @returns {FabricateComponent} ViewModeSetting comment.
  */
-const ViewModeSetting = () => fabricate('Column')
-  .setStyles({ padding: '8px' })
-  .setChildren([
-    Header().setText('View mode'),
-    fabricate('Row')
-      .setChildren([
-        Option({
-          label: 'List',
-          setting: 'displayMode',
-          value: 'list',
-        }),
-        Option({
-          label: 'Gallery',
-          setting: 'displayMode',
-          value: 'gallery',
-        }),
-      ]),
-  ]);
+const ViewModeSetting = () => SettingsWrapper({
+  title: 'View mode',
+  children: [
+    Option({
+      label: 'List',
+      setting: 'displayMode',
+      value: 'list',
+    }),
+    Option({
+      label: 'Gallery',
+      setting: 'displayMode',
+      value: 'gallery',
+    }),
+  ],
+});
 
 /**
  * SortModeSetting component.
  *
  * @returns {FabricateComponent} SortModeSetting comment.
  */
-const SortModeSetting = () => fabricate('Column')
-  .setStyles({ padding: '8px' })
-  .setChildren([
-    Header().setText('Sort mode'),
-    fabricate('Row')
-      .setChildren([
-        Option({
-          label: 'Top',
-          setting: 'sortMode',
-          value: 'top',
-        }),
-        Option({
-          label: 'Hot',
-          setting: 'sortMode',
-          value: 'hot',
-        }),
-        Option({
-          label: 'New',
-          setting: 'sortMode',
-          value: 'new',
-        }),
-      ]),
-  ]);
+const SortModeSetting = () => SettingsWrapper({
+  title: 'Sort mode',
+  children: [
+    Option({
+      label: 'Top',
+      setting: 'sortMode',
+      value: 'top',
+    }),
+    Option({
+      label: 'Hot',
+      setting: 'sortMode',
+      value: 'hot',
+    }),
+    Option({
+      label: 'New',
+      setting: 'sortMode',
+      value: 'new',
+    }),
+  ],
+});
+
+/**
+ * CheckForNewSetting component.
+ *
+ * @returns {FabricateComponent} CheckForNewSetting comment.
+ */
+const CheckForNewSetting = () => SettingsWrapper({
+  title: 'Check for new posts',
+  children: [
+    Option({
+      label: 'Disabled',
+      setting: 'checkForNewPosts',
+      value: false,
+    }),
+    Option({
+      label: 'Enabled',
+      setting: 'checkForNewPosts',
+      value: true,
+    }),
+  ],
+});
 
 /**
  * SettingsCard component.
@@ -136,10 +183,32 @@ const SortModeSetting = () => fabricate('Column')
  * @returns {FabricateComponent} SettingsCard component.
  */
 const SettingsCard = () => Card()
+  .setStyles({ padding: '8px' })
   .setChildren([
     ViewModeSetting(),
     SortModeSetting(),
-    // CheckForNewSetting(),
+    CheckForNewSetting(),
+  ]);
+
+/**
+ * AccountCard component.
+ *
+ * @returns {FabricateComponent} AccountCard component.
+ */
+const AccountCard = () => Card()
+  .setStyles({ padding: '8px' })
+  .setChildren([
+    RateLimitBar(),
+    fabricate('Text')
+      .setStyles({
+        color: Theme.palette.text,
+        fontSize: '1rem',
+      })
+      .onCreate((el, { rateLimitInfo }) => {
+        const { used, remaining } = rateLimitInfo;
+        el.setText(`${remaining} of ${used + remaining} API requests (per 10 minutes)`);
+      }),
+    LogoutButton(),
   ]);
 
 /**
@@ -153,7 +222,7 @@ export const SettingsPage = () => AppPage()
       fabricate('Fader')
         .setChildren([
           SettingsCard(),
-          LogoutButton(),
+          AccountCard(),
         ]),
     ]);
   });

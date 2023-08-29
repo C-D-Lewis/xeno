@@ -1,7 +1,6 @@
 import { Fabricate, FabricateComponent, FabricateOptions } from 'fabricate.js';
 import AppNavBar from './components/AppNavBar';
 import { Drawer } from './components/Drawer';
-import RateLimitBar from './components/RateLimitBar';
 import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
@@ -25,7 +24,7 @@ const AUTH_PAGE = 'LoginPage';
  */
 const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: string[]) => {
   const {
-    accessToken, refreshToken, query, page, sortMode, lastReloadTime, savedItems,
+    accessToken, refreshToken, query, page, sortMode, lastReloadTime, savedItems, checkForNewPosts,
   } = state;
 
   // Go to Login
@@ -46,8 +45,11 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: s
       const startQuery = query || '/r/all';
       fabricate.update({ query: startQuery });
 
+      if (checkForNewPosts) {
+        await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
+      }
+
       // Keep note of last reload time for 'isNew' calculations without replacing it
-      await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
       fabricate.update({
         newSinceTime: lastReloadTime,
         lastReloadTime: Date.now(),
@@ -67,7 +69,6 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: s
 const App = () => fabricate('Column')
   .setStyles({ backgroundColor: Theme.palette.background })
   .setChildren([
-    RateLimitBar(),
     AppNavBar(),
     Drawer(),
     fabricate.conditional(
@@ -103,6 +104,7 @@ const main = async () => {
     savedItems: [],
     sortMode: 'top',
     lastReloadTime: Date.now(),
+    checkForNewPosts: false,
 
     // Other
     newSinceTime: Date.now(),
@@ -131,6 +133,7 @@ const main = async () => {
       'savedItems',
       'sortMode',
       'lastReloadTime',
+      'checkForNewPosts',
     ],
     strict: true,
     // logStateUpdates: true,
