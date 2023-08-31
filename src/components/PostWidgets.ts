@@ -1,5 +1,4 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
 import { delayedScrollTop, getTimeAgoStr, navigate } from '../utils';
@@ -35,13 +34,12 @@ export const PostAuthorLink = ({
         ? Theme.PostAuthorLink.isPostAuthor
         : Theme.palette.transparent,
     })
-    .onClick((el, { accessToken, sortMode, page }) => {
+    .onClick((el, { accessToken, page }) => {
       if (!accessToken) return;
 
       delayedScrollTop();
+      fabricate.update({ query: fullAuthor });
       navigate(page, 'ListPage');
-
-      fetchPosts(accessToken, fullAuthor, sortMode);
     });
 };
 
@@ -66,9 +64,8 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     if (!accessToken) return;
 
     delayedScrollTop();
-    navigate(page, 'ListPage');
-
     fabricate.update({ query: `/r/${subreddit}` });
+    navigate(page, 'ListPage');
   });
 
 /**
