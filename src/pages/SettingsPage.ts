@@ -206,7 +206,7 @@ const AccountCard = () => Card()
       })
       .onCreate((el, { rateLimitInfo }) => {
         const { used, remaining } = rateLimitInfo;
-        el.setText(`${remaining} of ${used + remaining} API requests (per 10 minutes)`);
+        el.setText(`Used ${used} of ${used + remaining} API requests (per 10 minutes)`);
       }),
     LogoutButton(),
   ]);
@@ -217,6 +217,10 @@ const AccountCard = () => Card()
  * @returns {FabricateComponent} SettingsPage component.
  */
 export const SettingsPage = () => AppPage()
+  .setStyles({
+    width: fabricate.isNarrow() ? '95vw' : '48vw',
+    margin: '0px auto',
+  })
   .onCreate((el) => {
     el.setChildren([
       fabricate('Fader')

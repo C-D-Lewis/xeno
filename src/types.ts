@@ -1,6 +1,9 @@
 /** Sort mode type */
 export type SortMode = 'top' | 'hot' | 'new';
 
+/** Pages available */
+export type PageType = 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage';
+
 /** Single Reddit post */
 export type Post = {
   id: string;
@@ -50,7 +53,8 @@ export type AppState = {
   checkForNewPosts: boolean;
 
   // Other
-  page: 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage';
+  page: PageType;
+  lastPage: PageType | null;
   selectedPost: Post | null;
   posts: Post[];
   drawerVisible: boolean;

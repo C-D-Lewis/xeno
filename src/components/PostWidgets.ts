@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
-import { delayedScrollTop, getTimeAgoStr } from '../utils';
+import { delayedScrollTop, getTimeAgoStr, navigate } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -35,11 +35,11 @@ export const PostAuthorLink = ({
         ? Theme.PostAuthorLink.isPostAuthor
         : Theme.palette.transparent,
     })
-    .onClick((el, { accessToken, sortMode }) => {
+    .onClick((el, { accessToken, sortMode, page }) => {
       if (!accessToken) return;
 
       delayedScrollTop();
-      fabricate.update({ page: 'ListPage' });
+      navigate(page, 'ListPage');
 
       fetchPosts(accessToken, fullAuthor, sortMode);
     });
@@ -62,13 +62,13 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     padding: '2px 6px',
     margin: '0px 5px',
   })
-  .onClick((el, { accessToken, sortMode }) => {
+  .onClick((el, { accessToken, page }) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    fabricate.update({ page: 'ListPage' });
+    navigate(page, 'ListPage');
 
-    fetchPosts(accessToken, `/r/${subreddit}`, sortMode);
+    fabricate.update({ query: `/r/${subreddit}` });
   });
 
 /**
@@ -117,6 +117,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
     }
 
     if (page === 'ListPage') {
-      fabricate.update({ page: 'PostPage', selectedPost: post });
+      fabricate.update({ selectedPost: post });
+      navigate(page, 'PostPage');
     }
   });

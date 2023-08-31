@@ -109,6 +109,7 @@ const main = async () => {
     // Other
     newSinceTime: Date.now(),
     page: 'ListPage',
+    lastPage: null,
     posts: [],
     drawerVisible: false,
     rateLimitInfo: {

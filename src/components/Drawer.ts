@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState } from '../types';
-import { delayedScrollTop, hasSavedItems } from '../utils';
+import { delayedScrollTop, hasSavedItems, navigate } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
 
@@ -118,14 +118,16 @@ const UserInfoRow = () => {
       height: '22px',
       marginLeft: 'auto',
     })
-    .onClick(() => {
-      fabricate.update({ page: 'SettingsPage', drawerVisible: false });
+    .onClick((el, { page }) => {
+      fabricate.update({ drawerVisible: false });
+      navigate(page, 'SettingsPage');
     });
 
   return fabricate('Row')
     .setStyles({
       padding: '8px',
       alignItems: 'center',
+      backgroundColor: Theme.palette.widgetPanel,
     })
     .setChildren([
       fabricate('Image', { src: 'assets/user.png' })

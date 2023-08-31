@@ -12,7 +12,7 @@ declare const fabricate: Fabricate<AppState>;
 const Card = () => fabricate('Fader')
   .asFlex('column')
   .setStyles({
-    margin: '5px auto 10px auto',
+    margin: '10px auto',
     backgroundColor: Theme.palette.widgetBackground,
     borderRadius: '5px',
     overflow: 'hidden',

@@ -63,10 +63,23 @@ const ListPage = () => {
    * @param {FabricateComponent} el - The element.
    * @param {AppState} state - App state.
    */
-  const onCreate = (el: FabricateComponent<AppState>, state: AppState) => {
+  const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
+    // Reload data if returning from settings page
+    const {
+      accessToken, query, sortMode, lastPage,
+    } = state;
+    if (!accessToken) return;
+
+    // Initial load or settings changed, refresh posts
+    if (!lastPage || lastPage === 'SettingsPage') {
+      await fetchPosts(accessToken, query, sortMode);
+    } else {
+      updateLayoutAndPosts(el, state);
+    }
+
     // If navigating back, scroll to the viewed post
     const { selectedPost } = state;
-    if (selectedPost) {
+    if (selectedPost && lastPage !== 'SettingsPage') {
       setTimeout(() => {
         const found = document.getElementById(`post-${selectedPost.id}`) as FabricateComponent<AppState>;
         if (!found) return;
@@ -74,12 +87,6 @@ const ListPage = () => {
         scrollToPost(found);
       }, SCROLL_INTERVAL_MS);
     }
-
-    // Reload data if returning from settings page
-    const { accessToken, query, sortMode } = state;
-    if (!accessToken) return;
-
-    fetchPosts(accessToken, query, sortMode);
   };
 
   const postContainerRow = fabricate('Row')
@@ -88,6 +95,7 @@ const ListPage = () => {
       flex: '1',
       flexWrap: 'wrap',
       margin: 'auto',
+      // overflowY: 'scroll', for ScrollTopButton
     })
     .onCreate(onCreate)
     .onUpdate((el, state) => {
@@ -96,6 +104,7 @@ const ListPage = () => {
 
   return AppPage()
     .setChildren([
+      // ScrollTopButton({ root: postContainerRow }),
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       postContainerRow,
     ]);

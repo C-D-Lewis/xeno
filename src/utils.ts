@@ -1,4 +1,9 @@
-import { AppState, Post, SortMode } from './types';
+import { Fabricate } from 'fabricate.js';
+import {
+  AppState, PageType, Post, SortMode,
+} from './types';
+
+declare const fabricate: Fabricate<AppState>;
 
 /** Link label start pattern */
 const LINK_START = ' [';
@@ -119,3 +124,15 @@ export const sortByDate = (a: Post, b: Post) => a.created < b.created;
  */
 export const getQueryParam = (name: string) => new URLSearchParams(window.location.search)
   .get(name);
+
+/**
+ * Navigate to a new page, noting the last page.
+ *
+ * @param {PageType} lastPage - Last page.
+ * @param {PageType} nextPage - Next page.
+ * @returns {void}
+ */
+export const navigate = (
+  lastPage: PageType,
+  nextPage: PageType,
+) => fabricate.update({ page: nextPage, lastPage });

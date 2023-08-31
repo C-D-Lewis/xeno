@@ -114,6 +114,10 @@ const PostCommentTree = ({
  * @returns {FabricateComponent} CommentsList component.
  */
 const CommentsList = () => fabricate('Column')
+  .setStyles({
+    width: fabricate.isNarrow() ? '95vw' : '48vw',
+    margin: '0px auto',
+  })
   .onUpdate((el, { selectedPost, postComments }) => {
     if (!selectedPost || !postComments) return;
 

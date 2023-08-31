@@ -5,6 +5,7 @@ import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import Input from './Input';
+import { navigate } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -40,7 +41,7 @@ export const SaveToggle = () => ImageButton({ src: 'assets/save.png' })
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
-  .onClick(() => fabricate.update({ page: 'ListPage' }));
+  .onClick((el, { page }) => navigate(page, 'ListPage'));
 
 /**
  * SearchInput component.
