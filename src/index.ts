@@ -5,7 +5,7 @@ import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
 import SettingsPage from './pages/SettingsPage';
-import { checkSavedForNew, ensureAccessToken } from './services/ApiService';
+import { ensureAccessToken, getUserSubscriptions } from './services/ApiService';
 import Theme from './theme';
 import { AppState } from './types';
 
@@ -24,7 +24,7 @@ const AUTH_PAGE = 'LoginPage';
  */
 const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: string[]) => {
   const {
-    accessToken, refreshToken, query, page, sortMode, lastReloadTime, savedItems, checkForNewPosts,
+    accessToken, refreshToken, query, page, lastReloadTime,
   } = state;
 
   // Go to Login
@@ -45,9 +45,9 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: s
       const startQuery = query || '/r/all';
       fabricate.update({ query: startQuery });
 
-      if (checkForNewPosts) {
-        await checkSavedForNew(accessToken, savedItems, lastReloadTime, sortMode);
-      }
+      // Populate list in Drawer
+      const loadedSubreddits = await getUserSubscriptions(accessToken);
+      fabricate.update({ subreddits: loadedSubreddits });
 
       // Keep note of last reload time for 'isNew' calculations without replacing it
       fabricate.update({
@@ -55,6 +55,8 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: s
         lastReloadTime: Date.now(),
       });
     } catch (e) {
+      console.log(e);
+
       // Stored credentials were invalid
       fabricate.update({ page: AUTH_PAGE });
     }
@@ -101,16 +103,15 @@ const main = async () => {
     username: null,
     query: '/r/all',
     displayMode: 'list',
-    savedItems: [],
     sortMode: 'top',
     lastReloadTime: Date.now(),
-    checkForNewPosts: false,
 
     // Other
     newSinceTime: Date.now(),
     page: 'ListPage',
     lastPage: null,
     posts: [],
+    subreddits: [],
     drawerVisible: false,
     rateLimitInfo: {
       used: 0,
@@ -131,10 +132,8 @@ const main = async () => {
       'username',
       'query',
       'displayMode',
-      'savedItems',
       'sortMode',
       'lastReloadTime',
-      'checkForNewPosts',
     ],
     strict: true,
     // logStateUpdates: true,

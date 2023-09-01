@@ -16,7 +16,7 @@ const AppPage = () => fabricate('Column')
     overflowY: 'scroll',
     minHeight: '93vh',
     maxHeight: '93vh',
-    paddingTop: `${APP_NAV_BAR_HEIGHT + 5}px`,
+    paddingTop: `${APP_NAV_BAR_HEIGHT}px`,
   });
 
 export default AppPage;

@@ -35,6 +35,17 @@ export type Comment = {
   replies: Comment[];
 };
 
+/** Refined subreddit object */
+export type Subreddit = {
+  displayName: string;
+  displayNamePrefixed: string;
+  title: string;
+  url: string;
+  primaryColor: string;
+  iconImg: string;
+  iconSize: number[];
+};
+
 /** App state type */
 export type AppState = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,17 +57,16 @@ export type AppState = {
   username: string | null;
   query: string;
   displayMode: 'gallery' | 'list';
-  savedItems: string[];
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
-  checkForNewPosts: boolean;
 
   // Other
   page: PageType;
   lastPage: PageType | null;
   selectedPost: Post | null;
   posts: Post[];
+  subreddits: Subreddit[] | [];
   drawerVisible: boolean;
   postsLoading: boolean;
   commentsLoading: boolean;
@@ -123,4 +133,15 @@ export type RedditApiCommentTree = {
   data: {
     children: RedditApiComment[]
   }
+};
+
+/** Reddit API subreddit type */
+export type RedditApiSubreddit = {
+  display_name: string;
+  display_name_prefixed: string;
+  title: string;
+  url: string;
+  primary_color: string;
+  icon_img: string;
+  icon_size: number[];
 };

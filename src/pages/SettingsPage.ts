@@ -157,27 +157,6 @@ const SortModeSetting = () => SettingsWrapper({
 });
 
 /**
- * CheckForNewSetting component.
- *
- * @returns {FabricateComponent} CheckForNewSetting comment.
- */
-const CheckForNewSetting = () => SettingsWrapper({
-  title: 'Check for new posts',
-  children: [
-    Option({
-      label: 'Disabled',
-      setting: 'checkForNewPosts',
-      value: false,
-    }),
-    Option({
-      label: 'Enabled',
-      setting: 'checkForNewPosts',
-      value: true,
-    }),
-  ],
-});
-
-/**
  * SettingsCard component.
  *
  * @returns {FabricateComponent} SettingsCard component.
@@ -187,7 +166,6 @@ const SettingsCard = () => Card()
   .setChildren([
     ViewModeSetting(),
     SortModeSetting(),
-    CheckForNewSetting(),
   ]);
 
 /**

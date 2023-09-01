@@ -13,28 +13,6 @@ declare const fabricate: Fabricate<AppState>;
 export const APP_NAV_BAR_HEIGHT = 45;
 
 /**
- * SaveToggle component.
- *
- * @returns {FabricateComponent} Fabricate component.
- */
-export const SaveToggle = () => ImageButton({ src: 'assets/save.png' })
-  .setStyles({ width: '22px', height: '22px' })
-  .onUpdate((el, { savedItems, query }) => {
-    const savedNow = savedItems.includes(query);
-
-    el.setStyles({ backgroundColor: savedNow ? Theme.palette.primary : Theme.palette.transparent });
-  }, ['fabricate:init', 'query', 'savedItems'])
-  .onClick((el, { savedItems, query }) => {
-    const nextState = !savedItems.includes(query);
-
-    fabricate.update({
-      savedItems: nextState
-        ? [...savedItems, query]
-        : savedItems.filter((p) => p !== query),
-    });
-  });
-
-/**
  * BackButton component.
  *
  * @returns {FabricateComponent} BackButton component.
@@ -51,7 +29,7 @@ const BackButton = () => ImageButton({ src: 'assets/back.png' })
 const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
   .setStyles({
     marginLeft: '5px',
-    maxWidth: '150px',
+    maxWidth: '180px',
     backgroundColor: Theme.palette.widgetPanel,
   })
   .onUpdate((el, { query }) => {
@@ -114,7 +92,6 @@ const AppNavBar = () => fabricate('Row')
     BackButton().displayWhen(({ page }) => page !== 'ListPage'),
     NavBarTitle(),
     SearchInput(),
-    SaveToggle().displayWhen(({ page }) => page === 'ListPage'),
   ]);
 
 export default AppNavBar;

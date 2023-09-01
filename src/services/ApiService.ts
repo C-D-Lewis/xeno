@@ -2,7 +2,15 @@
 
 import { Fabricate } from 'fabricate.js';
 import {
-  AppState, Comment, Post, RedditApiComment, RedditApiCommentTree, RedditApiPost, SortMode,
+  AppState,
+  Comment,
+  Post,
+  RedditApiComment,
+  RedditApiCommentTree,
+  RedditApiPost,
+  RedditApiSubreddit,
+  SortMode,
+  Subreddit,
 } from '../types';
 import { sortByDate } from '../utils';
 
@@ -12,7 +20,7 @@ declare const CLIENT_SECRET: string;
 declare const REDIRECT_URI: string;
 
 /** Requested scopes */
-const SCOPE_STRING = 'identity read history';
+const SCOPE_STRING = 'identity read history mysubreddits';
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
@@ -202,8 +210,10 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
 
   // Arbitrary site plugin
   let iframe;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   if (window.iframeTransformer) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     iframe = window.iframeTransformer(source);
   }
@@ -236,6 +246,23 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
 };
 
 /**
+ * Transform subreddit entity from the API.
+ *
+ * @param {object} opts - function opts.
+ * @param {RedditApiSubreddit} opts.data - Subreddit entity.
+ * @returns {Subreddit} refined data.
+ */
+const extractSubredditData = ({ data }: { data: RedditApiSubreddit }): Subreddit => ({
+  displayName: data.display_name,
+  displayNamePrefixed: data.display_name_prefixed,
+  title: data.title,
+  url: data.url.slice(0, data.url.length - 1),
+  primaryColor: data.primary_color,
+  iconImg: data.icon_img,
+  iconSize: data.icon_size,
+});
+
+/**
  * Get final API path.
  *
  * @param {string} query - /r/subreddit or /u/user
@@ -244,7 +271,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
  */
 const getFinalPath = (query: string, sortMode: SortMode) => {
   const name = query.split('/').pop();
-  return query.includes('/u/')
+  return ['/u/', '/user/'].some((p) => query.includes(p))
     ? `/user/${name}/submitted?sort=${sortMode}&limit=50`
     : `/r/${name}/${sortMode}?limit=50`;
 };
@@ -318,44 +345,6 @@ export const fetchPostComments = async (accessToken: string, id: string) => {
 };
 
 /**
- * Check and mark in state when a saved subreddit has new posts.
- *
- * @param {string} accessToken - Access token.
- * @param {string[]} savedItems - Saved items to check.
- * @param {number} lastReloadTime - Last reload time.
- * @param {SortMode} sortMode - Sort mode.
- */
-export const checkSavedForNew = async (
-  accessToken: string,
-  savedItems: string[],
-  lastReloadTime: number,
-  sortMode: SortMode,
-) => {
-  await Promise.all(savedItems.map(async (query) => {
-    try {
-      const finalPath = getFinalPath(query, sortMode);
-      const res = await apiRequest(accessToken, finalPath);
-      const posts = res.data.children
-        .map(extractPostData)
-        .filter((p: Post | undefined) => !!p);
-
-      const hasNewPosts = posts.some(({ created }: Post) => {
-        const createdTime = new Date(created * 1000).getTime();
-        return createdTime > lastReloadTime;
-      });
-
-      if (hasNewPosts) {
-        const hasNewKey = fabricate.buildKey('checkSavedForNew', query);
-        fabricate.update(hasNewKey, true);
-      }
-    } catch (e: unknown) {
-      console.log(e);
-      console.warn(`Failed to checkSavedForNew for ${query}`);
-    }
-  }));
-};
-
-/**
  * Get an access token.
  *
  * @param {string} code - Code from login flow.
@@ -385,4 +374,18 @@ export const getAccessToken = async (code: string) => {
 export const getUsername = async (accessToken: string) => {
   const json = await apiRequest(accessToken, '/api/v1/me');
   return json.subreddit.display_name.replace('u_', '');
+};
+
+/**
+ * Get the user's subscribed subreddits.
+ *
+ * @param {string} accessToken - Access token.
+ * @returns {Subreddit[]} User's subscribed subreddits.
+ */
+export const getUserSubscriptions = async (accessToken: string) => {
+  const json = await apiRequest(accessToken, '/subreddits/mine/subscriber?limit=100');
+  const items = json.data.children
+    .map(extractSubredditData);
+  // console.log(items);
+  return items;
 };

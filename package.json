@@ -18,8 +18,8 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "npm run clean && webpack --mode production",
-    "build:site:dev": "npm run clean && webpack --mode development",
-    "start": "npm run build:site:dev && http-server"
+    "build:dev": "npm run clean && webpack --mode development",
+    "start": "npm run build:dev && http-server"
   },
   "eslintConfig": {
     "extends": [

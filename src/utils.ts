@@ -1,6 +1,6 @@
 import { Fabricate } from 'fabricate.js';
 import {
-  AppState, PageType, Post, SortMode,
+  AppState, PageType, Post, SortMode, Subreddit,
 } from './types';
 
 declare const fabricate: Fabricate<AppState>;
@@ -86,14 +86,6 @@ export const getTimeAgoStr = (time: number) => {
 };
 
 /**
- * When there are at least one saved item.
- *
- * @param {AppState} state - App state.
- * @returns {boolean} true if there is at least one saved item.
- */
-export const hasSavedItems = ({ savedItems }: AppState) => savedItems && !!savedItems.length;
-
-/**
  * Get next sort mode in the cycle.
  *
  * @param {string} mode - Mode now.
@@ -136,3 +128,15 @@ export const navigate = (
   lastPage: PageType,
   nextPage: PageType,
 ) => fabricate.update({ page: nextPage, lastPage });
+
+/**
+ * Sort subreddits by name.
+ *
+ * @param {Subreddit} a - Item to compare.
+ * @param {Subreddit} b - Item to compare.
+ * @returns {number} Sort order.
+ */
+export const sortSubreddits = (
+  a: Subreddit,
+  b: Subreddit,
+) => (a.displayName > b.displayName ? 1 : -1);

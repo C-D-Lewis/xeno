@@ -1,25 +1,35 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
-import { AppState } from '../types';
-import { delayedScrollTop, hasSavedItems, navigate } from '../utils';
+import { AppState, Subreddit } from '../types';
+import {
+  delayedScrollTop, navigate, sortSubreddits,
+} from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
+import AppLoader from './AppLoader';
 
 declare const fabricate: Fabricate<AppState>;
+
+/**
+ * Determine if subreddits are loaded.
+ *
+ * @param {AppState} state - App state.
+ * @returns {boolean}
+ */
+const subredditsLoaded = (state: AppState) => state.subreddits && state.subreddits.length > 0;
 
 /**
  * DrawerItem component.
  *
  * @param {object} props - Component props.
- * @param {string} props.query - Username or subreddit path.
+ * @param {string} props.subreddit - Subreddit for this row.
  * @returns {FabricateComponent} Fabricate component.
  */
-const DrawerItem = ({ query }: { query: string }) => {
-  const hasNewKey = fabricate.buildKey('checkSavedForNew', query);
-
+const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
+  const { url, primaryColor } = subreddit;
   const queryText = fabricate('Text')
-    .setText(query)
+    .setText(url)
     .setStyles({
       color: Theme.DrawerItem.unselected,
       margin: '0px',
@@ -32,8 +42,8 @@ const DrawerItem = ({ query }: { query: string }) => {
    * @param {FabricateComponent} el - Component to update.
    * @param {string} stateQuery - Current app input query.
    */
-  const setSelectedStyles = (el: FabricateComponent<AppState>, { query: stateQuery }: AppState) => {
-    const isSelected = stateQuery === query;
+  const setSelectedStyles = (el: FabricateComponent<AppState>, { query }: AppState) => {
+    const isSelected = query === url;
 
     el.setStyles({ backgroundColor: isSelected ? Theme.palette.primary : 'initial' });
     queryText.setStyles({
@@ -54,31 +64,21 @@ const DrawerItem = ({ query }: { query: string }) => {
     delayedScrollTop();
     fabricate.update({ drawerVisible: false });
 
-    fetchPosts(accessToken, query, sortMode);
+    fetchPosts(accessToken, url, sortMode);
   };
 
-  const newIcon = fabricate('Image', { src: 'assets/new.png' })
-    .setStyles({
-      width: '24px',
-      height: 'auto',
-      marginLeft: '8px',
-      display: 'none',
-    })
-    .onUpdate((el, state) => {
-      el.setStyles({ display: state[hasNewKey] ? 'flex' : 'none' });
-    }, [hasNewKey, 'drawerVisible']);
-
   return fabricate('Row')
-    .setChildren([queryText, newIcon])
+    .setChildren([queryText])
     .setStyles({
       cursor: 'pointer',
-      padding: '5px 0px 5px 15px',
+      padding: '7px 0px 7px 10px',
       margin: '0px',
       alignItems: 'center',
+      borderLeft: `solid 4px ${primaryColor}`,
     })
     .onClick(onClick)
     .onCreate(setSelectedStyles)
-    .onUpdate(setSelectedStyles, ['fabricate:init', 'query', 'savedItems']);
+    .onUpdate(setSelectedStyles, ['fabricate:init', 'query']);
 };
 
 /**
@@ -146,16 +146,8 @@ const UserInfoRow = () => {
  * @returns {FabricateComponent} Drawer component.
  */
 export const Drawer = () => {
-  const savedItemsList = fabricate('Column')
+  const subredditList = fabricate('Column')
     .setStyles({ margin: '0px 0px 10px 0px', padding: '5px 0px' });
-
-  const noItemsText = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.widgetPanel,
-      fontSize: '1rem',
-      margin: '10px 0px 10px 15px',
-    })
-    .setText('No saved subreddits yet');
 
   return fabricate('Column')
     .setStyles({
@@ -171,25 +163,24 @@ export const Drawer = () => {
     })
     .setChildren([
       UserInfoRow(),
-      DrawerItem({ query: '/r/all' }),
-      savedItemsList.displayWhen(hasSavedItems),
-      noItemsText.displayWhen((state) => !hasSavedItems(state)),
+      subredditList.displayWhen(subredditsLoaded),
+      AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
-    .onUpdate((el, { drawerVisible, savedItems }, keysChanged) => {
+    .onUpdate((el, { drawerVisible, subreddits }, keysChanged) => {
       el.setStyles({
         left: drawerVisible ? '0px' : '-300px',
         boxShadow: drawerVisible ? '2px 0px 16px black' : 'none',
       });
 
-      const shouldCreateItems = ['savedItems', 'fabricate:init'].some(
+      const shouldCreateItems = ['subreddits', 'fabricate:init'].some(
         (k) => keysChanged.includes(k),
       );
-      if (savedItems.length && shouldCreateItems) {
-        savedItemsList.setChildren(
-          savedItems
-            .sort()
-            .map((query: string) => DrawerItem({ query })),
+      if (subreddits.length && shouldCreateItems) {
+        subredditList.setChildren(
+          subreddits
+            .sort(sortSubreddits)
+            .map((subreddit: Subreddit) => DrawerItem({ subreddit })),
         );
       }
-    }, ['fabricate:init', 'drawerVisible', 'savedItems']);
+    }, ['fabricate:init', 'drawerVisible', 'subreddits']);
 };
