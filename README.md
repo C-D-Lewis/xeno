@@ -6,13 +6,13 @@ Lightweight Reddit browser.
 
 ## Features
 
-* Top bar displaying rate limit usage.
 * Search bar for any subreddit or username.
-* Drawer with quick toggles (display mode and sort mode).
-* Ability to save subreddits to show in drawer.
+* Reddit OAuth login.
+* Drawer with list of user's subscribed subreddits.
+* Settings page with options and rate limit usage summary.
 * Either list or gallery display modes.
-* Notation when a post is new or a saved subreddit has new posts.
-* Simple post ful view.
+* Multiple sort modes.
+* Notation when a post is new since last reload.
 * Collapsible comment tree.
 * Navigation by post author or subreddit name.
 * Simple inline image and video where extractable.
