@@ -5,7 +5,7 @@ import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import Input from './Input';
-import { navigate } from '../utils';
+import { getContrastColor, getCurrentSubredditColor, navigate } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -29,8 +29,8 @@ const BackButton = () => ImageButton({ src: 'assets/back.png' })
 const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
   .setStyles({
     marginLeft: '5px',
-    maxWidth: '180px',
-    backgroundColor: Theme.palette.widgetPanel,
+    maxWidth: '200px',
+    backgroundColor: Theme.palette.transparentGrey,
   })
   .onUpdate((el, { query }) => {
     const input = el as FabricateComponent<AppState> & HTMLInputElement;
@@ -65,6 +65,7 @@ const NavBarTitle = () => fabricate('Text')
     fontWeight: 'bold',
     margin: '0px 10px',
     cursor: 'default',
+    transition: '2s',
   })
   .setText('Xeno');
 
@@ -73,25 +74,39 @@ const NavBarTitle = () => fabricate('Text')
  *
  * @returns {FabricateComponent} AppNavBar component.
  */
-const AppNavBar = () => fabricate('Row')
-  .setStyles({
-    minHeight: `${APP_NAV_BAR_HEIGHT}px`,
-    maxHeight: `${APP_NAV_BAR_HEIGHT}px`,
-    backgroundColor: Theme.palette.widgetBackground,
-    padding: '0px 10px',
-    alignItems: 'center',
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    right: '0',
-    zIndex: '999',
-    boxShadow: Theme.styles.boxShadow,
-  })
-  .addChildren([
-    DrawerToggle().displayWhen(({ page }) => page === 'ListPage'),
-    BackButton().displayWhen(({ page }) => page !== 'ListPage'),
-    NavBarTitle(),
-    SearchInput(),
-  ]);
+const AppNavBar = () => {
+  const title = NavBarTitle();
+
+  return fabricate('Row')
+    .setStyles({
+      minHeight: `${APP_NAV_BAR_HEIGHT}px`,
+      maxHeight: `${APP_NAV_BAR_HEIGHT}px`,
+      backgroundColor: Theme.palette.widgetBackground,
+      padding: '0px 10px',
+      alignItems: 'center',
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      right: '0',
+      zIndex: '999',
+      boxShadow: Theme.styles.boxShadow,
+      transition: '2s',
+    })
+    .addChildren([
+      DrawerToggle().displayWhen(({ page }) => page === 'ListPage'),
+      BackButton().displayWhen(({ page }) => page !== 'ListPage'),
+      title,
+      SearchInput(),
+    ])
+    .onUpdate((el, state) => {
+      const backgroundColor = getCurrentSubredditColor(state);
+      const color = getContrastColor(backgroundColor);
+      el.setStyles({
+        backgroundColor,
+        color,
+      });
+      title.setStyles({ color });
+    }, ['query']);
+};
 
 export default AppNavBar;

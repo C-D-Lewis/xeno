@@ -22,7 +22,7 @@ const ImageButton = ({ src }: { src: string }) => fabricate('Image', { src })
   .onHover((el, state, isHovering) => {
     if (fabricate.isNarrow()) return;
 
-    el.setStyles({ filter: `brightness(${isHovering ? '0.5' : '1'})` });
+    el.setStyles({ filter: `brightness(${!fabricate.isNarrow() && isHovering ? '0.5' : '1'})` });
   });
 
 export default ImageButton;

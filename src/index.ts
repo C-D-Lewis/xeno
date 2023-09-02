@@ -5,7 +5,6 @@ import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
 import SettingsPage from './pages/SettingsPage';
-import Theme from './theme';
 import { AppState } from './types';
 import InitPage from './pages/InitPage';
 
@@ -17,7 +16,6 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {HTMLElement} Fabricate component
  */
 const App = () => fabricate('Column')
-  .setStyles({ backgroundColor: Theme.palette.background })
   .setChildren([
     AppNavBar(),
     Drawer(),

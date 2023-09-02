@@ -8,6 +8,7 @@ const Theme = {
     widgetBackground: '#333',
     widgetPanel: '#444',
     transparent: '#0000',
+    transparentGrey: '#2229',
     error: '#df3737',
     success: '#41aa41',
   },

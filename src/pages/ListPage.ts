@@ -95,7 +95,6 @@ const ListPage = () => {
       flex: '1',
       flexWrap: 'wrap',
       margin: 'auto',
-      // overflowY: 'scroll', for ScrollTopButton
     })
     .onCreate(onCreate)
     .onUpdate((el, state) => {
@@ -104,7 +103,6 @@ const ListPage = () => {
 
   return AppPage()
     .setChildren([
-      // ScrollTopButton({ root: postContainerRow }),
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       postContainerRow,
     ]);

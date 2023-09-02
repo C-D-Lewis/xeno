@@ -13,6 +13,8 @@ const LINK_MID = '](';
 /** Link end pattern */
 const LINK_END = ')';
 
+const colorCache: Record<string, string> = {};
+
 /**
  * Delayed scroll to top.
  *
@@ -152,7 +154,7 @@ export const sortSubreddits = (
 export const getSubredditColor = (state: AppState, query: string) => {
   const { subreddits } = state;
   const found = subreddits.find((p) => p.displayName === query || p.url === query);
-  return found ? found.primaryColor : Theme.palette.widgetBackground;
+  return found ? found.primaryColor : Theme.palette.background;
 };
 
 /**
@@ -170,26 +172,30 @@ export const getCurrentSubredditColor = (state: AppState) => {
  * Get contrasting color.
  * Based on: https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/
  *
- * @param {string} hexcolor - Input color.
+ * @param {string} input - Input color.
  * @returns {string} Output color.
  */
-export const getContrastColor = (hexcolor: string) => {
-  if (hexcolor.charAt(0) === '#') {
-    hexcolor = hexcolor.slice(1);
+export const getContrastColor = (input: string) => {
+  if (colorCache[input]) return colorCache[input];
+
+  if (input.charAt(0) === '#') {
+    input = input.slice(1);
   }
 
-  if (hexcolor.length === 3) {
-    hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
+  if (input.length === 3) {
+    input = input.split('').map((hex) => hex + hex).join('');
   }
 
-  if (hexcolor.length !== 6) {
-    console.log(`Unexpected color format: ${hexcolor}`);
-    return 'black';
+  if (input.length !== 6) {
+    console.log(`Unexpected color format: ${input}`);
+    return 'white';
   }
 
-  const r = parseInt(hexcolor.substring(0, 2), 16);
-  const g = parseInt(hexcolor.substring(2, 4), 16);
-  const b = parseInt(hexcolor.substring(4, 6), 16);
+  const r = parseInt(input.substring(0, 2), 16);
+  const g = parseInt(input.substring(2, 4), 16);
+  const b = parseInt(input.substring(4, 6), 16);
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-  return (yiq >= 128) ? 'black' : 'white';
+  const result = (yiq >= 128) ? 'black' : 'white';
+  colorCache[input] = result;
+  return result;
 };

@@ -3,7 +3,7 @@ import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Subreddit } from '../types';
 import {
-  delayedScrollTop, navigate, sortSubreddits,
+  delayedScrollTop, getContrastColor, getCurrentSubredditColor, navigate, sortSubreddits,
 } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
@@ -87,13 +87,27 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
  * @returns {FabricateComponent} Fabricate component.
  */
 export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
-  .setStyles({ marginLeft: '0px', backgroundColor: '#0000' })
+  .setStyles({
+    marginLeft: '0px',
+    backgroundColor: '#0000',
+    transition: '2s',
+  })
   .onClick((el, { drawerVisible }) => {
     const newState = !drawerVisible;
 
     fabricate.update({ drawerVisible: newState });
-    el.setStyles({ backgroundColor: newState ? Theme.DrawerToggle.activated : '#0000' });
-  });
+    el.setStyles({
+      backgroundColor: newState && !fabricate.isNarrow()
+        ? Theme.DrawerToggle.activated
+        : '#0000',
+    });
+  })
+  .onUpdate((el, state) => {
+    const backgroundColor = getCurrentSubredditColor(state);
+    const color = getContrastColor(backgroundColor);
+
+    el.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
+  }, ['query']);
 
 /**
  * UserInfo component.
