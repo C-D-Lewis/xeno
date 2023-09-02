@@ -1,67 +1,15 @@
-import { Fabricate, FabricateComponent, FabricateOptions } from 'fabricate.js';
+import { Fabricate, FabricateOptions } from 'fabricate.js';
 import AppNavBar from './components/AppNavBar';
 import { Drawer } from './components/Drawer';
 import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
 import PostPage from './pages/PostPage';
 import SettingsPage from './pages/SettingsPage';
-import { ensureAccessToken, getUserSubscriptions } from './services/ApiService';
 import Theme from './theme';
 import { AppState } from './types';
+import InitPage from './pages/InitPage';
 
 declare const fabricate: Fabricate<AppState>;
-
-/** Page for authorization */
-const AUTH_PAGE = 'LoginPage';
-
-/**
- * When app initialises.
- *
- * @param {FabricateComponent} el - App element.
- * @param {AppState} state - App state.
- * @param {string[]} keys - List of keys updated.
- * @returns {Promise<void>}
- */
-const onInit = async (el: FabricateComponent<AppState>, state: AppState, keys: string[]) => {
-  const {
-    accessToken, refreshToken, query, page, lastReloadTime,
-  } = state;
-
-  // Go to Login
-  if ((!accessToken || !refreshToken)) {
-    if (page !== AUTH_PAGE) {
-      fabricate.update({ page: AUTH_PAGE });
-    }
-    return;
-  }
-
-  // Restore query on app relaunch
-  if (keys.includes('fabricate:init')) {
-    try {
-      // Test stored credentials
-      await ensureAccessToken(accessToken, refreshToken);
-
-      // Success
-      const startQuery = query || '/r/all';
-      fabricate.update({ query: startQuery });
-
-      // Populate list in Drawer
-      const loadedSubreddits = await getUserSubscriptions(accessToken);
-      fabricate.update({ subreddits: loadedSubreddits });
-
-      // Keep note of last reload time for 'isNew' calculations without replacing it
-      fabricate.update({
-        newSinceTime: lastReloadTime,
-        lastReloadTime: Date.now(),
-      });
-    } catch (e) {
-      console.log(e);
-
-      // Stored credentials were invalid
-      fabricate.update({ page: AUTH_PAGE });
-    }
-  }
-};
 
 /**
  * App top-level component.
@@ -73,6 +21,10 @@ const App = () => fabricate('Column')
   .setChildren([
     AppNavBar(),
     Drawer(),
+    fabricate.conditional(
+      ({ page }) => page === 'InitPage',
+      InitPage,
+    ),
     fabricate.conditional(
       ({ page }) => page === 'LoginPage',
       LoginPage,
@@ -89,8 +41,7 @@ const App = () => fabricate('Column')
       ({ page }) => page === 'SettingsPage',
       SettingsPage,
     ),
-  ])
-  .onUpdate(onInit, ['fabricate:init', 'page']);
+  ]);
 
 /**
  * The main function.
@@ -108,7 +59,7 @@ const main = async () => {
 
     // Other
     newSinceTime: Date.now(),
-    page: 'ListPage',
+    page: 'InitPage',
     lastPage: null,
     posts: [],
     subreddits: [],

@@ -2,7 +2,7 @@
 export type SortMode = 'top' | 'hot' | 'new';
 
 /** Pages available */
-export type PageType = 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage';
+export type PageType = 'InitPage' | 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage';
 
 /** Single Reddit post */
 export type Post = {

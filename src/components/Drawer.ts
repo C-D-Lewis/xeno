@@ -15,7 +15,7 @@ declare const fabricate: Fabricate<AppState>;
  * Determine if subreddits are loaded.
  *
  * @param {AppState} state - App state.
- * @returns {boolean}
+ * @returns {boolean} true if subreddits are loaded.
  */
 const subredditsLoaded = (state: AppState) => state.subreddits && state.subreddits.length > 0;
 
