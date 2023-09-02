@@ -2,6 +2,7 @@ import { Fabricate } from 'fabricate.js';
 import {
   AppState, PageType, Post, SortMode, Subreddit,
 } from './types';
+import Theme from './theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -140,3 +141,55 @@ export const sortSubreddits = (
   a: Subreddit,
   b: Subreddit,
 ) => (a.displayName > b.displayName ? 1 : -1);
+
+/**
+ * Get color of a subreddit, if known.
+ *
+ * @param {AppState} state - App state.
+ * @param {string} query - Subreddit name or URL.
+ * @returns {string} Color if known.
+ */
+export const getSubredditColor = (state: AppState, query: string) => {
+  const { subreddits } = state;
+  const found = subreddits.find((p) => p.displayName === query || p.url === query);
+  return found ? found.primaryColor : Theme.palette.widgetBackground;
+};
+
+/**
+ * Get color of current subreddit, if known.
+ *
+ * @param {AppState} state - App state.
+ * @returns {string} Color if known.
+ */
+export const getCurrentSubredditColor = (state: AppState) => {
+  const { query } = state;
+  return getSubredditColor(state, query);
+};
+
+/**
+ * Get contrasting color.
+ * Based on: https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/
+ *
+ * @param {string} hexcolor - Input color.
+ * @returns {string} Output color.
+ */
+export const getContrastColor = (hexcolor: string) => {
+  if (hexcolor.charAt(0) === '#') {
+    hexcolor = hexcolor.slice(1);
+  }
+
+  if (hexcolor.length === 3) {
+    hexcolor = hexcolor.split('').map((hex) => hex + hex).join('');
+  }
+
+  if (hexcolor.length !== 6) {
+    console.log(`Unexpected color format: ${hexcolor}`);
+    return 'black';
+  }
+
+  const r = parseInt(hexcolor.substring(0, 2), 16);
+  const g = parseInt(hexcolor.substring(2, 4), 16);
+  const b = parseInt(hexcolor.substring(4, 6), 16);
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return (yiq >= 128) ? 'black' : 'white';
+};

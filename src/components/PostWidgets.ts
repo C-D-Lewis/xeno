@@ -1,7 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
-import { delayedScrollTop, getTimeAgoStr, navigate } from '../utils';
+import {
+  delayedScrollTop, getContrastColor, getSubredditColor, getTimeAgoStr, navigate,
+} from '../utils';
+import { fetchPosts } from '../services/ApiService';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -34,12 +37,17 @@ export const PostAuthorLink = ({
         ? Theme.PostAuthorLink.isPostAuthor
         : Theme.palette.transparent,
     })
-    .onClick((el, { accessToken, page }) => {
+    .onClick((el, { accessToken, page, sortMode }) => {
       if (!accessToken) return;
 
       delayedScrollTop();
       fabricate.update({ query: fullAuthor });
-      navigate(page, 'ListPage');
+
+      if (page === 'ListPage') {
+        fetchPosts(accessToken, fullAuthor, sortMode);
+      } else {
+        navigate(page, 'ListPage');
+      }
     });
 };
 
@@ -60,12 +68,25 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     padding: '2px 6px',
     margin: '0px 5px',
   })
-  .onClick((el, { accessToken, page }) => {
+  .onCreate((el, state) => {
+    const backgroundColor = getSubredditColor(state, subreddit);
+    el.setStyles({
+      backgroundColor,
+      color: getContrastColor(backgroundColor),
+    });
+  })
+  .onClick((el, { accessToken, page, sortMode }) => {
     if (!accessToken) return;
 
+    const query = `/r/${subreddit}`;
     delayedScrollTop();
-    fabricate.update({ query: `/r/${subreddit}` });
-    navigate(page, 'ListPage');
+    fabricate.update({ query });
+
+    if (page === 'ListPage') {
+      fetchPosts(accessToken, query, sortMode);
+    } else {
+      navigate(page, 'ListPage');
+    }
   });
 
 /**
