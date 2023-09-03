@@ -100,7 +100,6 @@ export const ensureAccessToken = async (
     console.log('Got new access token');
   }
 
-  fabricate.update('accessToken', token);
   return token;
 };
 

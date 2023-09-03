@@ -19,7 +19,13 @@ export const APP_NAV_BAR_HEIGHT = 45;
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
-  .onClick((el, { page }) => navigate(page, 'ListPage'));
+  .onClick((el, { page }) => navigate(page, 'ListPage'))
+  .onUpdate((el, state) => {
+    const backgroundColor = getCurrentSubredditColor(state);
+    const color = getContrastColor(backgroundColor);
+
+    el.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
+  }, ['query']);
 
 /**
  * SearchInput component.

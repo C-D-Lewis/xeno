@@ -31,16 +31,17 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
 
   try {
     // Test stored credentials
-    await ensureAccessToken(accessToken, refreshToken);
+    const testedToken = await ensureAccessToken(accessToken, refreshToken);
 
     // Populate list in Drawer
-    const subreddits = await getUserSubscriptions(accessToken);
+    const subreddits = await getUserSubscriptions(testedToken);
 
     // Proceed to app
     fabricate.update({
       query: query || '/r/all',
       subreddits,
       page: 'ListPage',
+      accessToken: testedToken,
 
       // Keep note of last reload time for 'isNew' calculations without replacing it
       newSinceTime: lastReloadTime,
