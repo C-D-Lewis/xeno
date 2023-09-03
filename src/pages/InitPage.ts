@@ -18,14 +18,12 @@ const AUTH_PAGE = 'LoginPage';
  */
 const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
   const {
-    accessToken, refreshToken, query, page, lastReloadTime,
+    accessToken, refreshToken, query, lastReloadTime,
   } = state;
 
   // Go to Login
   if ((!accessToken || !refreshToken)) {
-    if (page !== AUTH_PAGE) {
-      fabricate.update({ page: AUTH_PAGE });
-    }
+    fabricate.update({ page: AUTH_PAGE });
     return;
   }
 

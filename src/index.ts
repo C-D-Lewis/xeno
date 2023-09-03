@@ -20,12 +20,13 @@ const App = () => fabricate('Column')
     AppNavBar(),
     Drawer(),
     fabricate.conditional(
-      ({ page }) => page === 'InitPage',
-      InitPage,
-    ),
-    fabricate.conditional(
       ({ page }) => page === 'LoginPage',
       LoginPage,
+    ),
+    // FIXME: Why two pages at once!?
+    fabricate.conditional(
+      ({ page }) => page === 'InitPage',
+      InitPage,
     ),
     fabricate.conditional(
       ({ page }) => page === 'ListPage',
@@ -51,8 +52,8 @@ const main = async () => {
     refreshToken: null,
     username: null,
     query: '/r/all',
-    displayMode: 'list',
-    sortMode: 'top',
+    displayMode: 'gallery',
+    sortMode: 'hot',
     lastReloadTime: Date.now(),
 
     // Other
