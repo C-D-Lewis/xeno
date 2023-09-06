@@ -40,6 +40,7 @@ export type Subreddit = {
   displayName: string;
   displayNamePrefixed: string;
   title: string;
+  publicDescription: string;
   url: string;
   primaryColor: string;
   iconImg: string;
@@ -60,6 +61,7 @@ export type AppState = {
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
+  feedList: string[];
 
   // Other
   page: PageType;
@@ -67,6 +69,7 @@ export type AppState = {
   selectedPost: Post | null;
   posts: Post[];
   subreddits: Subreddit[] | [];
+  subreddit: Subreddit | null;
   drawerVisible: boolean;
   postsLoading: boolean;
   commentsLoading: boolean;
@@ -140,6 +143,7 @@ export type RedditApiSubreddit = {
   display_name: string;
   display_name_prefixed: string;
   title: string;
+  public_description: string;
   url: string;
   primary_color: string;
   icon_img: string;

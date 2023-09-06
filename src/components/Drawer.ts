@@ -3,7 +3,7 @@ import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Subreddit } from '../types';
 import {
-  delayedScrollTop, getContrastColor, getCurrentSubredditColor, navigate, sortSubreddits,
+  delayedScrollTop, navigate, sortSubreddits,
 } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
@@ -101,13 +101,11 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
         ? Theme.DrawerToggle.activated
         : '#0000',
     });
-  })
-  .onUpdate((el, state) => {
-    const backgroundColor = getCurrentSubredditColor(state);
-    const color = getContrastColor(backgroundColor);
-
-    el.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
-  }, ['query']);
+  });
+  // .onUpdate(
+  //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
+  //   ['query'],
+  // );
 
 /**
  * UserInfo component.
@@ -170,13 +168,15 @@ export const Drawer = () => {
       left: '-300px',
       width: '300px',
       transition: '0.3s',
-      height: '95vh',
+      height: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
       backgroundColor: '#222',
       overflowY: 'scroll',
       zIndex: '1',
     })
     .setChildren([
       UserInfoRow(),
+      // Feed item
+      // gap
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])

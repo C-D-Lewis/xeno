@@ -1,4 +1,4 @@
-import { Fabricate } from 'fabricate.js';
+import { Fabricate, FabricateComponent } from 'fabricate.js';
 import {
   AppState, PageType, Post, SortMode, Subreddit,
 } from './types';
@@ -198,4 +198,18 @@ export const getContrastColor = (input: string) => {
   const result = (yiq >= 128) ? 'black' : 'white';
   colorCache[input] = result;
   return result;
+};
+
+/**
+ * Style an icon with contrast color.
+ *
+ * @param {FabricateComponent} icon - Icon to style.
+ * @param {string} primaryColor - Initial color to contrast with.
+ */
+export const styleIconContrastColor = (
+  icon: FabricateComponent<AppState>,
+  primaryColor: string,
+) => {
+  const color = getContrastColor(primaryColor);
+  icon.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
 };

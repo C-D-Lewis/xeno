@@ -5,6 +5,9 @@ import ListPost from '../components/ListPost';
 import AppLoader from '../components/AppLoader';
 import AppPage from '../components/AppPage';
 import { fetchPosts } from '../services/ApiService';
+import Theme from '../theme';
+import { getContrastColor, styleIconContrastColor } from '../utils';
+import ImageButton from '../components/ImageButton';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -34,6 +37,121 @@ const scrollToPost = (el: FabricateComponent<AppState>) => {
 
     scrollToPost(el);
   }, SCROLL_INTERVAL_MS);
+};
+
+/**
+ * FeedToggle component.
+ *
+ * @returns {FabricateComponent} Fabricate component.
+ */
+export const FeedToggle = () => {
+  /**
+   * When created or updated.
+   *
+   * @param {FabricateComponent} el - Element to update.
+   * @param {AppState} state - App state.
+   */
+  const updateLayout = (el: FabricateComponent<AppState>, { feedList, query }: AppState) => {
+    const savedNow = feedList.includes(query);
+    el.setStyles({ backgroundColor: savedNow ? Theme.palette.primary : Theme.palette.transparent });
+  };
+
+  return ImageButton({ src: 'assets/feed.png' })
+    .setStyles({
+      width: '24px',
+      height: '24px',
+      padding: '2px',
+    })
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['feedList', 'page'])
+    .onClick((el, { feedList, query }) => {
+      const nextState = !feedList.includes(query);
+
+      fabricate.update({
+        feedList: nextState
+          ? [...feedList, query]
+          : feedList.filter((p) => p !== query),
+      });
+    });
+};
+
+/**
+ * SubredditHeader component.
+ *
+ * @returns {FabricateComponent} SubredditHeader component.
+ */
+const SubredditHeader = () => {
+  const icon = fabricate('Image', { src: 'assets/icon.png' })
+    .setStyles({
+      height: '48px',
+      width: '48px',
+      margin: '8px',
+      borderRadius: '50px',
+    });
+
+  const title = fabricate('Text')
+    .setStyles({
+      color: Theme.palette.text,
+      fontSize: '1.2rem',
+      fontWeight: 'bold',
+    });
+
+  const description = fabricate('Text')
+    .setStyles({
+      color: Theme.palette.text,
+      fontSize: '0.9rem',
+    });
+
+  /**
+   * When created or updated.
+   *
+   * @param {FabricateComponent} el - Element to update.
+   * @param {AppState} state - App state.
+   */
+  const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
+    const { subreddit } = state;
+    if (!subreddit) return;
+
+    const {
+      displayNamePrefixed, iconImg, primaryColor, publicDescription,
+    } = subreddit;
+
+    // Icon
+    const color = getContrastColor(primaryColor);
+    icon.setAttribute('src', iconImg || 'assets/icon.png');
+    if (!iconImg) {
+      styleIconContrastColor(icon, primaryColor);
+    } else {
+      icon.setStyles({ filter: 'none' });
+    }
+
+    // Others
+    title.setText(displayNamePrefixed);
+    title.setStyles({ color });
+    description.setText(publicDescription.trim());
+    description.setStyles({ color });
+    el.setStyles({ backgroundColor: primaryColor });
+  };
+
+  return fabricate('Row')
+    .setStyles({
+      padding: '4px',
+      borderBottomLeftRadius: '5px',
+      borderBottomRightRadius: '5px',
+    })
+    .setChildren([
+      icon,
+      fabricate('Column')
+        .setChildren([
+          fabricate('Row')
+            .setStyles({ alignItems: 'center' })
+            .setChildren([title, FeedToggle()]),
+          description,
+          // Add to feed?
+        ]),
+    ])
+    .onCreate(updateLayout);
+  // .onUpdate(updateLayout, ['query', 'subreddit']);
 };
 
 /**
@@ -104,6 +222,7 @@ const ListPage = () => {
   return AppPage()
     .setChildren([
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
+      fabricate.conditional(({ postsLoading }) => !postsLoading, SubredditHeader),
       postContainerRow,
     ]);
 };

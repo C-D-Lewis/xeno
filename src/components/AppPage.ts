@@ -14,8 +14,8 @@ const AppPage = () => fabricate('Column')
     width: fabricate.isNarrow() ? '95vw' : '100%',
     margin: '0px auto',
     overflowY: 'scroll',
-    minHeight: '93vh',
-    maxHeight: '93vh',
+    minHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
+    maxHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
     paddingTop: `${APP_NAV_BAR_HEIGHT}px`,
   });
 

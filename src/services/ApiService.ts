@@ -255,6 +255,7 @@ const extractSubredditData = ({ data }: { data: RedditApiSubreddit }): Subreddit
   displayName: data.display_name,
   displayNamePrefixed: data.display_name_prefixed,
   title: data.title,
+  publicDescription: data.public_description,
   url: data.url.slice(0, data.url.length - 1),
   primaryColor: data.primary_color,
   iconImg: data.icon_img,
@@ -276,6 +277,28 @@ const getFinalPath = (query: string, sortMode: SortMode) => {
 };
 
 /**
+ * Fetch subreddit data.
+ *
+ * @param {string} accessToken - Access token.
+ * @param {string} query - A '/u/user' or '/r/subreddit' name.
+ */
+const fetchSubreddit = async (accessToken: string, query: string) => {
+  if (!query.includes('/r/')) {
+    console.warn(`Query was not a subreddit ${query}`);
+    return undefined;
+  }
+
+  try {
+    const res = await apiRequest(accessToken, `${query}/about`);
+    return extractSubredditData(res);
+  } catch (e: unknown) {
+    console.log(`Failed fetchSubreddit ${query}`);
+    console.log(e);
+    return undefined;
+  }
+};
+
+/**
  * Fetch a list of posts for a user or subreddit
  *
  * @param {string} accessToken - Access token.
@@ -292,15 +315,17 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
       posts: [],
       query,
       postsLoading: true,
+      subreddit: null,
     });
     const res = await apiRequest(accessToken, finalPath);
-
     const posts = res.data.children
       .map(extractPostData)
       .filter((p: Post | undefined) => !!p)
       .sort(sortByDate);
 
-    fabricate.update({ posts, postsLoading: false });
+    const subreddit = await fetchSubreddit(accessToken, query);
+
+    fabricate.update({ posts, subreddit, postsLoading: false });
   } catch (e: unknown) {
     alert(e);
   }

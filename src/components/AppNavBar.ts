@@ -5,7 +5,9 @@ import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import Input from './Input';
-import { getContrastColor, getCurrentSubredditColor, navigate } from '../utils';
+import {
+  navigate,
+} from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -19,13 +21,11 @@ export const APP_NAV_BAR_HEIGHT = 45;
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
-  .onClick((el, { page }) => navigate(page, 'ListPage'))
-  .onUpdate((el, state) => {
-    const backgroundColor = getCurrentSubredditColor(state);
-    const color = getContrastColor(backgroundColor);
-
-    el.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
-  }, ['query']);
+  .onClick((el, { page }) => navigate(page, 'ListPage'));
+  // .onUpdate(
+  //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
+  //   ['query'],
+  // );
 
 /**
  * SearchInput component.
@@ -103,16 +103,16 @@ const AppNavBar = () => {
       BackButton().displayWhen(({ page }) => page !== 'ListPage'),
       title,
       SearchInput(),
-    ])
-    .onUpdate((el, state) => {
-      const backgroundColor = getCurrentSubredditColor(state);
-      const color = getContrastColor(backgroundColor);
-      el.setStyles({
-        backgroundColor,
-        color,
-      });
-      title.setStyles({ color });
-    }, ['query']);
+    ]);
+  // .onUpdate((el, state) => {
+  //   const backgroundColor = getCurrentSubredditColor(state);
+  //   const color = getContrastColor(backgroundColor);
+  //   el.setStyles({
+  //     backgroundColor,
+  //     color,
+  //   });
+  //   title.setStyles({ color });
+  // }, ['query']);
 };
 
 export default AppNavBar;

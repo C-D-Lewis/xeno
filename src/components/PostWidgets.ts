@@ -135,6 +135,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
     }
 
     if (page === 'ListPage') {
+      delayedScrollTop();
       fabricate.update({ selectedPost: post });
       navigate(page, 'PostPage');
     }

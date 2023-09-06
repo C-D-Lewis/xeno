@@ -55,6 +55,7 @@ const main = async () => {
     displayMode: 'gallery',
     sortMode: 'hot',
     lastReloadTime: Date.now(),
+    feedList: [],
 
     // Other
     newSinceTime: Date.now(),
@@ -62,6 +63,7 @@ const main = async () => {
     lastPage: null,
     posts: [],
     subreddits: [],
+    subreddit: null,
     drawerVisible: false,
     rateLimitInfo: {
       used: 0,
@@ -84,6 +86,7 @@ const main = async () => {
       'displayMode',
       'sortMode',
       'lastReloadTime',
+      'feedList',
     ],
     strict: true,
     // logStateUpdates: true,
