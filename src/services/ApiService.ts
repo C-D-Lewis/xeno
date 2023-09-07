@@ -299,7 +299,24 @@ const fetchSubreddit = async (accessToken: string, query: string) => {
 };
 
 /**
- * Fetch a list of posts for a user or subreddit
+ * Fetch a list of posts for a user or subreddit and return them.
+ *
+ * @param {string} accessToken - Access token.
+ * @param {string} query - A '/u/user' or '/r/subreddit' name.
+ * @param {SortMode} sortMode - Sort mode.
+ * @returns {Promise<Post[]>} Fetch posts.
+ */
+export const fetchQueryPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
+  const finalPath = getFinalPath(query, sortMode);
+  const res = await apiRequest(accessToken, finalPath);
+  return res.data.children
+    .map(extractPostData)
+    .filter((p: Post | undefined) => !!p)
+    .sort(sortByDate);
+};
+
+/**
+ * Fetch a list of posts for a user or subreddit.
  *
  * @param {string} accessToken - Access token.
  * @param {string} query - A '/u/user' or '/r/subreddit' name.
@@ -307,9 +324,6 @@ const fetchSubreddit = async (accessToken: string, query: string) => {
  * @returns {Promise<void>}
  */
 export const fetchPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
-  // Get final path for API
-  const finalPath = getFinalPath(query, sortMode);
-
   try {
     fabricate.update({
       posts: [],
@@ -317,12 +331,8 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
       postsLoading: true,
       subreddit: null,
     });
-    const res = await apiRequest(accessToken, finalPath);
-    const posts = res.data.children
-      .map(extractPostData)
-      .filter((p: Post | undefined) => !!p)
-      .sort(sortByDate);
 
+    const posts = await fetchQueryPosts(accessToken, query, sortMode);
     const subreddit = await fetchSubreddit(accessToken, query);
 
     fabricate.update({
@@ -416,4 +426,51 @@ export const getUserSubscriptions = async (accessToken: string) => {
     .map(extractSubredditData);
   // console.log(items);
   return items;
+};
+
+/**
+ * Fetch a list of posts for a user or subreddit
+ *
+ * @param {string} accessToken - Access token.
+ * @param {string} feedList - User's feedlist items.
+ * @param {SortMode} sortMode - Sort mode.
+ * @returns {Promise<void>}
+ */
+export const fetchFeedPosts = async (
+  accessToken: string,
+  feedList: string[],
+  sortMode: SortMode,
+) => {
+  try {
+    fabricate.update({
+      posts: [],
+      postsLoading: true,
+      postsLoadingProgress: 0,
+      subreddit: null,
+    });
+
+    // For each in the feedList, fetch posts.
+    const allPosts: Post[] = [];
+    let counter = 0;
+    await Promise.all(feedList.map(
+      async (query) => {
+        const posts = await fetchQueryPosts(accessToken, query, sortMode);
+        allPosts.concat(posts);
+        counter += 1;
+
+        const postsLoadingProgress = Math.round((counter * 100) / feedList.length);
+        fabricate.update({ postsLoadingProgress });
+
+        return posts;
+      },
+    ));
+
+    fabricate.update({
+      posts: allPosts,
+      postsLoading: false,
+      postsLoadingProgress: 100,
+    });
+  } catch (e: unknown) {
+    alert(e);
+  }
 };

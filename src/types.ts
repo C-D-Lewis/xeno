@@ -72,6 +72,7 @@ export type AppState = {
   subreddit: Subreddit | null;
   drawerVisible: boolean;
   postsLoading: boolean;
+  postsLoadingProgress: number;
   commentsLoading: boolean;
   rateLimitInfo: {
     used: number;

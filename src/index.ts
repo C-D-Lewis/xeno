@@ -72,6 +72,7 @@ const main = async () => {
     },
     selectedPost: null,
     postsLoading: false,
+    postsLoadingProgress: 0,
     commentsLoading: false,
     postComments: null,
     visibleIframe: null,

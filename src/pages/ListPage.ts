@@ -4,7 +4,7 @@ import GalleryPost from '../components/GalleryPost';
 import ListPost from '../components/ListPost';
 import AppLoader from '../components/AppLoader';
 import AppPage from '../components/AppPage';
-import { fetchPosts } from '../services/ApiService';
+import { fetchFeedPosts, fetchPosts } from '../services/ApiService';
 import SubredditHeader from '../components/SubredditHeader';
 import { SCROLL_INTERVAL_MS, scrollToPost } from '../utils';
 
@@ -42,20 +42,32 @@ const ListPage = () => {
   const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
     // Reload data if returning from settings page
     const {
-      accessToken, query, sortMode, lastPage,
+      accessToken, query, sortMode, lastPage, page, feedList,
     } = state;
     if (!accessToken) return;
 
     // Initial load or settings changed, refresh posts
     if (!lastPage || lastPage === 'SettingsPage') {
-      await fetchPosts(accessToken, query, sortMode);
+      if (page === 'ListPage') {
+        // Fetch list for this query
+        await fetchPosts(accessToken, query, sortMode);
+        return;
+      }
+
+      if (page === 'FeedPage') {
+        // Refresh feed
+        await fetchFeedPosts(accessToken, feedList, sortMode);
+        return;
+      }
+
+      throw new Error('Unknown onCreate state for ListPage');
     } else {
       updateLayout(el, state);
     }
 
     // If navigating back, scroll to the last viewed post
     const { selectedPost } = state;
-    if (selectedPost && lastPage !== 'SettingsPage') {
+    if (selectedPost) {
       setTimeout(() => {
         const found = document.getElementById(`post-${selectedPost.id}`) as FabricateComponent<AppState>;
         if (!found) return;

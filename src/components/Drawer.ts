@@ -176,7 +176,10 @@ export const Drawer = () => {
     })
     .setChildren([
       UserInfoRow(),
-      // Feed item
+      ImageButton({ src: 'assets/feed.png' }).onClick((el, state) => {
+        fabricate.update({ drawerVisible: false });
+        navigate(state.page, 'FeedPage');
+      }),
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
