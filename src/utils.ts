@@ -13,14 +13,18 @@ const LINK_MID = '](';
 /** Link end pattern */
 const LINK_END = ')';
 
+/** Scroll interval in millis */
+export const SCROLL_INTERVAL_MS = 200;
+
 const colorCache: Record<string, string> = {};
 
 /**
  * Delayed scroll to top.
  *
+ * @param {number} [ms] - Optional amount of delay.
  * @returns {void}
  */
-export const delayedScrollTop = () => setTimeout(() => window.scroll({ top: 0, behavior: 'smooth' }), 500);
+export const delayedScrollTop = (ms = 500) => setTimeout(() => window.scroll({ top: 0, behavior: 'smooth' }), ms);
 
 /**
  * Parse post or comment markdown.
@@ -212,4 +216,29 @@ export const styleIconContrastColor = (
 ) => {
   const color = getContrastColor(primaryColor);
   icon.setStyles({ filter: `brightness(${color === 'black' ? '0' : '1'})` });
+};
+
+/**
+ * Determine if an element is in view.
+ *
+ * @param {FabricateComponent} el - Element to test.
+ * @returns {boolean} true if in view.
+ */
+const isInViewPort = (el: FabricateComponent<AppState>) => el.getBoundingClientRect().top >= -10;
+
+/**
+ * Scroll a post into view until it is.
+ *
+ * @param {FabricateComponent} el - Component to scroll to.
+ */
+export const scrollToPost = (el: FabricateComponent<AppState>) => {
+  el.scrollIntoView();
+
+  // Check again until in view
+  setTimeout(() => {
+    const postInView = isInViewPort(el);
+    if (postInView) return;
+
+    scrollToPost(el);
+  }, SCROLL_INTERVAL_MS);
 };

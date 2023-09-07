@@ -325,7 +325,11 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
 
     const subreddit = await fetchSubreddit(accessToken, query);
 
-    fabricate.update({ posts, subreddit, postsLoading: false });
+    fabricate.update({
+      posts,
+      subreddit: subreddit || null, // For strict mode
+      postsLoading: false,
+    });
   } catch (e: unknown) {
     alert(e);
   }

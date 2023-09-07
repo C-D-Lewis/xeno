@@ -29,7 +29,7 @@ const App = () => fabricate('Column')
       InitPage,
     ),
     fabricate.conditional(
-      ({ page }) => page === 'ListPage',
+      ({ page }) => ['ListPage', 'FeedPage'].includes(page),
       ListPage,
     ),
     fabricate.conditional(

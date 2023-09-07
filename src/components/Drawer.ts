@@ -95,6 +95,8 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
   .onClick((el, { drawerVisible }) => {
     const newState = !drawerVisible;
 
+    delayedScrollTop(100);
+
     fabricate.update({ drawerVisible: newState });
     el.setStyles({
       backgroundColor: newState && !fabricate.isNarrow()
@@ -159,7 +161,7 @@ const UserInfoRow = () => {
  */
 export const Drawer = () => {
   const subredditList = fabricate('Column')
-    .setStyles({ margin: '0px 0px 10px 0px', padding: '5px 0px' });
+    .setStyles({ margin: '15px 0px 10px 0px', padding: '5px 0px' });
 
   return fabricate('Column')
     .setStyles({
@@ -170,13 +172,11 @@ export const Drawer = () => {
       transition: '0.3s',
       height: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
       backgroundColor: '#222',
-      overflowY: 'scroll',
       zIndex: '1',
     })
     .setChildren([
       UserInfoRow(),
       // Feed item
-      // gap
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
