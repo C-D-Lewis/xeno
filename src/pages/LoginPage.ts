@@ -7,6 +7,8 @@ import AppPage from '../components/AppPage';
 
 declare const fabricate: Fabricate<AppState>;
 
+const codeParam = getQueryParam('code');
+
 /**
  * LoginButton component.
  *
@@ -29,18 +31,11 @@ const LoginButton = () => fabricate('Button', {
  */
 export const LoginPage = () => AppPage()
   .setStyles({ textAlign: 'center', marginTop: '10px' })
-  .setChildren([
-    fabricate('Text')
-      .setStyles({ fontSize: '1rem', color: Theme.palette.text })
-      .setText('Please login with your Reddit account.'),
-    LoginButton(),
-  ])
-  .onCreate(async () => {
+  .onCreate(async (el) => {
     // Did we get authorized?
-    const code = getQueryParam('code');
-    if (code) {
+    if (codeParam) {
       try {
-        const { accessToken, refreshToken } = await getAccessToken(code);
+        const { accessToken, refreshToken } = await getAccessToken(codeParam);
         const username = await getUsername(accessToken);
         fabricate.update({ accessToken, refreshToken, username });
 
@@ -50,7 +45,16 @@ export const LoginPage = () => AppPage()
         console.log(e);
         alert('Failed to get login data');
       }
+      return;
     }
+
+    // Get authorized
+    el.setChildren([
+      fabricate('Text')
+        .setStyles({ fontSize: '1rem', color: Theme.palette.text })
+        .setText('Please login with your Reddit account.'),
+      LoginButton(),
+    ]);
   });
 
 export default LoginPage;

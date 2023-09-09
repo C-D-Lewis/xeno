@@ -45,7 +45,7 @@ const App = () => fabricate('Column')
 /**
  * The main function.
  */
-const main = async () => {
+const main = () => {
   const initialState: AppState = {
     // Persisted
     accessToken: null,
