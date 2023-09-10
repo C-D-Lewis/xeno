@@ -311,7 +311,7 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
   const finalPath = getFinalPath(query, sortMode);
 
   try {
-    fabricate.update({
+    await fabricate.update({
       posts: [],
       query,
       postsLoading: true,

@@ -68,6 +68,7 @@ export type AppState = {
   lastPage: PageType | null;
   selectedPost: Post | null;
   posts: Post[];
+  queryInput: string;
   subreddits: Subreddit[] | [];
   subreddit: Subreddit | null;
   drawerVisible: boolean;

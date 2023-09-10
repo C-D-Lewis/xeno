@@ -24,9 +24,7 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
 
   // Go to Login
   if ((!accessToken || !refreshToken)) {
-    // fabricate conditional behaves weirdly if two changes during app build
-    // Make app build async somehow?
-    setTimeout(() => navigate(page, AUTH_PAGE), 500);
+    navigate(page, AUTH_PAGE);
     return;
   }
 
@@ -37,8 +35,8 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
     // Populate list in Drawer
     const subreddits = await getUserSubscriptions(testedToken);
 
-    // Proceed to app
-    fabricate.update({
+    // Proceed to app - commit this update with await before others
+    await fabricate.update({
       query: query || '/r/all',
       subreddits,
       accessToken: testedToken,
