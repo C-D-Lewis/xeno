@@ -2,7 +2,7 @@
   "name": "xeno",
   "version": "1.0.0",
   "dependencies": {
-    "fabricate.js": "^2.10.1"
+    "fabricate.js": "^2.11.2"
   },
   "devDependencies": {
     "@chris-lewis/eslint-config": "^1.0.3",

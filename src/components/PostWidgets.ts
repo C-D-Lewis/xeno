@@ -128,7 +128,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
     fontSize: '1rem',
     fontWeight: 'bold',
   })
-  .onClick((el, { page }) => {
+  .onClick(async (el, { page }) => {
     if (page === 'PostPage') {
       window.open(`https://reddit.com${post.permalink}`, '_blank');
       return;
@@ -136,7 +136,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
 
     if (page === 'ListPage') {
       delayedScrollTop();
-      fabricate.update({ selectedPost: post });
+      await fabricate.update({ selectedPost: post });
       navigate(page, 'PostPage');
     }
   });

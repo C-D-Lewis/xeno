@@ -1,13 +1,14 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
-import { AppState, Subreddit } from '../types';
+import { AppState, SortMode, Subreddit } from '../types';
 import {
   delayedScrollTop, navigate, sortSubreddits,
 } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
 import AppLoader from './AppLoader';
+import Input from './Input';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -20,6 +21,23 @@ declare const fabricate: Fabricate<AppState>;
 const subredditsLoaded = (state: AppState) => state.subreddits && state.subreddits.length > 0;
 
 /**
+ * Submit the current query or query text.
+ *
+ * @param {string} accessToken - Acces token.
+ * @param {string} query - Query or queryInput
+ * @param {SortMode} sortMode - sort mode.
+ * @returns {Promise<void>}
+ */
+const submitQuery = async (accessToken: string, query: string, sortMode: SortMode) => {
+  // Validate input
+  if (!query || query.length < 6) return;
+  if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
+
+  await fabricate.update({ drawerVisible: false });
+  fetchPosts(accessToken, query, sortMode);
+};
+
+/**
  * DrawerItem component.
  *
  * @param {object} props - Component props.
@@ -28,7 +46,7 @@ const subredditsLoaded = (state: AppState) => state.subreddits && state.subreddi
  */
 const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
   const { url, primaryColor } = subreddit;
-  const queryText = fabricate('Text')
+  const queryInput = fabricate('Text')
     .setText(url)
     .setStyles({
       color: Theme.DrawerItem.unselected,
@@ -46,7 +64,7 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     const isSelected = query === url;
 
     el.setStyles({ backgroundColor: isSelected ? Theme.palette.primary : 'initial' });
-    queryText.setStyles({
+    queryInput.setStyles({
       fontWeight: isSelected ? 'bold' : 'initial',
       color: isSelected ? Theme.palette.text : Theme.DrawerItem.unselected,
     });
@@ -58,17 +76,17 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    * @param {FabricateComponent} el - This element.
    * @param {AppState} state - App state.
    */
-  const onClick = (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
+  const onClick = async (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    fabricate.update({ drawerVisible: false });
+    await fabricate.update({ drawerVisible: false });
 
     fetchPosts(accessToken, url, sortMode);
   };
 
   return fabricate('Row')
-    .setChildren([queryText])
+    .setChildren([queryInput])
     .setStyles({
       cursor: 'pointer',
       padding: '7px 0px 7px 10px',
@@ -155,6 +173,60 @@ const UserInfoRow = () => {
 };
 
 /**
+ * SearchInput component.
+ *
+ * @returns {HTMLElement} Fabricate component.
+ */
+const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
+  .setStyles({
+    margin: '0px 0px 0px 5px',
+    width: '92%',
+    backgroundColor: Theme.palette.transparentGrey,
+  })
+  .onUpdate((el, { query }) => {
+    const input = el as FabricateComponent<AppState> & HTMLInputElement;
+    input.value = query;
+
+    // Sync for search button
+    fabricate.update({ queryInput: input.value });
+  }, ['query'])
+  .onEvent('keyup', async (el, { accessToken, sortMode }, event) => {
+    if (!accessToken) return;
+
+    const input = el as FabricateComponent<AppState> & HTMLInputElement;
+    const query = input.value;
+    fabricate.update({ queryInput: query });
+
+    const e = event as KeyboardEvent;
+    if (e.key !== 'Enter') return;
+
+    submitQuery(accessToken, query, sortMode);
+    input.blur();
+  });
+
+/**
+ * SearchRow component.
+ *
+ * @returns {HTMLElement} Fabricate component.
+ */
+const SearchRow = () => fabricate('Row')
+  .setStyles({
+    padding: '0px 4px 4px 4px',
+    backgroundColor: Theme.palette.widgetPanel,
+    alignItems: 'center',
+  })
+  .setChildren([
+    SearchInput(),
+    ImageButton({ src: 'assets/search.png' })
+      .setStyles({ width: '24px', height: '24px' })
+      .onClick((el, { accessToken, queryInput, sortMode }) => {
+        if (!accessToken) return;
+
+        submitQuery(accessToken, queryInput, sortMode);
+      }),
+  ]);
+
+/**
  * Drawer component.
  *
  * @returns {FabricateComponent} Drawer component.
@@ -176,23 +248,24 @@ export const Drawer = () => {
     })
     .setChildren([
       UserInfoRow(),
-      ImageButton({ src: 'assets/feed.png' }).onClick((el, state) => {
-        fabricate.update({ drawerVisible: false });
+      ImageButton({ src: 'assets/feed.png' }).onClick(async (el, state) => {
+        await fabricate.update({ drawerVisible: false });
         navigate(state.page, 'FeedPage');
       }),
+      SearchRow(),
+      // Feed header
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
-    .onUpdate((el, { drawerVisible, subreddits }, keysChanged) => {
+    .onUpdate((el, { drawerVisible, subreddits }, keys) => {
       el.setStyles({
         left: drawerVisible ? '0px' : '-300px',
         boxShadow: drawerVisible ? '2px 0px 16px black' : 'none',
       });
 
-      const shouldCreateItems = ['subreddits', 'fabricate:init'].some(
-        (k) => keysChanged.includes(k),
-      );
-      if (subreddits.length && shouldCreateItems) {
+      // Don't recreate items when drawerVisible changes
+      const createItems = ['subreddits', 'fabricate:init'].some((k) => keys.includes(k));
+      if (subreddits.length && createItems) {
         subredditList.setChildren(
           subreddits
             .sort(sortSubreddits)

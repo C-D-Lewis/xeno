@@ -20,13 +20,12 @@ const App = () => fabricate('Column')
     AppNavBar(),
     Drawer(),
     fabricate.conditional(
-      ({ page }) => page === 'LoginPage',
-      LoginPage,
-    ),
-    // FIXME: Why two pages at once!?
-    fabricate.conditional(
       ({ page }) => page === 'InitPage',
       InitPage,
+    ),
+    fabricate.conditional(
+      ({ page }) => page === 'LoginPage',
+      LoginPage,
     ),
     fabricate.conditional(
       ({ page }) => ['ListPage', 'FeedPage'].includes(page),
@@ -45,7 +44,7 @@ const App = () => fabricate('Column')
 /**
  * The main function.
  */
-const main = async () => {
+const main = () => {
   const initialState: AppState = {
     // Persisted
     accessToken: null,
@@ -62,6 +61,7 @@ const main = async () => {
     page: 'InitPage',
     lastPage: null,
     posts: [],
+    queryInput: '',
     subreddits: [],
     subreddit: null,
     drawerVisible: false,
@@ -90,7 +90,8 @@ const main = async () => {
       'feedList',
     ],
     strict: true,
-    // logStateUpdates: true,
+    logStateUpdates: true,
+    asyncUpdates: true,
   };
 
   fabricate.app(App(), initialState, options);

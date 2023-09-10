@@ -124,8 +124,8 @@ const SubredditHeader = () => {
           description,
         ]),
     ])
-    .onCreate(updateLayout);
-  // .onUpdate(updateLayout, ['query', 'subreddit']);
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['query', 'subreddit', 'posts']);
 };
 
 export default SubredditHeader;

@@ -325,7 +325,7 @@ export const fetchQueryPosts = async (accessToken: string, query: string, sortMo
  */
 export const fetchPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
   try {
-    fabricate.update({
+    await fabricate.update({
       posts: [],
       query,
       postsLoading: true,
@@ -411,7 +411,15 @@ export const getAccessToken = async (code: string) => {
  */
 export const getUsername = async (accessToken: string) => {
   const json = await apiRequest(accessToken, '/api/v1/me');
-  return json.subreddit.display_name.replace('u_', '');
+  const username = json.subreddit.display_name.replace('u_', '');
+
+  // Check for prepared user icons
+  const res = await fetch(`assets/${username}.png`);
+  if (res.status !== 200) {
+    console.log('User does not have prepared icon yet');
+  }
+
+  return username;
 };
 
 /**

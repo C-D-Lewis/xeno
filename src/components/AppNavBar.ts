@@ -1,10 +1,8 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPosts } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
-import Input from './Input';
 import {
   navigate,
 } from '../utils';
@@ -26,39 +24,6 @@ const BackButton = () => ImageButton({ src: 'assets/back.png' })
   //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
   //   ['query'],
   // );
-
-/**
- * SearchInput component.
- *
- * @returns {HTMLElement} Fabricate component.
- */
-const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
-  .setStyles({
-    marginLeft: '5px',
-    maxWidth: '200px',
-    backgroundColor: Theme.palette.transparentGrey,
-  })
-  .onUpdate((el, { query }) => {
-    const input = el as FabricateComponent<AppState> & HTMLInputElement;
-    input.value = query;
-  }, ['query'])
-  .onEvent('keydown', (el, { accessToken, sortMode }, event) => {
-    if (!accessToken) return;
-
-    const e = event as KeyboardEvent;
-    if (e.key !== 'Enter') return;
-
-    const input = el as FabricateComponent<AppState> & HTMLInputElement;
-    const query = input.value;
-
-    // Validate input
-    if (!query || query.length < 6) return;
-    if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
-
-    fetchPosts(accessToken, query, sortMode);
-    input.blur();
-    fabricate.update({ drawerVisible: false });
-  });
 
 /**
  * NavBarTitle component.
@@ -100,9 +65,10 @@ const AppNavBar = () => {
     })
     .addChildren([
       DrawerToggle().displayWhen(({ page }) => page === 'ListPage'),
-      BackButton().displayWhen(({ page }) => page !== 'ListPage'),
+      BackButton().displayWhen(
+        ({ page }) => !['InitialPage', 'LoginPage', 'ListPage'].includes(page),
+      ),
       title,
-      SearchInput(),
     ]);
   // .onUpdate((el, state) => {
   //   const backgroundColor = getCurrentSubredditColor(state);

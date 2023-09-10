@@ -27,4 +27,5 @@ module "main" {
   zone_id         = "Z05682866H59A0KFT8S"
   domain_name     = "xeno.chrislewis.me.uk"
   certificate_arn = "arn:aws:acm:us-east-1:617929423658:certificate/a69e6906-579e-431d-9e4c-707877d325b7"
+  logs_bucket     = "chrislewis-cloudwatch-logs"
 }

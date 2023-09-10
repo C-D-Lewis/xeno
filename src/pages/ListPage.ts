@@ -47,7 +47,7 @@ const ListPage = () => {
     if (!accessToken) return;
 
     // Initial load or settings changed, refresh posts
-    if (!lastPage || lastPage === 'SettingsPage') {
+    if (lastPage !== 'PostPage') {
       if (page === 'ListPage') {
         // Fetch list for this query
         await fetchPosts(accessToken, query, sortMode);
@@ -85,7 +85,7 @@ const ListPage = () => {
       margin: 'auto',
     })
     .onCreate(onCreate)
-    .onUpdate(updateLayout, ['posts']);
+    .onUpdate(updateLayout, ['posts', 'page']);
 
   return AppPage()
     .setChildren([
