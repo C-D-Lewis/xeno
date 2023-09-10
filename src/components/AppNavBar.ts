@@ -65,7 +65,9 @@ const AppNavBar = () => {
     })
     .addChildren([
       DrawerToggle().displayWhen(({ page }) => page === 'ListPage'),
-      BackButton().displayWhen(({ page }) => !['LoginPage', 'ListPage'].includes(page)),
+      BackButton().displayWhen(
+        ({ page }) => !['InitialPage', 'LoginPage', 'ListPage'].includes(page),
+      ),
       title,
     ]);
   // .onUpdate((el, state) => {

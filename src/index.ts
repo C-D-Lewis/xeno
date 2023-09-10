@@ -89,7 +89,7 @@ const main = () => {
       'feedList',
     ],
     strict: true,
-    // logStateUpdates: true,
+    logStateUpdates: true,
     asyncUpdates: true,
   };
 

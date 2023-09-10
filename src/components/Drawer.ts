@@ -76,11 +76,11 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    * @param {FabricateComponent} el - This element.
    * @param {AppState} state - App state.
    */
-  const onClick = (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
+  const onClick = async (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    fabricate.update({ drawerVisible: false });
+    await fabricate.update({ drawerVisible: false });
 
     fetchPosts(accessToken, url, sortMode);
   };
