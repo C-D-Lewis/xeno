@@ -13,32 +13,32 @@ declare const fabricate: Fabricate<AppState>;
 export const APP_NAV_BAR_HEIGHT = 45;
 
 /**
+ * Get title bar subtitle.
+ *
+ * @param {AppState} state - App state.
+ * @returns {string} Subtitle.
+ */
+const getSubtitle = ({ page, subreddit }: AppState) => {
+  if (page === 'LoginPage') return 'Login';
+  if (page === 'FeedPage') return 'Starred Feed';
+  if (page === 'SettingsPage') return 'Settings';
+  if (['ListPage', 'PostPage'].includes(page) && subreddit) return subreddit?.displayName;
+
+  return '';
+};
+
+/**
  * BackButton component.
  *
  * @returns {FabricateComponent} BackButton component.
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
-  .onClick((el, { page }) => navigate(page, 'ListPage'));
+  .onClick((el, { page, lastPage }) => navigate(page, lastPage || 'ListPage'));
   // .onUpdate(
   //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
   //   ['query'],
   // );
-
-/**
- * NavBarTitle component.
- *
- * @returns {FabricateComponent} NavBarTitle component.
- */
-const NavBarTitle = () => fabricate('Text')
-  .setStyles({
-    color: Theme.palette.text,
-    fontWeight: 'bold',
-    margin: '0px 10px',
-    cursor: 'default',
-    transition: '2s',
-  })
-  .setText('Xeno');
 
 /**
  * AppNavBar component.
@@ -46,7 +46,25 @@ const NavBarTitle = () => fabricate('Text')
  * @returns {FabricateComponent} AppNavBar component.
  */
 const AppNavBar = () => {
-  const title = NavBarTitle();
+  const title = fabricate('Text')
+    .setStyles({
+      color: Theme.palette.text,
+      fontWeight: 'bold',
+      margin: '0px 10px',
+      cursor: 'default',
+      transition: '2s',
+    })
+    .setText('Xeno');
+
+  const subtitle = fabricate('Text')
+    .setStyles({
+      color: Theme.DrawerItem.unselected,
+      margin: '3px 0px 0px 5px',
+      cursor: 'default',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'no-wrap',
+    });
 
   return fabricate('Row')
     .setStyles({
@@ -64,21 +82,24 @@ const AppNavBar = () => {
       transition: '2s',
     })
     .addChildren([
-      DrawerToggle().displayWhen(({ page }) => page === 'ListPage'),
+      DrawerToggle().displayWhen(({ page }) => ['ListPage', 'FeedPage'].includes(page)),
       BackButton().displayWhen(
-        ({ page }) => !['InitialPage', 'LoginPage', 'ListPage'].includes(page),
+        ({ page }) => ['SettingsPage', 'PostPage'].includes(page),
       ),
       title,
-    ]);
-  // .onUpdate((el, state) => {
-  //   const backgroundColor = getCurrentSubredditColor(state);
-  //   const color = getContrastColor(backgroundColor);
-  //   el.setStyles({
-  //     backgroundColor,
-  //     color,
-  //   });
-  //   title.setStyles({ color });
-  // }, ['query']);
+      subtitle,
+    ])
+    .onUpdate((el, state) => {
+      subtitle.setText(getSubtitle(state));
+
+      // const backgroundColor = getCurrentSubredditColor(state);
+      // const color = getContrastColor(backgroundColor);
+      // el.setStyles({
+      //   backgroundColor,
+      //   color,
+      // });
+      // title.setStyles({ color });
+    }, ['query', 'page', 'subreddit']);
 };
 
 export default AppNavBar;

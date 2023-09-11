@@ -469,6 +469,7 @@ export const fetchFeedPosts = async (
         const postsLoadingProgress = Math.round((counter * 100) / feedList.length);
         fabricate.update({ postsLoadingProgress });
 
+        console.log({ query, postsLoadingProgress });
         return posts;
       },
     ));
@@ -481,4 +482,21 @@ export const fetchFeedPosts = async (
   } catch (e: unknown) {
     alert(e);
   }
+};
+
+/**
+ * Submit the current query or query text.
+ *
+ * @param {string} accessToken - Acces token.
+ * @param {string} query - Query or queryInput
+ * @param {SortMode} sortMode - sort mode.
+ * @returns {Promise<void>}
+ */
+export const submitQuery = async (accessToken: string, query: string, sortMode: SortMode) => {
+  // Validate input
+  if (!query || query.length < 6) return;
+  if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
+
+  await fabricate.update({ drawerVisible: false });
+  fetchPosts(accessToken, query, sortMode);
 };

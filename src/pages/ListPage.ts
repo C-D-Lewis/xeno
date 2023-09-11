@@ -47,6 +47,7 @@ const ListPage = () => {
     if (!accessToken) return;
 
     // Initial load or settings changed, refresh posts
+    console.log({ page, lastPage })
     if (lastPage !== 'PostPage') {
       if (page === 'ListPage') {
         // Fetch list for this query

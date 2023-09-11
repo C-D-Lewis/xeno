@@ -1,7 +1,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPosts } from '../services/ApiService';
+import { fetchPosts, submitQuery } from '../services/ApiService';
 import Theme from '../theme';
-import { AppState, SortMode, Subreddit } from '../types';
+import { AppState, Subreddit } from '../types';
 import {
   delayedScrollTop, navigate, sortSubreddits,
 } from '../utils';
@@ -21,20 +21,22 @@ declare const fabricate: Fabricate<AppState>;
 const subredditsLoaded = (state: AppState) => state.subreddits && state.subreddits.length > 0;
 
 /**
- * Submit the current query or query text.
+ * Set styles if the item is selected.
  *
- * @param {string} accessToken - Acces token.
- * @param {string} query - Query or queryInput
- * @param {SortMode} sortMode - sort mode.
- * @returns {Promise<void>}
+ * @param {FabricateComponent} background - Background component.
+ * @param {FabricateComponent} text - Text component.
+ * @param {boolean} isSelected - If the item is selected.
  */
-const submitQuery = async (accessToken: string, query: string, sortMode: SortMode) => {
-  // Validate input
-  if (!query || query.length < 6) return;
-  if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
-
-  await fabricate.update({ drawerVisible: false });
-  fetchPosts(accessToken, query, sortMode);
+const setSelectedStyles = (
+  background: FabricateComponent<AppState>,
+  text: FabricateComponent<AppState>,
+  isSelected: boolean,
+) => {
+  background.setStyles({ backgroundColor: isSelected ? Theme.palette.primary : 'initial' });
+  text.setStyles({
+    fontWeight: isSelected ? 'bold' : 'initial',
+    color: isSelected ? Theme.palette.text : Theme.DrawerItem.unselected,
+  });
 };
 
 /**
@@ -46,29 +48,13 @@ const submitQuery = async (accessToken: string, query: string, sortMode: SortMod
  */
 const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
   const { url, primaryColor } = subreddit;
-  const queryInput = fabricate('Text')
+  const label = fabricate('Text')
     .setText(url)
     .setStyles({
       color: Theme.DrawerItem.unselected,
       margin: '0px',
       fontSize: '1rem',
     });
-
-  /**
-   * Set styles if the item is selected.
-   *
-   * @param {FabricateComponent} el - Component to update.
-   * @param {string} stateQuery - Current app input query.
-   */
-  const setSelectedStyles = (el: FabricateComponent<AppState>, { query }: AppState) => {
-    const isSelected = query === url;
-
-    el.setStyles({ backgroundColor: isSelected ? Theme.palette.primary : 'initial' });
-    queryInput.setStyles({
-      fontWeight: isSelected ? 'bold' : 'initial',
-      color: isSelected ? Theme.palette.text : Theme.DrawerItem.unselected,
-    });
-  };
 
   /**
    * When this item is clicked.
@@ -80,13 +66,13 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    await fabricate.update({ drawerVisible: false });
+    await fabricate.update({ drawerVisible: false, page: 'ListPage' });
 
     fetchPosts(accessToken, url, sortMode);
   };
 
   return fabricate('Row')
-    .setChildren([queryInput])
+    .setChildren([label])
     .setStyles({
       cursor: 'pointer',
       padding: '7px 0px 7px 10px',
@@ -95,8 +81,8 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
       borderLeft: `solid 4px ${primaryColor}`,
     })
     .onClick(onClick)
-    .onCreate(setSelectedStyles)
-    .onUpdate(setSelectedStyles, ['fabricate:init', 'query']);
+    .onCreate((el, state) => setSelectedStyles(el, label, state.query === url))
+    .onUpdate((el, state) => setSelectedStyles(el, label, state.query === url), ['query']);
 };
 
 /**
@@ -150,8 +136,8 @@ const UserInfoRow = () => {
       height: '22px',
       marginLeft: 'auto',
     })
-    .onClick((el, { page }) => {
-      fabricate.update({ drawerVisible: false });
+    .onClick(async (el, { page }) => {
+      await fabricate.update({ drawerVisible: false });
       navigate(page, 'SettingsPage');
     });
 
@@ -227,13 +213,45 @@ const SearchRow = () => fabricate('Row')
   ]);
 
 /**
+ * FeedButton component.
+ *
+ * @returns {HTMLElement} Fabricate component.
+ */
+const FeedButton = () => {
+  const label = fabricate('Text')
+    .setStyles({
+      color: Theme.DrawerItem.unselected,
+      fontSize: '1rem',
+    })
+    .setText('Starred Feed');
+
+  return fabricate('Row')
+    .setStyles({
+      padding: '4px',
+      alignItems: 'center',
+      cursor: 'pointer',
+      borderBottom: `solid 1px ${Theme.palette.widgetBackground}`,
+    })
+    .setChildren([
+      ImageButton({ src: 'assets/feed.png' })
+        .setStyles({ margin: '0px' }),
+      label,
+    ])
+    .onClick(async (el, state) => {
+      await fabricate.update({ drawerVisible: false, query: '' });
+      navigate(state.page, 'FeedPage');
+    })
+    .onCreate((el, state) => setSelectedStyles(el, label, state.page === 'FeedPage'))
+    .onUpdate((el, state) => setSelectedStyles(el, label, state.page === 'FeedPage'), ['query', 'page']);
+};
+
+/**
  * Drawer component.
  *
  * @returns {FabricateComponent} Drawer component.
  */
 export const Drawer = () => {
-  const subredditList = fabricate('Column')
-    .setStyles({ margin: '15px 0px 10px 0px', padding: '5px 0px' });
+  const subredditList = fabricate('Column').setStyles({ margin: '0px 0px 10px 0px' });
 
   return fabricate('Column')
     .setStyles({
@@ -248,12 +266,8 @@ export const Drawer = () => {
     })
     .setChildren([
       UserInfoRow(),
-      ImageButton({ src: 'assets/feed.png' }).onClick(async (el, state) => {
-        await fabricate.update({ drawerVisible: false });
-        navigate(state.page, 'FeedPage');
-      }),
       SearchRow(),
-      // Feed header
+      // FeedButton(),
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
