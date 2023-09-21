@@ -26,6 +26,27 @@ const SCOPE_STRING = 'identity read history mysubreddits';
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
 state=${Date.now()}&redirect_uri=${REDIRECT_URI}&duration=permanent&scope=${SCOPE_STRING}`;
 
+let rps = 0;
+let rpsReset = Date.now();
+
+/**
+ * Prevent infinite loops of requests.
+ *
+ * @returns {boolean} true if request can proceed.
+ */
+const rateLimit = () => {
+  rps += 1;
+  if (rps > 10) return false;
+
+  const now = Date.now();
+  if (now - rpsReset > 1000) {
+    rpsReset = now;
+    rps = 0;
+  }
+
+  return true;
+};
+
 /**
  * Make a request to the Reddit API.
  *
@@ -33,6 +54,12 @@ state=${Date.now()}&redirect_uri=${REDIRECT_URI}&duration=permanent&scope=${SCOP
  * @param {string} route - API route.
  */
 const apiRequest = async (accessToken: string, route: string) => {
+  if (!rateLimit()) {
+    alert('Loop detected, reloading');
+    window.location.reload();
+    return {};
+  }
+
   const res = await fetch(`https://oauth.reddit.com${route}`, {
     headers: {
       Authorization: `bearer ${accessToken}`,
@@ -332,7 +359,6 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
       subreddit: null,
     });
 
-    console.log({ query })
     const posts = await fetchQueryPosts(accessToken, query, sortMode);
     const subreddit = await fetchSubreddit(accessToken, query);
 

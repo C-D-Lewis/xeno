@@ -37,11 +37,11 @@ export const PostAuthorLink = ({
         ? Theme.PostAuthorLink.isPostAuthor
         : Theme.palette.transparent,
     })
-    .onClick((el, { accessToken, page, sortMode }) => {
+    .onClick(async (el, { accessToken, page, sortMode }) => {
       if (!accessToken) return;
 
       delayedScrollTop();
-      fabricate.update({ query: fullAuthor });
+      await fabricate.update({ query: fullAuthor });
 
       if (page === 'ListPage') {
         fetchPosts(accessToken, fullAuthor, sortMode);
@@ -75,12 +75,12 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
       color: getContrastColor(backgroundColor),
     });
   })
-  .onClick((el, { accessToken, page, sortMode }) => {
+  .onClick(async (el, { accessToken, page, sortMode }) => {
     if (!accessToken) return;
 
     const query = `/r/${subreddit}`;
     delayedScrollTop();
-    fabricate.update({ query });
+    await fabricate.update({ query });
 
     // If already on ListPage, update the content. Else, go there.
     if (page === 'ListPage') {
@@ -135,7 +135,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
       return;
     }
 
-    if (page === 'ListPage') {
+    if (['ListPage', 'FeedPage'].includes(page)) {
       delayedScrollTop();
       await fabricate.update({ selectedPost: post });
       navigate(page, 'PostPage');

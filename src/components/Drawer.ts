@@ -66,7 +66,7 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    await fabricate.update({ drawerVisible: false, page: 'ListPage' });
+    await fabricate.update({ drawerVisible: false, page: 'ListPage', query: url });
 
     fetchPosts(accessToken, url, sortMode);
   };

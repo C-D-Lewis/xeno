@@ -44,14 +44,14 @@ const FeedPage = () => {
   const loadingTitle = fabricate('Text')
     .setStyles({
       color: Theme.palette.text,
-      margin: '10px auto',
+      margin: '20px auto 10px auto',
     })
     .setText('Building feed...');
 
   return AppPage()
     .setChildren([
-      ProgressBar().displayWhen(({ postsLoading }) => postsLoading),
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
+      ProgressBar().displayWhen(({ postsLoading }) => postsLoading),
       PostList({ onFetchPosts }),
     ]);
 };

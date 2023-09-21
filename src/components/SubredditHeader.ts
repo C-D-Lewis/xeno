@@ -20,14 +20,15 @@ export const FeedToggle = () => {
    */
   const updateLayout = (el: FabricateComponent<AppState>, { feedQueries, query }: AppState) => {
     const savedNow = feedQueries.includes(query);
-    el.setStyles({ backgroundColor: savedNow ? Theme.palette.primary : Theme.palette.transparent });
+    el.setAttribute('src', `assets/star_${savedNow ? 'on' : 'off'}.png`);
   };
 
-  return ImageButton({ src: 'assets/feed.png' })
+  return ImageButton({ src: 'assets/star_off.png' })
     .setStyles({
-      width: '24px',
-      height: '24px',
+      width: '22px',
+      height: '22px',
       padding: '2px',
+      marginLeft: '5px',
     })
     .onCreate(updateLayout)
     .onUpdate(updateLayout, ['feedQueries', 'page'])
