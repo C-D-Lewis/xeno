@@ -18,8 +18,8 @@ export const FeedToggle = () => {
    * @param {FabricateComponent} el - Element to update.
    * @param {AppState} state - App state.
    */
-  const updateLayout = (el: FabricateComponent<AppState>, { feedList, query }: AppState) => {
-    const savedNow = feedList.includes(query);
+  const updateLayout = (el: FabricateComponent<AppState>, { feedQueries, query }: AppState) => {
+    const savedNow = feedQueries.includes(query);
     el.setStyles({ backgroundColor: savedNow ? Theme.palette.primary : Theme.palette.transparent });
   };
 
@@ -30,14 +30,14 @@ export const FeedToggle = () => {
       padding: '2px',
     })
     .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['feedList', 'page'])
-    .onClick((el, { feedList, query }) => {
-      const nextState = !feedList.includes(query);
+    .onUpdate(updateLayout, ['feedQueries', 'page'])
+    .onClick((el, { feedQueries, query }) => {
+      const nextState = !feedQueries.includes(query);
 
       fabricate.update({
-        feedList: nextState
-          ? [...feedList, query]
-          : feedList.filter((p) => p !== query),
+        feedQueries: nextState
+          ? [...feedQueries, query]
+          : feedQueries.filter((p) => p !== query),
       });
     });
 };

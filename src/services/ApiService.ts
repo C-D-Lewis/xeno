@@ -48,7 +48,7 @@ const apiRequest = async (accessToken: string, route: string) => {
   };
   fabricate.update({ rateLimitInfo });
 
-  if (res.status >= 400) throw new Error(`apiRequest failed: ${res.status} ${(await res.text()).slice(0, 256)}`);
+  if (res.status >= 400) throw new Error(`apiRequest failed: ${route} ${res.status} ${(await res.text()).slice(0, 64)}`);
 
   const json = await res.json();
   // console.log(JSON.stringify({ route, json }, null, 2));
@@ -332,6 +332,7 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
       subreddit: null,
     });
 
+    console.log({ query })
     const posts = await fetchQueryPosts(accessToken, query, sortMode);
     const subreddit = await fetchSubreddit(accessToken, query);
 
@@ -440,13 +441,13 @@ export const getUserSubscriptions = async (accessToken: string) => {
  * Fetch a list of posts for a user or subreddit
  *
  * @param {string} accessToken - Access token.
- * @param {string} feedList - User's feedlist items.
+ * @param {string} feedQueries - User's feedlist items.
  * @param {SortMode} sortMode - Sort mode.
  * @returns {Promise<void>}
  */
 export const fetchFeedPosts = async (
   accessToken: string,
-  feedList: string[],
+  feedQueries: string[],
   sortMode: SortMode,
 ) => {
   try {
@@ -457,25 +458,22 @@ export const fetchFeedPosts = async (
       subreddit: null,
     });
 
-    // For each in the feedList, fetch posts.
+    // For each in the feedQueries, fetch posts.
     const allPosts: Post[] = [];
     let counter = 0;
-    await Promise.all(feedList.map(
+    await Promise.all(feedQueries.map(
       async (query) => {
         const posts = await fetchQueryPosts(accessToken, query, sortMode);
-        allPosts.concat(posts);
+        allPosts.push(...posts);
         counter += 1;
 
-        const postsLoadingProgress = Math.round((counter * 100) / feedList.length);
+        const postsLoadingProgress = Math.round((counter * 100) / feedQueries.length);
         fabricate.update({ postsLoadingProgress });
-
-        console.log({ query, postsLoadingProgress });
-        return posts;
       },
     ));
 
     fabricate.update({
-      posts: allPosts,
+      posts: allPosts.sort(sortByDate),
       postsLoading: false,
       postsLoadingProgress: 100,
     });

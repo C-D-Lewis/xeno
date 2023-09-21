@@ -3,6 +3,7 @@ import AppNavBar from './components/AppNavBar';
 import { Drawer } from './components/Drawer';
 import LoginPage from './pages/LoginPage';
 import ListPage from './pages/ListPage';
+import FeedPage from './pages/FeedPage';
 import PostPage from './pages/PostPage';
 import SettingsPage from './pages/SettingsPage';
 import { AppState } from './types';
@@ -28,8 +29,12 @@ const App = () => fabricate('Column')
       LoginPage,
     ),
     fabricate.conditional(
-      ({ page }) => ['ListPage', 'FeedPage'].includes(page),
+      ({ page }) => page === 'ListPage',
       ListPage,
+    ),
+    fabricate.conditional(
+      ({ page }) => page === 'FeedPage',
+      FeedPage,
     ),
     fabricate.conditional(
       ({ page }) => page === 'PostPage',
@@ -54,7 +59,7 @@ const main = () => {
     displayMode: 'gallery',
     sortMode: 'hot',
     lastReloadTime: Date.now(),
-    feedList: [],
+    feedQueries: [],
 
     // Other
     newSinceTime: Date.now(),
@@ -87,7 +92,7 @@ const main = () => {
       'displayMode',
       'sortMode',
       'lastReloadTime',
-      'feedList',
+      'feedQueries',
     ],
     strict: true,
     // logStateUpdates: true,

@@ -82,6 +82,7 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     delayedScrollTop();
     fabricate.update({ query });
 
+    // If already on ListPage, update the content. Else, go there.
     if (page === 'ListPage') {
       fetchPosts(accessToken, query, sortMode);
     } else {

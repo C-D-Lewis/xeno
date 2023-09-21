@@ -113,7 +113,7 @@ export const getNextSortMode = (mode: SortMode) => {
  * @param {Post} b - Post b;
  * @returns {number} Sort order;
  */
-export const sortByDate = (a: Post, b: Post) => a.created < b.created;
+export const sortByDate = (a: Post, b: Post) => a.created < b.created ? 1 : -1;
 
 /**
  * Get a query param.
