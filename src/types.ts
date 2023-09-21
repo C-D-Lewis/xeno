@@ -61,7 +61,6 @@ export type AppState = {
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
-  feedQueries: string[];
 
   // Other
   page: PageType;

@@ -2,46 +2,8 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import Theme from '../theme';
 import { getContrastColor, styleIconContrastColor } from '../utils';
-import ImageButton from './ImageButton';
 
 declare const fabricate: Fabricate<AppState>;
-
-/**
- * FeedToggle component.
- *
- * @returns {FabricateComponent} Fabricate component.
- */
-export const FeedToggle = () => {
-  /**
-   * When created or updated.
-   *
-   * @param {FabricateComponent} el - Element to update.
-   * @param {AppState} state - App state.
-   */
-  const updateLayout = (el: FabricateComponent<AppState>, { feedQueries, query }: AppState) => {
-    const savedNow = feedQueries.includes(query);
-    el.setAttribute('src', `assets/star_${savedNow ? 'on' : 'off'}.png`);
-  };
-
-  return ImageButton({ src: 'assets/star_off.png' })
-    .setStyles({
-      width: '22px',
-      height: '22px',
-      padding: '2px',
-      marginLeft: '5px',
-    })
-    .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['feedQueries', 'page'])
-    .onClick((el, { feedQueries, query }) => {
-      const nextState = !feedQueries.includes(query);
-
-      fabricate.update({
-        feedQueries: nextState
-          ? [...feedQueries, query]
-          : feedQueries.filter((p) => p !== query),
-      });
-    });
-};
 
 /**
  * SubredditHeader component.
@@ -121,7 +83,7 @@ const SubredditHeader = () => {
         .setChildren([
           fabricate('Row')
             .setStyles({ alignItems: 'center' })
-            .setChildren([title, FeedToggle()]),
+            .setChildren([title]),
           description,
         ]),
     ])

@@ -37,8 +37,8 @@ const FeedPage = () => {
    * @returns {Promise<void>}
    */
   const onFetchPosts = (state: AppState) => {
-    const { accessToken, feedQueries, sortMode } = state;
-    return fetchFeedPosts(accessToken!, feedQueries, sortMode);
+    const { accessToken, subreddits, sortMode } = state;
+    return fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
   };
 
   const loadingTitle = fabricate('Text')
@@ -46,7 +46,10 @@ const FeedPage = () => {
       color: Theme.palette.text,
       margin: '20px auto 10px auto',
     })
-    .setText('Building feed...');
+    .setText('Building feed...')
+    .onUpdate((el, { postsLoadingProgress }) => {
+      el.setText(`Building feed... ${postsLoadingProgress}%`);
+    }, ['postsLoadingProgress']);
 
   return AppPage()
     .setChildren([

@@ -22,6 +22,9 @@ declare const REDIRECT_URI: string;
 /** Requested scopes */
 const SCOPE_STRING = 'identity read history mysubreddits';
 
+/** Group of feed queries to fetch at once */
+const GROUP_SIZE = 10;
+
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
 state=${Date.now()}&redirect_uri=${REDIRECT_URI}&duration=permanent&scope=${SCOPE_STRING}`;
@@ -55,7 +58,7 @@ const rateLimit = () => {
  */
 const apiRequest = async (accessToken: string, route: string) => {
   if (!rateLimit()) {
-    alert('Loop detected, reloading');
+    alert(`Loop detected, reloading (${route})`);
     window.location.reload();
     return {};
   }
@@ -467,38 +470,47 @@ export const getUserSubscriptions = async (accessToken: string) => {
  * Fetch a list of posts for a user or subreddit
  *
  * @param {string} accessToken - Access token.
- * @param {string} feedQueries - User's feedlist items.
+ * @param {string} queries - User's subscriptions items.
  * @param {SortMode} sortMode - Sort mode.
  * @returns {Promise<void>}
  */
 export const fetchFeedPosts = async (
   accessToken: string,
-  feedQueries: string[],
+  queries: string[],
   sortMode: SortMode,
 ) => {
   try {
-    fabricate.update({
+    await fabricate.update({
       posts: [],
       postsLoading: true,
       postsLoadingProgress: 0,
       subreddit: null,
     });
 
-    // For each in the feedQueries, fetch posts.
+    // Don't have a super huge final list
+    const maxPerQuery = queries.length > 20 ? 10 : 20;
+
+    // For each in the queries, fetch posts.
     const allPosts: Post[] = [];
     let counter = 0;
-    await Promise.all(feedQueries.map(
-      async (query) => {
-        const posts = await fetchQueryPosts(accessToken, query, sortMode);
-        allPosts.push(...posts);
-        counter += 1;
 
-        const postsLoadingProgress = Math.round((counter * 100) / feedQueries.length);
-        fabricate.update({ postsLoadingProgress });
-      },
-    ));
+    const list = [...queries];
+    while (list.length) {
+      const next = list.splice(0, GROUP_SIZE);
+      await Promise.all(next.map(
+        // eslint-disable-next-line no-loop-func
+        async (query) => {
+          const posts = await fetchQueryPosts(accessToken, query, sortMode);
+          allPosts.push(...posts.sort(sortByDate).slice(0, maxPerQuery));
+          counter += 1;
 
-    fabricate.update({
+          const postsLoadingProgress = Math.round((counter * 100) / queries.length);
+          await fabricate.update({ postsLoadingProgress });
+        },
+      ));
+    }
+
+    await fabricate.update({
       posts: allPosts.sort(sortByDate),
       postsLoading: false,
       postsLoadingProgress: 100,

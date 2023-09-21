@@ -59,7 +59,6 @@ const main = () => {
     displayMode: 'gallery',
     sortMode: 'hot',
     lastReloadTime: Date.now(),
-    feedQueries: [],
 
     // Other
     newSinceTime: Date.now(),
@@ -92,7 +91,6 @@ const main = () => {
       'displayMode',
       'sortMode',
       'lastReloadTime',
-      'feedQueries',
     ],
     strict: true,
     // logStateUpdates: true,

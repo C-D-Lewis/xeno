@@ -267,7 +267,7 @@ export const Drawer = () => {
     .setChildren([
       UserInfoRow(),
       SearchRow(),
-      FeedButton(),
+      FeedButton().displayWhen(subredditsLoaded),
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
