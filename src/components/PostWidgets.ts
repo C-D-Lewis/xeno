@@ -99,7 +99,7 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
  */
 export const PostAgeView = ({ created }: { created: number }) => {
   const ageText = fabricate('Text')
-    .setText(getTimeAgoStr(created * 1000))
+    .setText(getTimeAgoStr(created))
     .setStyles({
       color: Theme.PostHeader.date,
       fontSize: '0.9rem',

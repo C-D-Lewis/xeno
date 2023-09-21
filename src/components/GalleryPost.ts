@@ -53,7 +53,7 @@ const PostHeader = ({ post }: { post: Post }) => {
   return fabricate('Column')
     .setStyles({ backgroundColor: Theme.palette.widgetPanel, padding: '8px' })
     .onCreate((el, { newSinceTime }) => {
-      const createdTime = new Date(created * 1000).getTime();
+      const createdTime = new Date(created).getTime();
       const isNew = createdTime > newSinceTime;
 
       if (isNew) el.setStyles({ borderTop: `${Theme.palette.primary} 4px solid` });

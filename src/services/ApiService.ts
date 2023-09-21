@@ -25,6 +25,9 @@ const SCOPE_STRING = 'identity read history mysubreddits';
 /** Group of feed queries to fetch at once */
 const GROUP_SIZE = 10;
 
+/** One week ago in ms */
+const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
+
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
 state=${Date.now()}&redirect_uri=${REDIRECT_URI}&duration=permanent&scope=${SCOPE_STRING}`;
@@ -253,7 +256,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     title,
     subreddit,
     permalink,
-    created,
+    created: created * 1000,
 
     // Custom added
     width,
@@ -336,7 +339,11 @@ const fetchSubreddit = async (accessToken: string, query: string) => {
  * @param {SortMode} sortMode - Sort mode.
  * @returns {Promise<Post[]>} Fetch posts.
  */
-export const fetchQueryPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
+export const fetchQueryPosts = async (
+  accessToken: string,
+  query: string,
+  sortMode: SortMode,
+): Promise<Post[]> => {
   const finalPath = getFinalPath(query, sortMode);
   const res = await apiRequest(accessToken, finalPath);
   return res.data.children
@@ -492,6 +499,7 @@ export const fetchFeedPosts = async (
 
     // For each in the queries, fetch posts.
     const allPosts: Post[] = [];
+    const now = Date.now();
     let counter = 0;
 
     const list = [...queries];
@@ -501,7 +509,12 @@ export const fetchFeedPosts = async (
         // eslint-disable-next-line no-loop-func
         async (query) => {
           const posts = await fetchQueryPosts(accessToken, query, sortMode);
-          allPosts.push(...posts.sort(sortByDate).slice(0, maxPerQuery));
+          allPosts.push(
+            ...posts
+              .sort(sortByDate)
+              .slice(0, maxPerQuery)
+              .filter((p) => now - p.created < ONE_WEEK_AGO),
+          );
           counter += 1;
 
           const postsLoadingProgress = Math.round((counter * 100) / queries.length);
