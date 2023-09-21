@@ -223,7 +223,7 @@ const FeedButton = () => {
       color: Theme.DrawerItem.unselected,
       fontSize: '1rem',
     })
-    .setText('Starred Feed');
+    .setText('Feed');
 
   return fabricate('Row')
     .setStyles({

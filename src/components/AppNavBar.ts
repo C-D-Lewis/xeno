@@ -20,7 +20,7 @@ export const APP_NAV_BAR_HEIGHT = 45;
  */
 const getSubtitle = ({ page, subreddit }: AppState) => {
   if (page === 'LoginPage') return 'Login';
-  if (page === 'FeedPage') return 'Starred Feed';
+  if (page === 'FeedPage') return 'Feed';
   if (page === 'SettingsPage') return 'Settings';
   if (['ListPage', 'PostPage'].includes(page) && subreddit) return subreddit?.displayName;
 
