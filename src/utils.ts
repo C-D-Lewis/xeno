@@ -116,6 +116,15 @@ export const getNextSortMode = (mode: SortMode) => {
 export const sortByDate = (a: Post, b: Post) => a.created < b.created ? 1 : -1;
 
 /**
+ * Sort subreddits by title, case insensitive.
+ *
+ * @param {Subreddit} a - Subreddit a;
+ * @param {Subreddit} b - Subreddit b;
+ * @returns {number} Sort order;
+ */
+export const sortByTitleCaseInsensitive = (a: Subreddit, b: Subreddit) => a.url.toLowerCase() < b.url.toLowerCase() ? -1 : 1;
+
+/**
  * Get a query param.
  *
  * @param {string} name - Param name.
@@ -135,18 +144,6 @@ export const navigate = (
   lastPage: PageType,
   nextPage: PageType,
 ) => fabricate.update({ page: nextPage, lastPage });
-
-/**
- * Sort subreddits by name.
- *
- * @param {Subreddit} a - Item to compare.
- * @param {Subreddit} b - Item to compare.
- * @returns {number} Sort order.
- */
-export const sortSubreddits = (
-  a: Subreddit,
-  b: Subreddit,
-) => (a.displayName > b.displayName ? 1 : -1);
 
 /**
  * Get color of a subreddit, if known.

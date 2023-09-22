@@ -12,7 +12,7 @@ import {
   SortMode,
   Subreddit,
 } from '../types';
-import { sortByDate } from '../utils';
+import { sortByDate, sortByTitleCaseInsensitive } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 declare const CLIENT_ID: string;
@@ -27,6 +27,9 @@ const GROUP_SIZE = 10;
 
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
+
+/** Max feed items */
+const MAX_FEED_LENGTH = 256;
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
@@ -468,7 +471,8 @@ export const getUsername = async (accessToken: string) => {
 export const getUserSubscriptions = async (accessToken: string) => {
   const json = await apiRequest(accessToken, '/subreddits/mine/subscriber?limit=100');
   const items = json.data.children
-    .map(extractSubredditData);
+    .map(extractSubredditData)
+    .sort(sortByTitleCaseInsensitive);
   // console.log(items);
   return items;
 };
@@ -524,7 +528,7 @@ export const fetchFeedPosts = async (
     }
 
     await fabricate.update({
-      posts: allPosts.sort(sortByDate),
+      posts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
       postsLoading: false,
       postsLoadingProgress: 100,
     });

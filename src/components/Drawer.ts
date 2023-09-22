@@ -3,7 +3,7 @@ import { fetchPosts, submitQuery } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Subreddit } from '../types';
 import {
-  delayedScrollTop, navigate, sortSubreddits,
+  delayedScrollTop, navigate,
 } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
@@ -48,6 +48,7 @@ const setSelectedStyles = (
  */
 const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
   const { url, primaryColor } = subreddit;
+
   const label = fabricate('Text')
     .setText(url)
     .setStyles({
@@ -55,6 +56,18 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
       margin: '0px',
       fontSize: '1rem',
     });
+
+  /**
+   * When created or updated.
+   *
+   * @param {FabricateComponent} el - Element to update.
+   * @param {AppState} state - App state.
+   * @returns {void}
+   */
+  const updateLayout = (
+    el: FabricateComponent<AppState>,
+    state: AppState,
+  ) => setSelectedStyles(el, label, state.query === url);
 
   /**
    * When this item is clicked.
@@ -78,11 +91,11 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
       padding: '7px 0px 7px 10px',
       margin: '0px',
       alignItems: 'center',
-      borderLeft: `solid 4px ${primaryColor}`,
+      borderLeft: `solid 6px ${primaryColor}`,
     })
     .onClick(onClick)
-    .onCreate((el, state) => setSelectedStyles(el, label, state.query === url))
-    .onUpdate((el, state) => setSelectedStyles(el, label, state.query === url), ['query']);
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['query']);
 };
 
 /**
@@ -281,9 +294,7 @@ export const Drawer = () => {
       const createItems = ['subreddits', 'fabricate:init'].some((k) => keys.includes(k));
       if (subreddits.length && createItems) {
         subredditList.setChildren(
-          subreddits
-            .sort(sortSubreddits)
-            .map((subreddit: Subreddit) => DrawerItem({ subreddit })),
+          subreddits.map((subreddit: Subreddit) => DrawerItem({ subreddit })),
         );
       }
     }, ['fabricate:init', 'drawerVisible', 'subreddits']);
