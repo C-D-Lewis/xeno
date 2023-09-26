@@ -77,7 +77,10 @@ const PostCommentTree = ({
     ]);
 
   const commentBody = fabricate('Text')
-    .setStyles({ color: 'white', fontSize: '0.9rem' })
+    .setStyles({
+      color: 'white',
+      fontSize: fabricate.isNarrow() ? '0.9rem' : '1rem',
+    })
     .setHtml(html || parseMarkdown(body))
     .onUpdate((el, state) => {
       el.setStyles({

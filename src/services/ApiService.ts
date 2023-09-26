@@ -396,7 +396,7 @@ const convertComment = ({ data }: RedditApiComment): Comment => ({
   author: data.author,
   body: data.body,
   bodyHtml: data.body_html,
-  createdUtc: data.created_utc,
+  createdUtc: data.created_utc * 1000,
   replies: data.replies ? data.replies.data.children.map(convertComment) : [],
 });
 
@@ -512,14 +512,19 @@ export const fetchFeedPosts = async (
       await Promise.all(next.map(
         // eslint-disable-next-line no-loop-func
         async (query) => {
-          const posts = await fetchQueryPosts(accessToken, query, sortMode);
-          allPosts.push(
-            ...posts
-              .sort(sortByDate)
-              .slice(0, maxPerQuery)
-              .filter((p) => now - p.created < ONE_WEEK_AGO),
-          );
           counter += 1;
+
+          try {
+            const posts = await fetchQueryPosts(accessToken, query, sortMode);
+            allPosts.push(
+              ...posts
+                .sort(sortByDate)
+                .slice(0, maxPerQuery)
+                .filter((p) => now - p.created < ONE_WEEK_AGO),
+            );
+          } catch (e: unknown) {
+            console.log(`Failed to fetch feed posts for ${query}`);
+          }
 
           const postsLoadingProgress = Math.round((counter * 100) / queries.length);
           await fabricate.update({ postsLoadingProgress });
@@ -550,6 +555,6 @@ export const submitQuery = async (accessToken: string, query: string, sortMode: 
   if (!query || query.length < 6) return;
   if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
 
-  await fabricate.update({ drawerVisible: false });
+  await fabricate.update({ drawerVisible: false, page: 'ListPage', query });
   fetchPosts(accessToken, query, sortMode);
 };
