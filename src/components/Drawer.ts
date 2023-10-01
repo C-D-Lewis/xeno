@@ -251,7 +251,7 @@ const FeedButton = () => {
       label,
     ])
     .onClick(async (el, state) => {
-      await fabricate.update({ drawerVisible: false, query: '' });
+      await fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
       navigate(state.page, 'FeedPage');
     })
     .onCreate((el, state) => setSelectedStyles(el, label, state.page === 'FeedPage'))
