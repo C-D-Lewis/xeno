@@ -20,7 +20,7 @@ declare const CLIENT_SECRET: string;
 declare const REDIRECT_URI: string;
 
 /** Requested scopes */
-const SCOPE_STRING = 'identity read history mysubreddits';
+const SCOPE_STRING = 'identity read history mysubreddits subscribe';
 
 /** Group of feed queries to fetch at once */
 const GROUP_SIZE = 10;
@@ -61,8 +61,15 @@ const rateLimit = () => {
  *
  * @param {string} accessToken - Access token.
  * @param {string} route - API route.
+ * @param {string} [method] - HTTP method.
+ * @param {object} [body] - Body, form data.
  */
-const apiRequest = async (accessToken: string, route: string) => {
+const apiRequest = async (
+  accessToken: string,
+  route: string,
+  method: string = 'GET',
+  body: string = '',
+) => {
   if (!rateLimit()) {
     alert(`Loop detected, reloading (${route})`);
     window.location.reload();
@@ -70,11 +77,14 @@ const apiRequest = async (accessToken: string, route: string) => {
   }
 
   const res = await fetch(`https://oauth.reddit.com${route}`, {
+    method,
     headers: {
       Authorization: `bearer ${accessToken}`,
       // Asked for, but breaks it
       // 'User-Agent': 'pc:xeno:v1.0.0 (by C-D-Lewis)',
+      'Content-Type': method !== 'GET' ? 'application/x-www-form-urlencoded' : '',
     },
+    body: method !== 'GET' ? body : undefined,
   });
 
   const rateLimitInfo = {
@@ -283,11 +293,10 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
 /**
  * Transform subreddit entity from the API.
  *
- * @param {object} opts - function opts.
- * @param {RedditApiSubreddit} opts.data - Subreddit entity.
+ * @param {object} data - Subreddit entity.
  * @returns {Subreddit} refined data.
  */
-const extractSubredditData = ({ data }: { data: RedditApiSubreddit }): Subreddit => ({
+const extractSubredditData = (data: RedditApiSubreddit): Subreddit => ({
   displayName: data.display_name,
   displayNamePrefixed: data.display_name_prefixed,
   title: data.title,
@@ -296,6 +305,7 @@ const extractSubredditData = ({ data }: { data: RedditApiSubreddit }): Subreddit
   primaryColor: data.primary_color,
   iconImg: data.icon_img,
   iconSize: data.icon_size,
+  isSubscribed: data.user_is_subscriber,
 });
 
 /**
@@ -318,15 +328,18 @@ const getFinalPath = (query: string, sortMode: SortMode) => {
  * @param {string} accessToken - Access token.
  * @param {string} query - A '/u/user' or '/r/subreddit' name.
  */
-const fetchSubreddit = async (accessToken: string, query: string) => {
-  if (!query.includes('/r/')) {
-    console.warn(`Query was not a subreddit ${query}`);
-    return undefined;
-  }
+export const fetchSubreddit = async (accessToken: string, query: string) => {
+  // Adapt for users followed
+  const finalUrl = query.includes('/r/')
+    ? `${query}/about`
+    : `/user/${query.split('/').pop()}/about.json`;
 
   try {
-    const res = await apiRequest(accessToken, `${query}/about`);
-    return extractSubredditData(res);
+    const res = await apiRequest(accessToken, finalUrl);
+
+    // Users followed has res.data.subreddit
+    const finalData = res.data && res.data.subreddit ? res.data.subreddit : res.data;
+    return extractSubredditData(finalData);
   } catch (e: unknown) {
     console.log(`Failed fetchSubreddit ${query}`);
     console.log(e);
@@ -471,7 +484,7 @@ export const getUsername = async (accessToken: string) => {
 export const getUserSubscriptions = async (accessToken: string) => {
   const json = await apiRequest(accessToken, '/subreddits/mine/subscriber?limit=100');
   const items = json.data.children
-    .map(extractSubredditData)
+    .map(({ data }: { data: RedditApiSubreddit }) => extractSubredditData(data))
     .sort(sortByTitleCaseInsensitive);
   // console.log(items);
   return items;
@@ -557,4 +570,21 @@ export const submitQuery = async (accessToken: string, query: string, sortMode: 
 
   await fabricate.update({ drawerVisible: false, page: 'ListPage', query });
   fetchPosts(accessToken, query, sortMode);
+};
+
+/**
+ * Modify a subscriptin.
+ *
+ * @param {string} accessToken - Acces token.
+ * @param {string} fullName - Subreddit fullname
+ * @param {boolean} subscribed - Whether to be subscribed now.
+ */
+export const modifySubscription = async (
+  accessToken: string,
+  fullName: string,
+  subscribed: boolean,
+) => {
+  const action = subscribed ? 'sub' : 'unsub';
+  const body = `action=${action}&api_type=json&sr_name=${fullName}`;
+  await apiRequest(accessToken, '/api/subscribe', 'POST', body);
 };

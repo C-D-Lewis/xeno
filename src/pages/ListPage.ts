@@ -22,7 +22,7 @@ const ListPage = () => {
    * @param {AppState} state - App state.
    * @returns {Promise<void>}
    */
-  const onFetchPosts = (state: AppState) => {
+  const onFetchPosts = async (state: AppState) => {
     const { accessToken, query, sortMode } = state;
     return fetchPosts(accessToken!, query, sortMode);
   };

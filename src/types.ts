@@ -45,6 +45,7 @@ export type Subreddit = {
   primaryColor: string;
   iconImg: string;
   iconSize: number[];
+  isSubscribed: boolean;
 };
 
 /** App state type */
@@ -149,4 +150,5 @@ export type RedditApiSubreddit = {
   primary_color: string;
   icon_img: string;
   icon_size: number[];
+  user_is_subscriber: boolean;
 };

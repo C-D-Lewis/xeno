@@ -2,6 +2,8 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import Theme from '../theme';
 import { getContrastColor, styleIconContrastColor } from '../utils';
+import ImageButton from './ImageButton';
+import { fetchSubreddit, getUserSubscriptions, modifySubscription } from '../services/ApiService';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -26,6 +28,26 @@ const SubredditHeader = () => {
       fontWeight: 'bold',
     });
 
+  const subscribeButton = ImageButton({ src: 'assets/save.png' })
+    .setStyles({ width: '22px', height: '22px' })
+    .onClick(async (el, state) => {
+      const { subreddit, accessToken, query } = state;
+      if (!accessToken) return;
+
+      const { isSubscribed, displayName } = subreddit || {};
+
+      // Handle subreddits and following users
+      const finalName = (query && !subreddit) ? `u_${query.split('/').pop()}` : displayName;
+
+      await modifySubscription(accessToken, finalName!, !isSubscribed);
+
+      // Update state - responsive button state first
+      const updated = await fetchSubreddit(accessToken, query);
+      await fabricate.update({ subreddit: updated });
+      const subreddits = await getUserSubscriptions(accessToken);
+      await fabricate.update({ subreddits });
+    });
+
   const description = fabricate('Text')
     .setStyles({
       color: Theme.palette.text,
@@ -48,12 +70,12 @@ const SubredditHeader = () => {
     }
 
     const {
-      displayNamePrefixed, iconImg, primaryColor, publicDescription,
+      displayNamePrefixed, iconImg, primaryColor, publicDescription, isSubscribed,
     } = subreddit;
 
     const finalColor = primaryColor || Theme.palette.widgetBackground;
 
-    // Icon
+    // Icon TODO: Breaks for users
     const color = getContrastColor(finalColor);
     icon.setAttribute('src', iconImg || 'assets/icon.png');
     if (!iconImg) {
@@ -63,16 +85,19 @@ const SubredditHeader = () => {
     }
 
     // Others
+    el.setStyles({ backgroundColor: finalColor });
     title.setText(displayNamePrefixed);
     title.setStyles({ color });
+    subscribeButton.setStyles({
+      backgroundColor: isSubscribed ? Theme.palette.primary : Theme.palette.transparent,
+    });
     description.setText(publicDescription.trim());
     description.setStyles({ color });
-    el.setStyles({ backgroundColor: finalColor });
   };
 
   return fabricate('Row')
     .setStyles({
-      padding: '4px',
+      padding: '8px 4px 4px 4px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
       backgroundColor: Theme.palette.widgetPanel,
@@ -83,7 +108,7 @@ const SubredditHeader = () => {
         .setChildren([
           fabricate('Row')
             .setStyles({ alignItems: 'center' })
-            .setChildren([title]),
+            .setChildren([title, subscribeButton]),
           description,
         ]),
     ])
