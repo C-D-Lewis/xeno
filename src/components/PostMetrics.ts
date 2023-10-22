@@ -1,6 +1,7 @@
 import { Fabricate } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
+import { roughNumber } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -9,16 +10,16 @@ declare const fabricate: Fabricate<AppState>;
  *
  * @param {object} props - Component props.
  * @param {string} props.src - Icon source.
- * @param {number} props.count - Comment count.
+ * @param {string} props.count - Comment count.
  * @returns {HTMLElement} Fabricate component.
  */
-const CounterWithImage = ({ src, count }: { src: string, count: number }) => fabricate('Row')
+const CounterWithImage = ({ src, count }: { src: string, count: string }) => fabricate('Row')
   .setStyles({ padding: '0px 5px', alignItems: 'center' })
   .setChildren([
     fabricate('Image', { src }).setStyles({ width: '18px', height: '18px' }),
     fabricate('Text')
       .setStyles({ color: Theme.palette.textSecondary, fontSize: '0.8rem' })
-      .setText(String(count)),
+      .setText(count),
   ]);
 
 /**
@@ -30,10 +31,13 @@ const CounterWithImage = ({ src, count }: { src: string, count: number }) => fab
  */
 const PostMetrics = ({ post }: { post: Post }) => fabricate('Row')
   .setChildren([
-    // upvotes?
+    CounterWithImage({
+      src: 'assets/upvote.png',
+      count: roughNumber(post.upvotes),
+    }),
     CounterWithImage({
       src: 'assets/comments.png',
-      count: post.numComments,
+      count: roughNumber(post.numComments),
     }),
   ]);
 

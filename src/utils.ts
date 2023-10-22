@@ -239,3 +239,11 @@ export const scrollToPost = (el: FabricateComponent<AppState>) => {
     scrollToPost(el);
   }, SCROLL_INTERVAL_MS);
 };
+
+/**
+ * Return a rough representation of a larger number.
+ *
+ * @param {number} n - Number to format.
+ * @returns {string} Formatted number.
+ */
+export const roughNumber = (n: number) => n < 1000 ? String(n) : `${Math.round(n / 1000)}k`;

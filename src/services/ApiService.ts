@@ -21,15 +21,14 @@ declare const REDIRECT_URI: string;
 
 /** Requested scopes */
 const SCOPE_STRING = 'identity read history mysubreddits subscribe';
-
 /** Group of feed queries to fetch at once */
 const GROUP_SIZE = 10;
-
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
-
 /** Max feed items */
 const MAX_FEED_LENGTH = 256;
+/** Minimum upvotes for feed posts, despite 'applied' hot or top sort order... */
+const MIN_FEED_UPVOTES = 10;
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
@@ -45,7 +44,7 @@ let rpsReset = Date.now();
  */
 const rateLimit = () => {
   rps += 1;
-  if (rps > 10) return false;
+  if (rps > 15) return false;
 
   const now = Date.now();
   if (now - rpsReset > 1000) {
@@ -209,6 +208,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     num_comments,
     selftext,
     selftext_html,
+    ups,
   } = data;
   // console.log(data);
 
@@ -270,6 +270,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     subreddit,
     permalink,
     created: created * 1000,
+    upvotes: ups,
 
     // Custom added
     width,
@@ -533,6 +534,7 @@ export const fetchFeedPosts = async (
               ...posts
                 .sort(sortByDate)
                 .slice(0, maxPerQuery)
+                .filter((p) => p.upvotes > MIN_FEED_UPVOTES)
                 .filter((p) => now - p.created < ONE_WEEK_AGO),
             );
           } catch (e: unknown) {

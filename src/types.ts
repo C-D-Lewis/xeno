@@ -23,6 +23,7 @@ export type Post = {
   numComments: number;
   selfText?: string;
   selfTextHtml?: string;
+  upvotes: number;
 };
 
 /** Refined comment object */
@@ -97,6 +98,7 @@ export type RedditApiPost = {
   num_comments: number;
   selftext?: string;
   selftext_html?: string;
+  ups: number;
   preview: {
     images: {
       source: {
