@@ -238,6 +238,18 @@ const FeedButton = () => {
     })
     .setText('Feed');
 
+  /**
+   * Update layout.
+   *
+   * @param {FabricateComponent} el - The component.
+   * @param {AppState} state - App state.
+   * @returns {void}
+   */
+  const updateLayout = (
+    el:FabricateComponent<AppState>,
+    state: AppState,
+  ) => setSelectedStyles(el, label, state.page === 'FeedPage');
+
   return fabricate('Row')
     .setStyles({
       padding: '4px',
@@ -254,8 +266,8 @@ const FeedButton = () => {
       await fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
       navigate(state.page, 'FeedPage');
     })
-    .onCreate((el, state) => setSelectedStyles(el, label, state.page === 'FeedPage'))
-    .onUpdate((el, state) => setSelectedStyles(el, label, state.page === 'FeedPage'), ['query', 'page']);
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['query', 'page']);
 };
 
 /**

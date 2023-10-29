@@ -568,10 +568,15 @@ export const fetchFeedPosts = async (
 export const submitQuery = async (accessToken: string, query: string, sortMode: SortMode) => {
   // Validate input
   if (!query || query.length < 6) return;
-  if (!['/r/', '/u/'].some((q) => query.includes(q))) return;
 
-  await fabricate.update({ drawerVisible: false, page: 'ListPage', query });
-  fetchPosts(accessToken, query, sortMode);
+  // Assume it's a subreddit name
+  let finalQuery = query;
+  if (!['/r/', '/u/'].some((q) => query.includes(q))) {
+    finalQuery = `/r/${query}`;
+  }
+
+  await fabricate.update({ drawerVisible: false, page: 'ListPage', query: finalQuery });
+  fetchPosts(accessToken, finalQuery, sortMode);
 };
 
 /**
