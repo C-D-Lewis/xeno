@@ -35,10 +35,6 @@ const getSubtitle = ({ page, subreddit }: AppState) => {
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
   .onClick((el, { page, lastPage }) => navigate(page, lastPage || 'ListPage'));
-  // .onUpdate(
-  //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
-  //   ['query'],
-  // );
 
 /**
  * AppNavBar component.
@@ -91,14 +87,6 @@ const AppNavBar = () => {
     ])
     .onUpdate((el, state) => {
       subtitle.setText(getSubtitle(state));
-
-      // const backgroundColor = getCurrentSubredditColor(state);
-      // const color = getContrastColor(backgroundColor);
-      // el.setStyles({
-      //   backgroundColor,
-      //   color,
-      // });
-      // title.setStyles({ color });
     }, ['query', 'page', 'subreddit']);
 };
 

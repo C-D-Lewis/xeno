@@ -26,7 +26,7 @@ const GROUP_SIZE = 10;
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
 /** Max feed items */
-const MAX_FEED_LENGTH = 256;
+const MAX_FEED_LENGTH = 128;
 /** Minimum upvotes for feed posts, despite 'applied' hot or top sort order... */
 const MIN_FEED_UPVOTES = 10;
 
