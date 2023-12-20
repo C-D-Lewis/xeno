@@ -1,5 +1,4 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState } from '../types';
 
 declare const fabricate: Fabricate<AppState>;
@@ -17,13 +16,13 @@ const ScrollTopButton = ({ root }: { root: FabricateComponent<AppState> }) => {
   let scrollHandle: Timeout;
 
   const div = fabricate('Column')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       justifyContent: 'center',
       textAlign: 'center',
       margin: '8px',
       alignItems: 'center',
-      color: Theme.palette.text,
-      backgroundColor: Theme.palette.primary,
+      color: palette.text,
+      backgroundColor: palette.primary,
       transition: '0.5s',
       position: 'fixed',
       top: '-100px',
@@ -33,7 +32,7 @@ const ScrollTopButton = ({ root }: { root: FabricateComponent<AppState> }) => {
       zIndex: '9999',
       padding: '8px',
       cursor: 'pointer',
-    })
+    }))
     .setText('Back to top')
     .onClick(() => root.scrollTo(0, 0));
 

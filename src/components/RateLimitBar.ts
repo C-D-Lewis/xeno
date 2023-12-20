@@ -20,11 +20,11 @@ const RateLimitBar = () => fabricate('div')
     transition: '0.3s',
     padding: '0px 4px 0px 0px',
   })
-  .onCreate((el, { rateLimitInfo }) => {
+  .onUpdate((el, { rateLimitInfo }) => {
     const { used, remaining } = rateLimitInfo;
     const widthPerc = (used / (used + remaining)) * 100;
 
     el.setStyles({ width: `${100 - widthPerc}%` });
-  });
+  }, ['fabricate:created']);
 
 export default RateLimitBar;

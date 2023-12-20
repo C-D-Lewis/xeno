@@ -1,5 +1,4 @@
 import { Fabricate } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState, Post } from '../types';
 import { roughNumber } from '../utils';
 
@@ -18,7 +17,10 @@ const CounterWithImage = ({ src, count }: { src: string, count: string }) => fab
   .setChildren([
     fabricate('Image', { src }).setStyles({ width: '18px', height: '18px' }),
     fabricate('Text')
-      .setStyles({ color: Theme.palette.textSecondary, fontSize: '0.8rem' })
+      .setStyles(({ palette }) => ({
+        color: palette.textSecondary,
+        fontSize: '0.8rem',
+      }))
       .setText(count),
   ]);
 

@@ -61,6 +61,6 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
  */
 export const InitPage = () => AppPage()
   .setChildren([AppLoader()])
-  .onCreate(onInit);
+  .onUpdate(onInit, ['fabricate:created']);
 
 export default InitPage;

@@ -12,7 +12,7 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} PostPage component.
  */
 export const PostPage = () => AppPage()
-  .onCreate((el, { selectedPost }) => {
+  .onUpdate((el, { selectedPost }) => {
     if (!selectedPost) return;
 
     el.setChildren([
@@ -22,6 +22,6 @@ export const PostPage = () => AppPage()
           CommentsList(),
         ]),
     ]);
-  });
+  }, ['fabricate:created']);
 
 export default PostPage;

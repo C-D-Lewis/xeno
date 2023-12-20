@@ -44,7 +44,7 @@ let rpsReset = Date.now();
  */
 const rateLimit = () => {
   rps += 1;
-  if (rps > 15) return false;
+  if (rps > 20) return false;
 
   const now = Date.now();
   if (now - rpsReset > 1000) {
@@ -135,15 +135,16 @@ export const ensureAccessToken = async (
 ) => {
   let token = accessToken;
 
-  try {
-    // Test saved token
-    await apiRequest(token, '/r/pics/about');
-    console.log('Existing token is valid');
-  } catch (e) {
-    // Generate a new one
-    token = await refreshAppToken(refreshToken);
-    console.log('Got new access token');
-  }
+  // TODO: Handle when fetching page/comments fails?
+  // try {
+  //   // Test saved token
+  //   await apiRequest(token, '/r/pics/about');
+  //   console.log('Existing token is valid');
+  // } catch (e) {
+  // Generate a new one
+  token = await refreshAppToken(refreshToken);
+  console.log('Got new access token');
+  // }
 
   return token;
 };
@@ -253,14 +254,17 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     // Other?
   }
 
-  // Arbitrary site plugin
   let iframe;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (window.iframeTransformer) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    iframe = window.iframeTransformer(source);
+  if (source.match(/[gsirdfe]{7}.com/)) {
+    const src = source.split('www.').join('').split('/watch/').join('/ifr/');
+    iframe =  `<iframe
+      src="${src}"
+      frameborder="0"
+      scrolling="no"
+      allowfullscreen
+      style="width:100%;"
+      height="465">
+    </iframe>`;
   }
 
   const post: Post = {

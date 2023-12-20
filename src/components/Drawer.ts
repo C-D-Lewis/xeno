@@ -32,11 +32,13 @@ const setSelectedStyles = (
   text: FabricateComponent<AppState>,
   isSelected: boolean,
 ) => {
-  background.setStyles({ backgroundColor: isSelected ? Theme.palette.primary : 'initial' });
-  text.setStyles({
+  background.setStyles(({ palette }) => ({
+    backgroundColor: isSelected ? palette.primary : 'initial',
+  }));
+  text.setStyles(({ palette }) => ({
     fontWeight: isSelected ? 'bold' : 'initial',
-    color: isSelected ? Theme.palette.text : Theme.DrawerItem.unselected,
-  });
+    color: isSelected ? palette.text : Theme.DrawerItem.unselected,
+  }));
 };
 
 /**
@@ -94,8 +96,7 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
       borderLeft: `solid 6px ${primaryColor}`,
     })
     .onClick(onClick)
-    .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['query']);
+    .onUpdate(updateLayout, ['fabricate:created', 'query']);
 };
 
 /**
@@ -133,12 +134,12 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
  */
 const UserInfoRow = () => {
   const usernameText = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.text,
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       marginLeft: '8px',
       fontSize: '1rem',
       cursor: 'default',
-    })
+    }))
     .onUpdate((el, { username }) => {
       el.setText(username || '-');
     }, ['fabricate:init', 'username']);
@@ -155,11 +156,11 @@ const UserInfoRow = () => {
     });
 
   return fabricate('Row')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       padding: '8px',
       alignItems: 'center',
-      backgroundColor: Theme.palette.widgetPanel,
-    })
+      backgroundColor: palette.widgetPanel,
+    }))
     .setChildren([
       fabricate('Image', { src: 'assets/user.png' })
         .setStyles({
@@ -177,11 +178,11 @@ const UserInfoRow = () => {
  * @returns {HTMLElement} Fabricate component.
  */
 const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
-  .setStyles({
+  .setStyles(({ palette }) => ({
     margin: '0px 0px 0px 5px',
     width: '92%',
-    backgroundColor: Theme.palette.transparentGrey,
-  })
+    backgroundColor: palette.transparentGrey,
+  }))
   .onUpdate((el, { query }) => {
     const input = el as FabricateComponent<AppState> & HTMLInputElement;
     input.value = query;
@@ -209,11 +210,11 @@ const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
  * @returns {HTMLElement} Fabricate component.
  */
 const SearchRow = () => fabricate('Row')
-  .setStyles({
+  .setStyles(({ palette }) => ({
     padding: '0px 4px 4px 4px',
-    backgroundColor: Theme.palette.widgetPanel,
+    backgroundColor: palette.widgetPanel,
     alignItems: 'center',
-  })
+  }))
   .setChildren([
     SearchInput(),
     ImageButton({ src: 'assets/search.png' })
@@ -251,12 +252,12 @@ const FeedButton = () => {
   ) => setSelectedStyles(el, label, state.page === 'FeedPage');
 
   return fabricate('Row')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       padding: '4px',
       alignItems: 'center',
       cursor: 'pointer',
-      borderBottom: `solid 1px ${Theme.palette.widgetBackground}`,
-    })
+      borderBottom: `solid 1px ${palette.widgetBackground}`,
+    }))
     .setChildren([
       ImageButton({ src: 'assets/feed.png' })
         .setStyles({ margin: '0px' }),
@@ -266,8 +267,7 @@ const FeedButton = () => {
       await fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
       navigate(state.page, 'FeedPage');
     })
-    .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['query', 'page']);
+    .onUpdate(updateLayout, ['fabricate:created', 'query', 'page']);
 };
 
 /**

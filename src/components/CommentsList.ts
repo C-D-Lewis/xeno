@@ -1,10 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPostComments } from '../services/ApiService';
-import Theme from '../theme';
 import { AppState, Comment } from '../types';
 import { decodeHtml, parseMarkdown } from '../utils';
 import AppLoader from './AppLoader';
 import { PostAgeView, PostAuthorLink } from './PostWidgets';
+import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -97,13 +97,13 @@ const PostCommentTree = ({
     }, [isCollapsedKey]);
 
   return fabricate('Column')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       borderRadius: '5px',
-      backgroundColor: Theme.palette.widgetBackground,
+      backgroundColor: palette.widgetBackground,
       padding: '5px',
       marginTop: '5px',
       borderLeft: '3px solid #FFF5',
-    })
+    }))
     .setChildren([
       commentMetadataRow,
       commentBody,
@@ -121,7 +121,12 @@ const CommentsList = () => fabricate('Column')
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
   })
-  .onUpdate((el, { selectedPost, postComments }) => {
+  .onUpdate((el, { selectedPost, postComments, accessToken }, keys) => {
+    if (accessToken && selectedPost && keys.includes('fabricate:created')) {
+      fetchPostComments(accessToken, selectedPost.id);
+      return;
+    }
+
     if (!selectedPost || !postComments) return;
 
     el.setChildren(postComments.map((comment) => {
@@ -129,12 +134,7 @@ const CommentsList = () => fabricate('Column')
 
       return PostCommentTree({ comment, postAuthor: selectedPost.author });
     }));
-  }, ['selectedPost', 'postComments'])
-  .onCreate((el, { selectedPost, accessToken }) => {
-    if (!selectedPost || !accessToken) return;
-
-    fetchPostComments(accessToken, selectedPost.id);
-  })
+  }, ['fabricate:created', 'selectedPost', 'postComments'])
   .setChildren([AppLoader()]);
 
 export default CommentsList;

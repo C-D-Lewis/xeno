@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState } from '../types';
 import { getQueryParam } from '../utils';
 import { LOGIN_URL, getAccessToken, getUsername } from '../services/ApiService';
 import AppPage from '../components/AppPage';
+import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -31,7 +31,7 @@ const LoginButton = () => fabricate('Button', {
  */
 export const LoginPage = () => AppPage()
   .setStyles({ textAlign: 'center', marginTop: '10px' })
-  .onCreate(async (el) => {
+  .onUpdate(async (el) => {
     // Did we get authorized?
     if (codeParam) {
       try {
@@ -55,6 +55,6 @@ export const LoginPage = () => AppPage()
         .setText('Please login with your Reddit account.'),
       LoginButton(),
     ]);
-  });
+  }, ['fabricate:created']);
 
 export default LoginPage;

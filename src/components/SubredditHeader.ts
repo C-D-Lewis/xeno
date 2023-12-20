@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
-import Theme from '../theme';
 import { getContrastColor, styleIconContrastColor } from '../utils';
 import ImageButton from './ImageButton';
 import { fetchSubreddit, getUserSubscriptions, modifySubscription } from '../services/ApiService';
+import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -22,11 +22,11 @@ const SubredditHeader = () => {
     });
 
   const title = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.text,
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       fontSize: '1.2rem',
       fontWeight: 'bold',
-    });
+    }));
 
   const subscribeButton = ImageButton({ src: 'assets/save.png' })
     .setStyles({ width: '22px', height: '22px' })
@@ -49,10 +49,10 @@ const SubredditHeader = () => {
     });
 
   const description = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.text,
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       fontSize: '0.9rem',
-    });
+    }));
 
   /**
    * When created or updated.
@@ -88,20 +88,20 @@ const SubredditHeader = () => {
     el.setStyles({ backgroundColor: finalColor });
     title.setText(displayNamePrefixed);
     title.setStyles({ color });
-    subscribeButton.setStyles({
-      backgroundColor: isSubscribed ? Theme.palette.primary : Theme.palette.transparent,
-    });
+    subscribeButton.setStyles(({ palette }) => ({
+      backgroundColor: isSubscribed ? palette.primary : palette.transparent,
+    }));
     description.setText(publicDescription.trim());
     description.setStyles({ color });
   };
 
   return fabricate('Row')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       padding: '8px 4px 4px 4px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
-      backgroundColor: Theme.palette.widgetPanel,
-    })
+      backgroundColor: palette.widgetPanel,
+    }))
     .setChildren([
       icon,
       fabricate('Column')
@@ -112,8 +112,7 @@ const SubredditHeader = () => {
           description,
         ]),
     ])
-    .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['query', 'subreddit', 'posts']);
+    .onUpdate(updateLayout, ['fabricate:created', 'query', 'subreddit', 'posts']);
 };
 
 export default SubredditHeader;
