@@ -31,7 +31,7 @@ const ListPage = () => {
     .setChildren([
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       fabricate.conditional(({ postsLoading }) => !postsLoading, SubredditHeader),
-      PostList({ onFetchPosts }),
+      PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
     ]);
 };
 

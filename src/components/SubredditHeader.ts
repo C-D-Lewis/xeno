@@ -43,9 +43,9 @@ const SubredditHeader = () => {
 
       // Update state - responsive button state first
       const updated = await fetchSubreddit(accessToken, query);
-      await fabricate.update({ subreddit: updated });
+      fabricate.update({ subreddit: updated });
       const subreddits = await getUserSubscriptions(accessToken);
-      await fabricate.update({ subreddits });
+      fabricate.update({ subreddits });
     });
 
   const description = fabricate('Text')

@@ -77,11 +77,11 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    * @param {FabricateComponent} el - This element.
    * @param {AppState} state - App state.
    */
-  const onClick = async (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
+  const onClick = (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    await fabricate.update({ drawerVisible: false, page: 'ListPage', query: url });
+    fabricate.update({ drawerVisible: false, page: 'ListPage', query: url });
 
     fetchPosts(accessToken, url, sortMode);
   };
@@ -150,8 +150,8 @@ const UserInfoRow = () => {
       height: '22px',
       marginLeft: 'auto',
     })
-    .onClick(async (el, { page }) => {
-      await fabricate.update({ drawerVisible: false });
+    .onClick((el, { page }) => {
+      fabricate.update({ drawerVisible: false });
       navigate(page, 'SettingsPage');
     });
 
@@ -263,8 +263,8 @@ const FeedButton = () => {
         .setStyles({ margin: '0px' }),
       label,
     ])
-    .onClick(async (el, state) => {
-      await fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
+    .onClick((el, state) => {
+      fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
       navigate(state.page, 'FeedPage');
     })
     .onUpdate(updateLayout, ['fabricate:created', 'query', 'page']);
