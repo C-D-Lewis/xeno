@@ -79,7 +79,7 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       }
 
       updateLayout(el, state);
-    }, ['fabricate:created', 'posts', 'page']);
+    }, ['fabricate:created', 'posts']);
 };
 
 export default PostList;
