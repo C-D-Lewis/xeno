@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import AppPage from '../components/AppPage';
-import Theme from '../theme';
 import Card from '../components/Card';
 import RateLimitBar from '../components/RateLimitBar';
+import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -13,12 +13,12 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} Header component.
  */
 const Header = () => fabricate('Text')
-  .setStyles({
+  .setStyles(({ palette }) => ({
     fontSize: '1rem',
     color: Theme.palette.text,
     fontWeight: 'bold',
     margin: '5px auto',
-  });
+  }));
 
 /**
  * LogoutButton component.
@@ -67,27 +67,26 @@ const Option = ({ label, setting, value }: OptionProps) => {
   const onCreateOrUpdate = (el: FabricateComponent<AppState>, state: AppState) => {
     const isSelected = state[setting] === value;
 
-    el.setStyles({
-      backgroundColor: isSelected ? Theme.palette.primary : Theme.palette.widgetPanel,
+    el.setStyles(({ palette }) => ({
+      backgroundColor: isSelected ? palette.primary : palette.widgetPanel,
       fontWeight: isSelected ? 'bold' : 'initial',
-    });
+    }));
   };
 
   return fabricate('Text')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       fontSize: '1rem',
-      color: Theme.palette.text,
+      color: palette.text,
       cursor: 'pointer',
       flex: '1',
       margin: '5px',
       padding: '8px',
       borderRadius: '5px',
       textAlign: 'center',
-    })
+    }))
     .setText(label)
     .onClick(() => fabricate.update(setting, value))
-    .onCreate(onCreateOrUpdate)
-    .onUpdate(onCreateOrUpdate, [setting]);
+    .onUpdate(onCreateOrUpdate, ['fabricate:created', setting]);
 };
 
 /** SettingsWrapper prop types */
@@ -178,14 +177,14 @@ const AccountCard = () => Card()
   .setChildren([
     RateLimitBar(),
     fabricate('Text')
-      .setStyles({
-        color: Theme.palette.text,
+      .setStyles(({ palette }) => ({
+        color: palette.text,
         fontSize: '1rem',
-      })
-      .onCreate((el, { rateLimitInfo }) => {
+      }))
+      .onUpdate((el, { rateLimitInfo }) => {
         const { used, remaining } = rateLimitInfo;
         el.setText(`Used ${used} of ${used + remaining} API requests (per 10 minutes)`);
-      }),
+      }, ['fabricate:created']),
     LogoutButton(),
   ]);
 
@@ -199,7 +198,7 @@ export const SettingsPage = () => AppPage()
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
   })
-  .onCreate((el) => {
+  .onUpdate((el) => {
     el.setChildren([
       fabricate('Fader')
         .setChildren([
@@ -207,6 +206,6 @@ export const SettingsPage = () => AppPage()
           AccountCard(),
         ]),
     ]);
-  });
+  }, ['fabricate:created']);
 
 export default SettingsPage;

@@ -3,7 +3,6 @@ import { AppState } from '../types';
 import AppPage from '../components/AppPage';
 import { fetchFeedPosts } from '../services/ApiService';
 import PostList from '../components/PostList';
-import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -13,13 +12,13 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} ProgressBar component.
  */
 const ProgressBar = () => fabricate('div')
-  .setStyles({
-    backgroundColor: Theme.palette.primary,
+  .setStyles(({ palette }) => ({
+    backgroundColor: palette.primary,
     height: '5px',
     width: '0%',
     marginTop: '10px',
     transition: '0.2s',
-  })
+  }))
   .onUpdate((el, { postsLoadingProgress }) => {
     el.setStyles({ width: `${postsLoadingProgress}%` });
   }, ['postsLoadingProgress']);
@@ -42,10 +41,10 @@ const FeedPage = () => {
   };
 
   const loadingTitle = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.text,
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       margin: '20px auto 10px auto',
-    })
+    }))
     .setText('Building feed...')
     .onUpdate((el, { postsLoadingProgress }) => {
       el.setText(`Building feed... ${postsLoadingProgress}%`);

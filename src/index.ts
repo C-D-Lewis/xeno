@@ -8,6 +8,7 @@ import PostPage from './pages/PostPage';
 import SettingsPage from './pages/SettingsPage';
 import { AppState } from './types';
 import InitPage from './pages/InitPage';
+import Theme from './theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -92,12 +93,11 @@ const main = () => {
       'sortMode',
       'lastReloadTime',
     ],
-    strict: true,
     // logStateUpdates: true,
-    asyncUpdates: true,
+    theme: Theme,
   };
 
-  fabricate.app(App(), initialState, options);
+  fabricate.app(App, initialState, options);
 };
 
 main();

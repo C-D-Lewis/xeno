@@ -5,7 +5,6 @@ config.ts
 dist
 *.bak
 devItems.json
-iframeTransformer.js
 .terraform
 env.js
 env-prod.js

@@ -1,11 +1,11 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
 import {
   navigate,
 } from '../utils';
+import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -43,30 +43,30 @@ const BackButton = () => ImageButton({ src: 'assets/back.png' })
  */
 const AppNavBar = () => {
   const title = fabricate('Text')
-    .setStyles({
-      color: Theme.palette.text,
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       fontWeight: 'bold',
       margin: '0px 10px',
       cursor: 'default',
       transition: '2s',
-    })
+    }))
     .setText('Xeno');
 
   const subtitle = fabricate('Text')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       color: Theme.DrawerItem.unselected,
       margin: '3px 0px 0px 5px',
       cursor: 'default',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'no-wrap',
-    });
+    }));
 
   return fabricate('Row')
-    .setStyles({
+    .setStyles(({ palette, styles }) => ({
       minHeight: `${APP_NAV_BAR_HEIGHT}px`,
       maxHeight: `${APP_NAV_BAR_HEIGHT}px`,
-      backgroundColor: Theme.palette.widgetBackground,
+      backgroundColor: palette.widgetBackground,
       padding: '0px 10px',
       alignItems: 'center',
       position: 'fixed',
@@ -74,9 +74,9 @@ const AppNavBar = () => {
       left: '0',
       right: '0',
       zIndex: '999',
-      boxShadow: Theme.styles.boxShadow,
+      boxShadow: styles.boxShadow,
       transition: '2s',
-    })
+    }))
     .addChildren([
       DrawerToggle().displayWhen(({ page }) => ['ListPage', 'FeedPage'].includes(page)),
       BackButton().displayWhen(
@@ -85,7 +85,7 @@ const AppNavBar = () => {
       title,
       subtitle,
     ])
-    .onUpdate((el, state) => {
+    .onUpdate((el: FabricateComponent<AppState>, state: AppState) => {
       subtitle.setText(getSubtitle(state));
     }, ['query', 'page', 'subreddit']);
 };

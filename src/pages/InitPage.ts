@@ -17,7 +17,7 @@ const AUTH_PAGE = 'LoginPage';
  * @param {AppState} state - App state.
  * @returns {Promise<void>}
  */
-const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
+const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
   const {
     accessToken, refreshToken, query, lastReloadTime, page,
   } = state;
@@ -36,7 +36,7 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
     const subreddits = await getUserSubscriptions(testedToken);
 
     // Proceed to app - commit this update with await before others
-    await fabricate.update({
+    fabricate.update({
       query: query || '/r/all',
       subreddits,
       accessToken: testedToken,
@@ -61,6 +61,9 @@ const onInit = async (el: FabricateComponent<AppState>, state: AppState) => {
  */
 export const InitPage = () => AppPage()
   .setChildren([AppLoader()])
-  .onCreate(onInit);
+  .onUpdate((el, state) => {
+    // Unique case, happens before fabricate:init for some reason
+    setTimeout(() => onUpdate(el, state), 500);
+  }, ['fabricate:created']);
 
 export default InitPage;

@@ -1,5 +1,4 @@
 import { Fabricate } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState, Post } from '../types';
 import {
   PostAgeView, PostAuthorLink, PostTitle, SubredditPill,
@@ -51,7 +50,7 @@ const PostSummary = ({ post }: { post: Post }) => {
     .onClick(() => {
       if (imageSource) window.open(imageSource, '_blank');
     })
-    .onCreate((el) => {
+    .onUpdate((el) => {
       // Use thumbnail by default
       el.setAttributes({ src: thumbnail });
 
@@ -77,7 +76,7 @@ const PostSummary = ({ post }: { post: Post }) => {
       // Detect failure to load
       el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
       el.onEvent('error', () => el.setAttributes({ src: 'assets/gallerypost.png' }));
-    });
+    }, ['fabricate:created']);
 
   const itemContent = fabricate('Column')
     .setChildren([
@@ -98,7 +97,9 @@ const PostSummary = ({ post }: { post: Post }) => {
     ]);
 
   return fabricate('Row')
-    .setStyles({ padding: '8px', backgroundColor: Theme.palette.widgetPanel })
+    .setStyles(({ palette }) => ({
+      padding: '8px', backgroundColor: palette.widgetPanel,
+    }))
     .setChildren([thumbnailEl, itemContent]);
 };
 

@@ -11,6 +11,7 @@ import {
   RedditApiSubreddit,
   SortMode,
   Subreddit,
+  VideoSourceData,
 } from '../types';
 import { sortByDate, sortByTitleCaseInsensitive } from '../utils';
 
@@ -44,7 +45,7 @@ let rpsReset = Date.now();
  */
 const rateLimit = () => {
   rps += 1;
-  if (rps > 15) return false;
+  if (rps > 20) return false;
 
   const now = Date.now();
   if (now - rpsReset > 1000) {
@@ -135,15 +136,16 @@ export const ensureAccessToken = async (
 ) => {
   let token = accessToken;
 
-  try {
-    // Test saved token
-    await apiRequest(token, '/r/pics/about');
-    console.log('Existing token is valid');
-  } catch (e) {
-    // Generate a new one
-    token = await refreshAppToken(refreshToken);
-    console.log('Got new access token');
-  }
+  // TODO: Handle when fetching page/comments fails?
+  // try {
+  //   // Test saved token
+  //   await apiRequest(token, '/r/pics/about');
+  //   console.log('Existing token is valid');
+  // } catch (e) {
+  // Generate a new one
+  token = await refreshAppToken(refreshToken);
+  console.log('Got new access token');
+  // }
 
   return token;
 };
@@ -173,7 +175,7 @@ const getImageSource = (source: string) => {
  * Extract expected video source.
  *
  * @param {string} source - Original source.
- * @returns {string|undefined} Video source, if any
+ * @returns {string} Video source, if any
  */
 const getVideoSource = (source: string) => {
   if (source.includes('i.imgur.com') && source.includes('.gifv')) {
@@ -182,7 +184,8 @@ const getVideoSource = (source: string) => {
 
   if (source.includes('v.redd.it')) return source;
 
-  return undefined;
+  console.log(`getVideoSource failed: ${source}`);
+  return '';
 };
 
 /**
@@ -210,7 +213,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selftext_html,
     ups,
   } = data;
-  // console.log(data);
+  // if (data.title.includes('MAXX')) console.log(data.secure_media);
 
   // Works for imgur and i.reddit
   let source = url_overridden_by_dest || '';
@@ -244,23 +247,39 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
   }
 
   // Other video sources
+  let videoSourceData: VideoSourceData | undefined;
   if (secure_media) {
     // v.reddit.com (TODO: No sound)
     if (secure_media.reddit_video) {
-      source = secure_media.reddit_video.fallback_url;
+      const { dash_url, fallback_url, hls_url } = secure_media.reddit_video;
+
+      // Try DASH else fallback (no audio)
+      if (dash_url) {
+        videoSourceData = {
+          dashUrl: dash_url,
+          hlsUrl: hls_url,
+        };
+      } else {
+        videoSourceData = {
+          fallbackUrl: getVideoSource(fallback_url),
+        };
+      }
     }
 
     // Other?
   }
 
-  // Arbitrary site plugin
   let iframe;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (window.iframeTransformer) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    iframe = window.iframeTransformer(source);
+  if (source.match(/[gsirdfe]{7}.com/)) {
+    const src = source.split('www.').join('').split('/watch/').join('/ifr/');
+    iframe =  `<iframe
+      src="${src}"
+      frameborder="0"
+      scrolling="no"
+      allowfullscreen
+      style="width:100%;"
+      height="465">
+    </iframe>`;
   }
 
   const post: Post = {
@@ -283,7 +302,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     // Media
     thumbnail: thumbnail || backupThumbnail,
     imageSource: getImageSource(source),
-    videoSource: getVideoSource(source),
+    videoSourceData,
     fallbackSource: source,
     imageList,
   };
@@ -379,7 +398,7 @@ export const fetchQueryPosts = async (
  */
 export const fetchPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
   try {
-    await fabricate.update({
+    fabricate.update({
       posts: [],
       query,
       postsLoading: true,
@@ -505,7 +524,7 @@ export const fetchFeedPosts = async (
   sortMode: SortMode,
 ) => {
   try {
-    await fabricate.update({
+    fabricate.update({
       posts: [],
       postsLoading: true,
       postsLoadingProgress: 0,
@@ -542,12 +561,12 @@ export const fetchFeedPosts = async (
           }
 
           const postsLoadingProgress = Math.round((counter * 100) / queries.length);
-          await fabricate.update({ postsLoadingProgress });
+          fabricate.update({ postsLoadingProgress });
         },
       ));
     }
 
-    await fabricate.update({
+    fabricate.update({
       posts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
       postsLoading: false,
       postsLoadingProgress: 100,
@@ -563,9 +582,8 @@ export const fetchFeedPosts = async (
  * @param {string} accessToken - Acces token.
  * @param {string} query - Query or queryInput
  * @param {SortMode} sortMode - sort mode.
- * @returns {Promise<void>}
  */
-export const submitQuery = async (accessToken: string, query: string, sortMode: SortMode) => {
+export const submitQuery = (accessToken: string, query: string, sortMode: SortMode) => {
   // Validate input
   if (!query || query.length < 6) return;
 
@@ -575,7 +593,7 @@ export const submitQuery = async (accessToken: string, query: string, sortMode: 
     finalQuery = `/r/${query}`;
   }
 
-  await fabricate.update({ drawerVisible: false, page: 'ListPage', query: finalQuery });
+  fabricate.update({ drawerVisible: false, page: 'ListPage', query: finalQuery });
   fetchPosts(accessToken, finalQuery, sortMode);
 };
 

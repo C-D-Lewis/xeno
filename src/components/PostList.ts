@@ -72,8 +72,14 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       flexWrap: 'wrap',
       margin: 'auto',
     })
-    .onCreate(onCreate)
-    .onUpdate(updateLayout, ['posts', 'page']);
+    .onUpdate((el, state, keys) => {
+      if (keys.includes('fabricate:created')) {
+        onCreate(el, state);
+        return;
+      }
+
+      updateLayout(el, state);
+    }, ['fabricate:created', 'posts', 'page']);
 };
 
 export default PostList;

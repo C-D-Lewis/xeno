@@ -1,5 +1,4 @@
 import { Fabricate } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState } from '../types';
 
 declare const fabricate: Fabricate<AppState>;
@@ -11,12 +10,12 @@ declare const fabricate: Fabricate<AppState>;
  */
 const Card = () => fabricate('Fader')
   .asFlex('column')
-  .setStyles({
+  .setStyles(({ palette }) => ({
     margin: '10px auto',
-    backgroundColor: Theme.palette.widgetBackground,
+    backgroundColor: palette.widgetBackground,
     borderRadius: '5px',
     overflow: 'hidden',
     height: 'fit-content',
-  });
+  }));
 
 export default Card;

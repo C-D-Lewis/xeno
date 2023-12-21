@@ -4,6 +4,13 @@ export type SortMode = 'top' | 'hot' | 'new';
 /** Pages available */
 export type PageType = 'InitPage' | 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage' | 'FeedPage';
 
+/** Video source data */
+export type VideoSourceData = {
+  dashUrl?: string;
+  hlsUrl?: string;
+  fallbackUrl?: string;
+};
+
 /** Single Reddit post */
 export type Post = {
   id: string;
@@ -17,7 +24,7 @@ export type Post = {
   height?: number;
   imageSource?: string;
   imageList: string[];
-  videoSource?: string;
+  videoSourceData?: VideoSourceData | undefined;
   thumbnail?: string;
   fallbackSource?: string;
   numComments: number;
@@ -110,7 +117,9 @@ export type RedditApiPost = {
   }
   secure_media?: {
     reddit_video?: {
+      dash_url?: string;
       fallback_url: string;
+      hls_url?: string;
     }
   }
   media_metadata?: {

@@ -1,5 +1,4 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme';
 import { AppState, Post } from '../types';
 import ImageButton from './ImageButton';
 import LinkButton from './LinkButton';
@@ -11,6 +10,14 @@ import Card from './Card';
 import { decodeHtml } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
+declare const dashjs: {
+  MediaPlayer: () => ({
+    create: () => ({
+      initialize: (e: HTMLElement, s: string, b: boolean) => void;
+      setAutoPlay: (b: boolean) => void;
+    }),
+  });
+};
 
 // Lazy load images since some tags include a lot of posts
 const imgObserver = new IntersectionObserver((entries) => {
@@ -51,13 +58,19 @@ const PostHeader = ({ post }: { post: Post }) => {
     ]);
 
   return fabricate('Column')
-    .setStyles({ backgroundColor: Theme.palette.widgetPanel, padding: '8px' })
-    .onCreate((el, { newSinceTime }) => {
+    .setStyles(({ palette }) => ({
+      backgroundColor: palette.widgetPanel, padding: '8px',
+    }))
+    .onUpdate((el, { newSinceTime }) => {
       const createdTime = new Date(created).getTime();
       const isNew = createdTime > newSinceTime;
 
-      if (isNew) el.setStyles({ borderTop: `${Theme.palette.primary} 4px solid` });
-    })
+      if (isNew) {
+        el.setStyles(({ palette }) => ({
+          borderTop: `${palette.primary} 4px solid`,
+        }));
+      }
+    }, ['fabricate:created'])
     .setChildren([
       postMetadataRow,
       postTitleRow,
@@ -107,11 +120,11 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: string[] 
     });
 
   const currentIndexText = fabricate('Text')
-    .setStyles({
+    .setStyles(({ palette }) => ({
       margin: '0px 5px',
       fontSize: '0.9rem',
-      color: Theme.palette.text,
-    })
+      color: palette.text,
+    }))
     .setText(`1/${imageList.length}`)
     .onUpdate(
       (el, state) => el.setText(`${state[indexKey] + 1}/${imageList.length}`),
@@ -136,13 +149,13 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: string[] 
  * @returns {FabricateComponent} BodyText component.
  */
 const BodyText = ({ text }: { text: string }) => fabricate('Text')
-  .setStyles({
+  .setStyles(({ palette }) => ({
     fontSize: '0.9rem',
-    color: Theme.palette.text,
+    color: palette.text,
     padding: '8px',
     borderRadius: '5px',
-    backgroundColor: Theme.palette.widgetBackground,
-  })
+    backgroundColor: palette.widgetBackground,
+  }))
   .setHtml(decodeHtml(text) || 'Failed to load text post');
 
 /**
@@ -154,11 +167,11 @@ const BodyText = ({ text }: { text: string }) => fabricate('Text')
  */
 const GalleryPost = ({ post }: { post: Post }) => {
   const {
-    id, iframe, imageSource, videoSource, imageList, selfText, selfTextHtml,
+    id, iframe, imageSource, videoSourceData, imageList, selfText, selfTextHtml,
   } = post;
 
   const indexKey = fabricate.buildKey('imageListIndex', id);
-  const showVideo = !!videoSource;
+  const showVideo = !!videoSourceData;
   const showIframe = !!iframe;
   const showImage = !showVideo && !showIframe && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
@@ -182,19 +195,42 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
         el.setAttributes({ src: imageList[state[indexKey]] });
       }, [indexKey])
-      .onCreate((el) => {
+      .onUpdate((el) => {
         el.dataset.src = imageSource;
         imgObserver.observe(el);
 
         el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
-      })
+      }, ['fabricate:created'])
     : undefined;
 
   const videoEl = showVideo
     ? fabricate('video')
       .setStyles({ width: '100%', objectFit: 'cover' })
-      .setAttributes({ src: videoSource, controls: 'controls' })
+      .setAttributes({ controls: 'controls', muted: false })
     : undefined;
+
+  // Try DASH
+  if (videoEl && videoSourceData) {
+    if (!videoSourceData.dashUrl) {
+      // Fallback
+      videoEl.setAttributes({ src: videoSourceData.fallbackUrl });
+    } else {
+      // DASH
+      // const mpd = document.createElement('source');
+      // mpd.src = videoSourceData.dashUrl;
+      // mpd.type = 'application/dash+xml';
+      // videoEl.appendChild(mpd);
+
+      // const m3u8 = document.createElement('source');
+      // m3u8.src = videoSourceData.hlsUrl!;
+      // m3u8.type = 'application/x-mpegURL';
+      // videoEl.appendChild(m3u8);
+
+      // dashjs
+      const player = dashjs.MediaPlayer().create();
+      player.initialize(videoEl, videoSourceData.dashUrl, false);
+    }
+  }
 
   const iframeEl = showIframe
     ? fabricate('div')
@@ -214,12 +250,12 @@ const GalleryPost = ({ post }: { post: Post }) => {
     .setChildren([
       PostHeader({ post }),
       ...showImage ? [imageEl!] : [],
-      ...videoSource ? [videoEl!] : [],
+      ...videoSourceData ? [videoEl!] : [],
       ...showIframe ? [iframeEl!] : [],
       revealEmbedButton,
       ImageListControls({ id, imageList }),
     ])
-    .onCreate((el, { page }) => {
+    .onUpdate((el, { page }) => {
       if (page !== 'PostPage') return;
 
       // Always wide on PostPage
@@ -227,7 +263,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
       // Show body text only on detail page
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
-    });
+    }, ['fabricate:created']);
 };
 
 export default GalleryPost;

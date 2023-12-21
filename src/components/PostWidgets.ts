@@ -26,8 +26,8 @@ export const PostAuthorLink = ({
   const fullAuthor = `/u/${author}`;
   return fabricate('Text')
     .setText(fullAuthor)
-    .setStyles({
-      color: Theme.palette.textSecondary,
+    .setStyles(({ palette }) => ({
+      color: palette.textSecondary,
       cursor: 'pointer',
       fontSize: '0.9rem',
       margin: '0px 5px',
@@ -35,13 +35,13 @@ export const PostAuthorLink = ({
       borderRadius: isPostAuthor ? '5px' : '0px',
       backgroundColor: isPostAuthor
         ? Theme.PostAuthorLink.isPostAuthor
-        : Theme.palette.transparent,
-    })
-    .onClick(async (el, { accessToken, page, sortMode }) => {
+        : palette.transparent,
+    }))
+    .onClick((el, { accessToken, page, sortMode }) => {
       if (!accessToken) return;
 
       delayedScrollTop();
-      await fabricate.update({ query: fullAuthor });
+      fabricate.update({ query: fullAuthor });
 
       if (page === 'ListPage') {
         fetchPosts(accessToken, fullAuthor, sortMode);
@@ -68,19 +68,19 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     padding: '2px 6px',
     margin: '0px 5px',
   })
-  .onCreate((el, state) => {
+  .onUpdate((el, state) => {
     const backgroundColor = getSubredditColor(state, subreddit);
     el.setStyles({
       backgroundColor,
       color: getContrastColor(backgroundColor),
     });
-  })
-  .onClick(async (el, { accessToken, page, sortMode }) => {
+  }, ['fabricate:created'])
+  .onClick((el, { accessToken, page, sortMode }) => {
     if (!accessToken) return;
 
     const query = `/r/${subreddit}`;
     delayedScrollTop();
-    await fabricate.update({ query });
+    fabricate.update({ query });
 
     // If already on ListPage, update the content. Else, go there.
     if (page === 'ListPage') {
@@ -122,14 +122,14 @@ export const PostAgeView = ({ created }: { created: number }) => {
 export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
   .setText(post.title)
   .setAttributes({ id: `post-${post.id}` })
-  .setStyles({
-    color: Theme.palette.text,
+  .setStyles(({ palette }) => ({
+    color: palette.text,
     cursor: 'pointer',
     margin: '5px',
     fontSize: '1rem',
     fontWeight: 'bold',
-  })
-  .onClick(async (el, { page }) => {
+  }))
+  .onClick((el, { page }) => {
     if (page === 'PostPage') {
       window.open(`https://reddit.com${post.permalink}`, '_blank');
       return;
@@ -137,7 +137,7 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
 
     if (['ListPage', 'FeedPage'].includes(page)) {
       delayedScrollTop();
-      await fabricate.update({ selectedPost: post, drawerVisible: false });
+      fabricate.update({ selectedPost: post, drawerVisible: false });
       navigate(page, 'PostPage');
     }
   });
