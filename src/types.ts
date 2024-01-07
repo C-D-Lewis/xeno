@@ -89,7 +89,7 @@ export type AppState = {
     reset: number;
   },
   postComments: Comment[] | null;
-  visibleIframe: string | null;
+  visibleMediaPostId: string | null;
 };
 
 /** Reddit API post type */

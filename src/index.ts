@@ -80,7 +80,7 @@ const main = () => {
     postsLoadingProgress: 0,
     commentsLoading: false,
     postComments: null,
-    visibleIframe: null,
+    visibleMediaPostId: null,
   };
 
   const options: FabricateOptions = {

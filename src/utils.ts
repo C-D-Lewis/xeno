@@ -16,6 +16,9 @@ const LINK_END = ')';
 /** Scroll interval in millis */
 export const SCROLL_INTERVAL_MS = 200;
 
+/** Max time to look for last list page scroll location */
+export const MAX_JUMP_TO_TIME_MS = 5000;
+
 const colorCache: Record<string, string> = {};
 
 /**

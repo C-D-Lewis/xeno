@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import GalleryPost from './GalleryPost';
 import ListPost from './ListPost';
-import { SCROLL_INTERVAL_MS, scrollToPost } from '../utils';
+import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, scrollToPost } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -55,10 +55,11 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
 
     // If navigating back, scroll to the last viewed post
     const { selectedPost } = state;
+    const start = Date.now();
     if (selectedPost) {
       setTimeout(() => {
         const found = document.getElementById(`post-${selectedPost.id}`) as FabricateComponent<AppState>;
-        if (!found) return;
+        if (!found && (Date.now() - start > MAX_JUMP_TO_TIME_MS)) return;
 
         scrollToPost(found);
       }, SCROLL_INTERVAL_MS);

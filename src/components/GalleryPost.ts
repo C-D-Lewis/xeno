@@ -171,9 +171,9 @@ const GalleryPost = ({ post }: { post: Post }) => {
   } = post;
 
   const indexKey = fabricate.buildKey('imageListIndex', id);
-  const showVideo = !!videoSourceData;
-  const showIframe = !!iframe;
-  const showImage = !showVideo && !showIframe && imageSource;
+  const hasVideo = !!videoSourceData;
+  const hasIframeEmbed = !!iframe;
+  const showImage = !hasVideo && !hasIframeEmbed && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
 
   const imageEl = showImage
@@ -203,55 +203,53 @@ const GalleryPost = ({ post }: { post: Post }) => {
       }, ['fabricate:created'])
     : undefined;
 
-  const videoEl = showVideo
-    ? fabricate('video')
+  /**
+   * Video element component.
+   *
+   * @returns {FabricateComponent} Component.
+   */
+  const VideoElement = () => fabricate.conditional(
+    (state) => state.visibleMediaPostId === id,
+    () => fabricate('video')
       .setStyles({ width: '100%', objectFit: 'cover' })
       .setAttributes({ controls: 'controls', muted: false })
-    : undefined;
+      .onUpdate((el) => {
+        // Try DASH
+        if (videoSourceData) {
+          if (!videoSourceData.dashUrl) {
+            // Fallback
+            el.setAttributes({ src: videoSourceData.fallbackUrl });
+          } else {
+            // Use dashjs
+            const player = dashjs.MediaPlayer().create();
+            player.initialize(el, videoSourceData.dashUrl, false);
+          }
+        }
+      }, ['fabricate:created']),
+  );
 
-  // Try DASH
-  if (videoEl && videoSourceData) {
-    if (!videoSourceData.dashUrl) {
-      // Fallback
-      videoEl.setAttributes({ src: videoSourceData.fallbackUrl });
-    } else {
-      // DASH
-      // const mpd = document.createElement('source');
-      // mpd.src = videoSourceData.dashUrl;
-      // mpd.type = 'application/dash+xml';
-      // videoEl.appendChild(mpd);
-
-      // const m3u8 = document.createElement('source');
-      // m3u8.src = videoSourceData.hlsUrl!;
-      // m3u8.type = 'application/x-mpegURL';
-      // videoEl.appendChild(m3u8);
-
-      // dashjs
-      const player = dashjs.MediaPlayer().create();
-      player.initialize(videoEl, videoSourceData.dashUrl, false);
-    }
-  }
-
-  const iframeEl = showIframe
+  const iframeEl = hasIframeEmbed
     ? fabricate('div')
       .onUpdate(
-        (el, { visibleIframe }) => el.setHtml(visibleIframe === id ? iframe! : ''),
-        ['visibleIframe'],
+        (el, { visibleMediaPostId }) => el.setHtml(visibleMediaPostId === id ? iframe! : ''),
+        ['visibleMediaPostId'],
       )
     : undefined;
 
-  const revealEmbedButton = ImageButton({ src: 'assets/magnify.png' })
+  const revealEmbedButton = ImageButton({ src: 'assets/play-media.png' })
     .setStyles({ margin: '10px auto' })
-    .displayWhen(({ visibleIframe }) => showIframe && visibleIframe !== id)
-    .onClick(() => fabricate.update({ visibleIframe: id }));
+    .displayWhen(
+      ({ visibleMediaPostId }) => (hasIframeEmbed || hasVideo) && visibleMediaPostId !== id,
+    )
+    .onClick(() => fabricate.update({ visibleMediaPostId: id }));
 
   return Card()
     .setStyles({ width: fabricate.isNarrow() ? '95vw' : '29vw' })
     .setChildren([
       PostHeader({ post }),
       ...showImage ? [imageEl!] : [],
-      ...videoSourceData ? [videoEl!] : [],
-      ...showIframe ? [iframeEl!] : [],
+      ...hasVideo ? [VideoElement()] : [],
+      ...hasIframeEmbed ? [iframeEl!] : [],
       revealEmbedButton,
       ImageListControls({ id, imageList }),
     ])
