@@ -26,6 +26,15 @@ Install dependencies:
 npm ci
 ```
 
+Setup `env.js` file using credentials from
+[Reddit apps prefs](https://old.reddit.com/prefs/apps/):
+
+```js
+window.CLIENT_ID = '';
+window.CLIENT_SECRET = '';
+window.REDIRECT_URI = '';
+```
+
 ## Run
 
 Build and run:
@@ -33,5 +42,3 @@ Build and run:
 ```
 npm start
 ```
-
-When launched, enter your Reddit developer application credentials.

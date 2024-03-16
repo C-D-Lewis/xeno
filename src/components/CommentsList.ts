@@ -122,7 +122,7 @@ const CommentsList = () => fabricate('Column')
     margin: '0px auto',
   })
   .onUpdate((el, { selectedPost, postComments, accessToken }, keys) => {
-    if (accessToken && selectedPost && keys.includes('fabricate:created')) {
+    if (accessToken && selectedPost && keys.includes(fabricate.StateKeys.Created)) {
       fetchPostComments(accessToken, selectedPost.id);
       return;
     }
@@ -134,7 +134,7 @@ const CommentsList = () => fabricate('Column')
 
       return PostCommentTree({ comment, postAuthor: selectedPost.author });
     }));
-  }, ['fabricate:created', 'selectedPost', 'postComments'])
+  }, [fabricate.StateKeys.Created, 'selectedPost', 'postComments'])
   .setChildren([AppLoader()]);
 
 export default CommentsList;

@@ -21,30 +21,14 @@ const App = () => fabricate('Column')
   .setChildren([
     AppNavBar(),
     Drawer(),
-    fabricate.conditional(
-      ({ page }) => page === 'InitPage',
-      InitPage,
-    ),
-    fabricate.conditional(
-      ({ page }) => page === 'LoginPage',
-      LoginPage,
-    ),
-    fabricate.conditional(
-      ({ page }) => page === 'ListPage',
-      ListPage,
-    ),
-    fabricate.conditional(
-      ({ page }) => page === 'FeedPage',
-      FeedPage,
-    ),
-    fabricate.conditional(
-      ({ page }) => page === 'PostPage',
-      PostPage,
-    ),
-    fabricate.conditional(
-      ({ page }) => page === 'SettingsPage',
-      SettingsPage,
-    ),
+    fabricate.router({
+      '/': InitPage,
+      '/login': LoginPage,
+      '/list': ListPage,
+      '/feed': FeedPage,
+      '/post': PostPage,
+      '/settings': SettingsPage,
+    }),
   ]);
 
 /**
@@ -63,13 +47,11 @@ const main = () => {
 
     // Other
     newSinceTime: Date.now(),
-    page: 'InitPage',
-    lastPage: null,
     posts: [],
     queryInput: '',
     subreddits: [],
     subreddit: null,
-    drawerVisible: false,
+    drawerOpen: false,
     rateLimitInfo: {
       used: 0,
       remaining: 0,

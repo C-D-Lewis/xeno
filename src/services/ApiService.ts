@@ -593,7 +593,8 @@ export const submitQuery = (accessToken: string, query: string, sortMode: SortMo
     finalQuery = `/r/${query}`;
   }
 
-  fabricate.update({ drawerVisible: false, page: 'ListPage', query: finalQuery });
+  fabricate.update({ drawerOpen: false, query: finalQuery });
+  fabricate.navigate('/list');
   fetchPosts(accessToken, finalQuery, sortMode);
 };
 

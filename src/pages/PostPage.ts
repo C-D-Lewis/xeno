@@ -22,6 +22,6 @@ export const PostPage = () => AppPage()
           CommentsList(),
         ]),
     ]);
-  }, ['fabricate:created']);
+  }, [fabricate.StateKeys.Created]);
 
 export default PostPage;

@@ -2,9 +2,6 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
-import {
-  navigate,
-} from '../utils';
 import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
@@ -18,11 +15,13 @@ export const APP_NAV_BAR_HEIGHT = 45;
  * @param {AppState} state - App state.
  * @returns {string} Subtitle.
  */
-const getSubtitle = ({ page, subreddit }: AppState) => {
-  if (page === 'LoginPage') return 'Login';
-  if (page === 'FeedPage') return 'Feed';
-  if (page === 'SettingsPage') return 'Settings';
-  if (['ListPage', 'PostPage'].includes(page) && subreddit) return subreddit?.displayName;
+const getSubtitle = ({ subreddit }: AppState) => {
+  const route = fabricate.getRouteHistory().pop()!;
+
+  if (route === '/login') return 'Login';
+  if (route === '/feed') return 'Feed';
+  if (route === '/settings') return 'Settings';
+  if (['/list', '/post'].includes(route) && subreddit) return subreddit?.displayName;
 
   return '';
 };
@@ -34,7 +33,7 @@ const getSubtitle = ({ page, subreddit }: AppState) => {
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px' })
-  .onClick((el, { page, lastPage }) => navigate(page, lastPage || 'ListPage'));
+  .onClick(() => fabricate.goBack());
 
 /**
  * AppNavBar component.
@@ -53,14 +52,14 @@ const AppNavBar = () => {
     .setText('Xeno');
 
   const subtitle = fabricate('Text')
-    .setStyles(({ palette }) => ({
+    .setStyles({
       color: Theme.DrawerItem.unselected,
       margin: '3px 0px 0px 5px',
       cursor: 'default',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'no-wrap',
-    }));
+    });
 
   return fabricate('Row')
     .setStyles(({ palette, styles }) => ({
@@ -78,16 +77,16 @@ const AppNavBar = () => {
       transition: '2s',
     }))
     .addChildren([
-      DrawerToggle().displayWhen(({ page }) => ['ListPage', 'FeedPage'].includes(page)),
-      BackButton().displayWhen(
-        ({ page }) => ['SettingsPage', 'PostPage'].includes(page),
-      ),
+      DrawerToggle()
+        .displayWhen((state) => ['/list', '/feed'].includes(state[fabricate.StateKeys.Route])),
+      BackButton()
+        .displayWhen((state) => ['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),
       title,
       subtitle,
     ])
     .onUpdate((el: FabricateComponent<AppState>, state: AppState) => {
       subtitle.setText(getSubtitle(state));
-    }, ['query', 'page', 'subreddit']);
+    }, ['query', fabricate.StateKeys.Route, 'subreddit']);
 };
 
 export default AppNavBar;

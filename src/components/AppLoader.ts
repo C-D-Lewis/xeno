@@ -10,7 +10,7 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} AppLoader component.
  */
 const AppLoader = () => fabricate('Loader', {
-  size: 40,
+  size: 60,
   color: Theme.palette.primary,
   backgroundColor: Theme.palette.background,
 })

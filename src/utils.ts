@@ -1,6 +1,6 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import {
-  AppState, PageType, Post, SortMode, Subreddit,
+  AppState, Post, SortMode, Subreddit,
 } from './types';
 import Theme from './theme';
 
@@ -135,18 +135,6 @@ export const sortByTitleCaseInsensitive = (a: Subreddit, b: Subreddit) => a.url.
  */
 export const getQueryParam = (name: string) => new URLSearchParams(window.location.search)
   .get(name);
-
-/**
- * Navigate to a new page, noting the last page.
- *
- * @param {PageType} lastPage - Last page.
- * @param {PageType} nextPage - Next page.
- * @returns {void}
- */
-export const navigate = (
-  lastPage: PageType,
-  nextPage: PageType,
-) => fabricate.update({ page: nextPage, lastPage });
 
 /**
  * Get color of a subreddit, if known.

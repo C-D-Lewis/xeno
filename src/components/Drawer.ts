@@ -3,7 +3,7 @@ import { fetchPosts, submitQuery } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Subreddit } from '../types';
 import {
-  delayedScrollTop, navigate,
+  delayedScrollTop,
 } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
@@ -81,7 +81,8 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     if (!accessToken) return;
 
     delayedScrollTop();
-    fabricate.update({ drawerVisible: false, page: 'ListPage', query: url });
+    fabricate.update({ drawerOpen: false, query: url });
+    fabricate.navigate('/list');
 
     fetchPosts(accessToken, url, sortMode);
   };
@@ -96,7 +97,7 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
       borderLeft: `solid 6px ${primaryColor}`,
     })
     .onClick(onClick)
-    .onUpdate(updateLayout, ['fabricate:created', 'query']);
+    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query']);
 };
 
 /**
@@ -110,12 +111,12 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
     backgroundColor: '#0000',
     transition: '2s',
   })
-  .onClick((el, { drawerVisible }) => {
-    const newState = !drawerVisible;
+  .onClick((el, { drawerOpen }) => {
+    const newState = !drawerOpen;
 
     delayedScrollTop(100);
 
-    fabricate.update({ drawerVisible: newState });
+    fabricate.update({ drawerOpen: newState });
     el.setStyles({
       backgroundColor: newState && !fabricate.isNarrow()
         ? Theme.DrawerToggle.activated
@@ -142,7 +143,7 @@ const UserInfoRow = () => {
     }))
     .onUpdate((el, { username }) => {
       el.setText(username || '-');
-    }, ['fabricate:init', 'username']);
+    }, [fabricate.StateKeys.Init, 'username']);
 
   const settingsButton = ImageButton({ src: 'assets/settings.png' })
     .setStyles({
@@ -150,9 +151,9 @@ const UserInfoRow = () => {
       height: '22px',
       marginLeft: 'auto',
     })
-    .onClick((el, { page }) => {
-      fabricate.update({ drawerVisible: false });
-      navigate(page, 'SettingsPage');
+    .onClick(() => {
+      fabricate.update({ drawerOpen: false });
+      fabricate.navigate('/settings');
     });
 
   return fabricate('Row')
@@ -249,7 +250,7 @@ const FeedButton = () => {
   const updateLayout = (
     el:FabricateComponent<AppState>,
     state: AppState,
-  ) => setSelectedStyles(el, label, state.page === 'FeedPage');
+  ) => setSelectedStyles(el, label, state[fabricate.StateKeys.Route] === '/feed');
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({
@@ -263,11 +264,11 @@ const FeedButton = () => {
         .setStyles({ margin: '0px' }),
       label,
     ])
-    .onClick((el, state) => {
-      fabricate.update({ drawerVisible: false, query: '', selectedPost: null });
-      navigate(state.page, 'FeedPage');
+    .onClick(() => {
+      fabricate.update({ drawerOpen: false, query: '', selectedPost: null });
+      fabricate.navigate('/feed');
     })
-    .onUpdate(updateLayout, ['fabricate:created', 'query', 'page']);
+    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query', fabricate.StateKeys.Route]);
 };
 
 /**
@@ -296,18 +297,18 @@ export const Drawer = () => {
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
-    .onUpdate((el, { drawerVisible, subreddits }, keys) => {
+    .onUpdate((el, { drawerOpen, subreddits }, keys) => {
       el.setStyles({
-        left: drawerVisible ? '0px' : '-300px',
-        boxShadow: drawerVisible ? '2px 0px 16px black' : 'none',
+        left: drawerOpen ? '0px' : '-300px',
+        boxShadow: drawerOpen ? '2px 0px 16px black' : 'none',
       });
 
-      // Don't recreate items when drawerVisible changes
-      const createItems = ['subreddits', 'fabricate:init'].some((k) => keys.includes(k));
+      // Don't recreate items when drawerOpen changes
+      const createItems = ['subreddits', fabricate.StateKeys.Init].some((k) => keys.includes(k));
       if (subreddits.length && createItems) {
         subredditList.setChildren(
           subreddits.map((subreddit: Subreddit) => DrawerItem({ subreddit })),
         );
       }
-    }, ['fabricate:init', 'drawerVisible', 'subreddits']);
+    }, [fabricate.StateKeys.Init, 'drawerOpen', 'subreddits']);
 };

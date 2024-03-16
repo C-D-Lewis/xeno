@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import Theme from '../theme';
 import { AppState, Post } from '../types';
 import {
-  delayedScrollTop, getContrastColor, getSubredditColor, getTimeAgoStr, navigate,
+  delayedScrollTop, getContrastColor, getSubredditColor, getTimeAgoStr,
 } from '../utils';
 import { fetchPosts } from '../services/ApiService';
 
@@ -37,17 +37,16 @@ export const PostAuthorLink = ({
         ? Theme.PostAuthorLink.isPostAuthor
         : palette.transparent,
     }))
-    .onClick((el, { accessToken, page, sortMode }) => {
+    .onClick((el, state) => {
+      const { accessToken, sortMode } = state;
       if (!accessToken) return;
 
       delayedScrollTop();
       fabricate.update({ query: fullAuthor });
 
-      if (page === 'ListPage') {
-        fetchPosts(accessToken, fullAuthor, sortMode);
-      } else {
-        navigate(page, 'ListPage');
-      }
+      // Go there and load
+      fetchPosts(accessToken, fullAuthor, sortMode);
+      fabricate.navigate('/list');
     });
 };
 
@@ -74,20 +73,18 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
       backgroundColor,
       color: getContrastColor(backgroundColor),
     });
-  }, ['fabricate:created'])
-  .onClick((el, { accessToken, page, sortMode }) => {
+  }, [fabricate.StateKeys.Created])
+  .onClick((el, state) => {
+    const { accessToken, sortMode } = state;
     if (!accessToken) return;
 
     const query = `/r/${subreddit}`;
     delayedScrollTop();
     fabricate.update({ query });
 
-    // If already on ListPage, update the content. Else, go there.
-    if (page === 'ListPage') {
-      fetchPosts(accessToken, query, sortMode);
-    } else {
-      navigate(page, 'ListPage');
-    }
+    // Go there and load
+    fetchPosts(accessToken, query, sortMode);
+    fabricate.navigate('/list');
   });
 
 /**
@@ -129,15 +126,16 @@ export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
     fontSize: '1rem',
     fontWeight: 'bold',
   }))
-  .onClick((el, { page }) => {
-    if (page === 'PostPage') {
+  .onClick((el, state) => {
+    const route = state[fabricate.StateKeys.Route];
+    if (route === '/post') {
       window.open(`https://reddit.com${post.permalink}`, '_blank');
       return;
     }
 
-    if (['ListPage', 'FeedPage'].includes(page)) {
+    if (['/list', '/feed'].includes(route)) {
       delayedScrollTop();
-      fabricate.update({ selectedPost: post, drawerVisible: false });
-      navigate(page, 'PostPage');
+      fabricate.update({ selectedPost: post, drawerOpen: false });
+      fabricate.navigate('/post');
     }
   });

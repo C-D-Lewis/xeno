@@ -42,11 +42,12 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
    */
   const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
     // Reload data if returning from settings page
-    const { accessToken, lastPage } = state;
+    const { accessToken } = state;
     if (!accessToken) return;
 
     // Initial load or settings changed, refresh posts
-    if (lastPage !== 'PostPage') {
+    const [lastRoute] = fabricate.getRouteHistory().slice(-2);
+    if (lastRoute !== '/post') {
       // Fetch new content
       await onFetchPosts(state);
     } else {
@@ -74,13 +75,13 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       margin: 'auto',
     })
     .onUpdate((el, state, keys) => {
-      if (keys.includes('fabricate:created')) {
+      if (keys.includes(fabricate.StateKeys.Created)) {
         onCreate(el, state);
         return;
       }
 
       updateLayout(el, state);
-    }, ['fabricate:created', 'posts']);
+    }, [fabricate.StateKeys.Created, 'posts']);
 };
 
 export default PostList;

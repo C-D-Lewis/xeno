@@ -55,6 +55,6 @@ export const LoginPage = () => AppPage()
         .setText('Please login with your Reddit account.'),
       LoginButton(),
     ]);
-  }, ['fabricate:created']);
+  }, [fabricate.StateKeys.Created]);
 
 export default LoginPage;

@@ -1,9 +1,6 @@
 /** Sort mode type */
 export type SortMode = 'top' | 'hot' | 'new';
 
-/** Pages available */
-export type PageType = 'InitPage' | 'LoginPage' | 'ListPage' | 'PostPage' | 'SettingsPage' | 'FeedPage';
-
 /** Video source data */
 export type VideoSourceData = {
   dashUrl?: string;
@@ -58,6 +55,7 @@ export type Subreddit = {
 
 /** App state type */
 export type AppState = {
+  // Required for key indexing like state['fabricate:route'] (need other solution)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 
@@ -72,14 +70,12 @@ export type AppState = {
   newSinceTime: number;
 
   // Other
-  page: PageType;
-  lastPage: PageType | null;
   selectedPost: Post | null;
   posts: Post[];
   queryInput: string;
   subreddits: Subreddit[] | [];
   subreddit: Subreddit | null;
-  drawerVisible: boolean;
+  drawerOpen: boolean;
   postsLoading: boolean;
   postsLoadingProgress: number;
   commentsLoading: boolean;

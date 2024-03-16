@@ -25,6 +25,6 @@ const RateLimitBar = () => fabricate('div')
     const widthPerc = (used / (used + remaining)) * 100;
 
     el.setStyles({ width: `${100 - widthPerc}%` });
-  }, ['fabricate:created']);
+  }, [fabricate.StateKeys.Created]);
 
 export default RateLimitBar;

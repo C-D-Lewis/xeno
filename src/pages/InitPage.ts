@@ -3,12 +3,8 @@ import { AppState } from '../types';
 import AppLoader from '../components/AppLoader';
 import { ensureAccessToken, getUserSubscriptions } from '../services/ApiService';
 import AppPage from '../components/AppPage';
-import { navigate } from '../utils';
 
 declare const fabricate: Fabricate<AppState>;
-
-/** Page for authorization */
-const AUTH_PAGE = 'LoginPage';
 
 /**
  * When app initialises.
@@ -19,12 +15,12 @@ const AUTH_PAGE = 'LoginPage';
  */
 const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
   const {
-    accessToken, refreshToken, query, lastReloadTime, page,
+    accessToken, refreshToken, query, lastReloadTime,
   } = state;
 
   // Go to Login
   if ((!accessToken || !refreshToken)) {
-    navigate(page, AUTH_PAGE);
+    fabricate.navigate('/login');
     return;
   }
 
@@ -45,12 +41,12 @@ const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
       newSinceTime: lastReloadTime,
       lastReloadTime: Date.now(),
     });
-    navigate(page, 'ListPage');
+    fabricate.navigate('/list');
   } catch (e) {
     console.log(e);
 
     // Stored credentials were invalid
-    fabricate.update({ page: AUTH_PAGE });
+    fabricate.navigate('/login');
   }
 };
 
@@ -64,6 +60,6 @@ export const InitPage = () => AppPage()
   .onUpdate((el, state) => {
     // Unique case, happens before fabricate:init for some reason
     setTimeout(() => onUpdate(el, state), 500);
-  }, ['fabricate:created']);
+  }, [fabricate.StateKeys.Created]);
 
 export default InitPage;

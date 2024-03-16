@@ -76,7 +76,7 @@ const PostSummary = ({ post }: { post: Post }) => {
       // Detect failure to load
       el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
       el.onEvent('error', () => el.setAttributes({ src: 'assets/gallerypost.png' }));
-    }, ['fabricate:created']);
+    }, [fabricate.StateKeys.Created]);
 
   const itemContent = fabricate('Column')
     .setChildren([

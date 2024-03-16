@@ -15,7 +15,7 @@ declare const fabricate: Fabricate<AppState>;
 const Header = () => fabricate('Text')
   .setStyles(({ palette }) => ({
     fontSize: '1rem',
-    color: Theme.palette.text,
+    color: palette.text,
     fontWeight: 'bold',
     margin: '5px auto',
   }));
@@ -86,7 +86,7 @@ const Option = ({ label, setting, value }: OptionProps) => {
     }))
     .setText(label)
     .onClick(() => fabricate.update(setting, value))
-    .onUpdate(onCreateOrUpdate, ['fabricate:created', setting]);
+    .onUpdate(onCreateOrUpdate, [fabricate.StateKeys.Created, setting]);
 };
 
 /** SettingsWrapper prop types */
@@ -184,7 +184,7 @@ const AccountCard = () => Card()
       .onUpdate((el, { rateLimitInfo }) => {
         const { used, remaining } = rateLimitInfo;
         el.setText(`Used ${used} of ${used + remaining} API requests (per 10 minutes)`);
-      }, ['fabricate:created']),
+      }, [fabricate.StateKeys.Created]),
     LogoutButton(),
   ]);
 
@@ -206,6 +206,6 @@ export const SettingsPage = () => AppPage()
           AccountCard(),
         ]),
     ]);
-  }, ['fabricate:created']);
+  }, [fabricate.StateKeys.Created]);
 
 export default SettingsPage;
