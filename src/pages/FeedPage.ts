@@ -54,7 +54,7 @@ const FeedPage = () => {
     .setChildren([
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
       ProgressBar().displayWhen(({ postsLoading }) => postsLoading),
-      PostList({ onFetchPosts }),
+      PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
     ]);
 };
 

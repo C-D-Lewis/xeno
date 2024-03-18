@@ -47,6 +47,7 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
 
     // Initial load or settings changed, refresh posts
     const [lastRoute] = fabricate.getRouteHistory().slice(-2);
+
     if (lastRoute !== '/post') {
       // Fetch new content
       await onFetchPosts(state);
