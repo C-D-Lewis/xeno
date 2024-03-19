@@ -67,13 +67,13 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     padding: '2px 6px',
     margin: '0px 5px',
   })
-  .onUpdate((el, state) => {
+  .onCreate((el, state) => {
     const backgroundColor = getSubredditColor(state, subreddit);
     el.setStyles({
       backgroundColor,
       color: getContrastColor(backgroundColor),
     });
-  }, [fabricate.StateKeys.Created])
+  })
   .onClick((el, state) => {
     const { accessToken, sortMode } = state;
     if (!accessToken) return;

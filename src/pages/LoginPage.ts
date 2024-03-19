@@ -31,7 +31,7 @@ const LoginButton = () => fabricate('Button', {
  */
 export const LoginPage = () => AppPage()
   .setStyles({ textAlign: 'center', marginTop: '10px' })
-  .onUpdate(async (el) => {
+  .onCreate(async (el) => {
     // Did we get authorized?
     if (codeParam) {
       try {
@@ -55,6 +55,6 @@ export const LoginPage = () => AppPage()
         .setText('Please login with your Reddit account.'),
       LoginButton(),
     ]);
-  }, [fabricate.StateKeys.Created]);
+  });
 
 export default LoginPage;

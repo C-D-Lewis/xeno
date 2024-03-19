@@ -181,10 +181,10 @@ const AccountCard = () => Card()
         color: palette.text,
         fontSize: '1rem',
       }))
-      .onUpdate((el, { rateLimitInfo }) => {
+      .onCreate((el, { rateLimitInfo }) => {
         const { used, remaining } = rateLimitInfo;
         el.setText(`Used ${used} of ${used + remaining} API requests (per 10 minutes)`);
-      }, [fabricate.StateKeys.Created]),
+      }),
     LogoutButton(),
   ]);
 
@@ -198,7 +198,7 @@ export const SettingsPage = () => AppPage()
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
   })
-  .onUpdate((el) => {
+  .onCreate((el) => {
     el.setChildren([
       fabricate('Fader')
         .setChildren([
@@ -206,6 +206,6 @@ export const SettingsPage = () => AppPage()
           AccountCard(),
         ]),
     ]);
-  }, [fabricate.StateKeys.Created]);
+  });
 
 export default SettingsPage;

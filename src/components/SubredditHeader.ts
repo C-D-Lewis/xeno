@@ -19,7 +19,8 @@ const SubredditHeader = () => {
       width: '48px',
       margin: '8px',
       borderRadius: '50px',
-    });
+    })
+    .onEvent('error', (el) => el.setAttribute('src', 'assets/icon.png'));
 
   const title = fabricate('Text')
     .setStyles(({ palette }) => ({
@@ -97,7 +98,7 @@ const SubredditHeader = () => {
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({
-      padding: '8px 4px 4px 4px',
+      padding: '22px 4px 4px 4px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
       backgroundColor: palette.widgetPanel,

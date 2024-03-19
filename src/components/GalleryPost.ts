@@ -61,7 +61,7 @@ const PostHeader = ({ post }: { post: Post }) => {
     .setStyles(({ palette }) => ({
       backgroundColor: palette.widgetPanel, padding: '8px',
     }))
-    .onUpdate((el, { newSinceTime }) => {
+    .onCreate((el, { newSinceTime }) => {
       const createdTime = new Date(created).getTime();
       const isNew = createdTime > newSinceTime;
 
@@ -70,7 +70,7 @@ const PostHeader = ({ post }: { post: Post }) => {
           borderTop: `${palette.primary} 4px solid`,
         }));
       }
-    }, [fabricate.StateKeys.Created])
+    })
     .setChildren([
       postMetadataRow,
       postTitleRow,
@@ -195,12 +195,12 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
         el.setAttributes({ src: imageList[state[indexKey]] });
       }, [indexKey])
-      .onUpdate((el) => {
+      .onCreate((el) => {
         el.dataset.src = imageSource;
         imgObserver.observe(el);
 
         el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
-      }, [fabricate.StateKeys.Created])
+      })
     : undefined;
 
   /**
@@ -213,7 +213,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     () => fabricate('video')
       .setStyles({ width: '100%', objectFit: 'cover' })
       .setAttributes({ controls: 'controls', muted: false })
-      .onUpdate((el) => {
+      .onCreate((el) => {
         // Try DASH
         if (videoSourceData) {
           if (!videoSourceData.dashUrl) {
@@ -225,7 +225,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
             player.initialize(el, videoSourceData.dashUrl, false);
           }
         }
-      }, [fabricate.StateKeys.Created]),
+      }),
   );
 
   const iframeEl = hasIframeEmbed
@@ -253,7 +253,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       revealEmbedButton,
       ImageListControls({ id, imageList }),
     ])
-    .onUpdate((el, state) => {
+    .onCreate((el, state) => {
       if (state[fabricate.StateKeys.Route] !== '/post') return;
 
       // Always wide on PostPage
@@ -261,7 +261,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
       // Show body text only on detail page
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
-    }, [fabricate.StateKeys.Created]);
+    });
 };
 
 export default GalleryPost;

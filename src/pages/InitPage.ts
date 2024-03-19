@@ -57,9 +57,9 @@ const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
  */
 export const InitPage = () => AppPage()
   .setChildren([AppLoader()])
-  .onUpdate((el, state) => {
+  .onCreate((el, state) => {
     // Unique case, happens before fabricate:init for some reason
     setTimeout(() => onUpdate(el, state), 500);
-  }, [fabricate.StateKeys.Created]);
+  });
 
 export default InitPage;

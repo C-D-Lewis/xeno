@@ -140,6 +140,7 @@ const UserInfoRow = () => {
       marginLeft: '8px',
       fontSize: '1rem',
       cursor: 'default',
+      fontWeight: 'bold',
     }))
     .onUpdate((el, { username }) => {
       el.setText(username || '-');

@@ -21,7 +21,7 @@ const getSubtitle = ({ subreddit }: AppState) => {
   if (route === '/login') return 'Login';
   if (route === '/feed') return 'Feed';
   if (route === '/settings') return 'Settings';
-  if (['/list', '/post'].includes(route) && subreddit) return subreddit?.displayName;
+  if (['/list', '/post'].includes(route) && subreddit) return subreddit?.displayNamePrefixed;
 
   return '';
 };

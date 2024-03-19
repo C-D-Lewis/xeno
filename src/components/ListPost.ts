@@ -50,7 +50,7 @@ const PostSummary = ({ post }: { post: Post }) => {
     .onClick(() => {
       if (imageSource) window.open(imageSource, '_blank');
     })
-    .onUpdate((el) => {
+    .onCreate((el) => {
       // Use thumbnail by default
       el.setAttributes({ src: thumbnail });
 
@@ -76,7 +76,7 @@ const PostSummary = ({ post }: { post: Post }) => {
       // Detect failure to load
       el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
       el.onEvent('error', () => el.setAttributes({ src: 'assets/gallerypost.png' }));
-    }, [fabricate.StateKeys.Created]);
+    });
 
   const itemContent = fabricate('Column')
     .setChildren([
