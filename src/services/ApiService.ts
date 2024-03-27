@@ -23,7 +23,7 @@ declare const REDIRECT_URI: string;
 /** Requested scopes */
 const SCOPE_STRING = 'identity read history mysubreddits subscribe';
 /** Group of feed queries to fetch at once */
-const GROUP_SIZE = 10;
+const GROUP_SIZE = 50;
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
 /** Max feed items */
@@ -45,7 +45,7 @@ let rpsReset = Date.now();
  */
 const rateLimit = () => {
   rps += 1;
-  if (rps > 20) return false;
+  if (rps > GROUP_SIZE * 2) return false;
 
   const now = Date.now();
   if (now - rpsReset > 1000) {
