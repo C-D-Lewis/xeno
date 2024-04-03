@@ -41,7 +41,7 @@ const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
       newSinceTime: lastReloadTime,
       lastReloadTime: Date.now(),
     });
-    fabricate.navigate('/list');
+    fabricate.navigate('/feed');
   } catch (e) {
     console.log(e);
 

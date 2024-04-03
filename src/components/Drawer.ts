@@ -159,7 +159,7 @@ const UserInfoRow = () => {
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({
-      padding: '8px',
+      padding: '12px 8px 8px 8px',
       alignItems: 'center',
       backgroundColor: palette.widgetPanel,
     }))
@@ -213,7 +213,7 @@ const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
  */
 const SearchRow = () => fabricate('Row')
   .setStyles(({ palette }) => ({
-    padding: '0px 4px 4px 4px',
+    padding: '0px 4px 8px 4px',
     backgroundColor: palette.widgetPanel,
     alignItems: 'center',
   }))
@@ -235,10 +235,7 @@ const SearchRow = () => fabricate('Row')
  */
 const FeedButton = () => {
   const label = fabricate('Text')
-    .setStyles({
-      color: Theme.DrawerItem.unselected,
-      fontSize: '1rem',
-    })
+    .setStyles({ color: Theme.DrawerItem.unselected, fontSize: '1rem' })
     .setText('Feed');
 
   /**

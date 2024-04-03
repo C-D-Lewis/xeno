@@ -29,10 +29,10 @@ const FeedPage = () => {
       color: palette.text,
       margin: '20px auto 5px auto',
     }))
-    .setText('Building feed...')
-    .onUpdate((el, { postsLoadingProgress }) => {
-      el.setText(`Building feed... ${postsLoadingProgress}%`);
-    }, ['postsLoadingProgress']);
+    .setText('Building feed...');
+    // .onUpdate((el, { postsLoadingProgress }) => {
+    //   el.setText(`Building feed... ${postsLoadingProgress}%`);
+    // }, ['postsLoadingProgress']);
 
   return AppPage()
     .setChildren([

@@ -22,8 +22,8 @@ declare const REDIRECT_URI: string;
 
 /** Requested scopes */
 const SCOPE_STRING = 'identity read history mysubreddits subscribe';
-/** Group of feed queries to fetch at once */
-const GROUP_SIZE = 50;
+/** Group of feed queries to fetch at once (600 per 10 mins) */
+const GROUP_SIZE = 100;
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
 /** Max feed items */
