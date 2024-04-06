@@ -54,7 +54,7 @@ const AppNavBar = () => {
   const subtitle = fabricate('Text')
     .setStyles({
       color: Theme.DrawerItem.unselected,
-      margin: '3px 0px 0px 5px',
+      margin: '0px 0px 0px 5px',
       cursor: 'default',
       textOverflow: 'ellipsis',
       overflow: 'hidden',

@@ -194,6 +194,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       .onUpdate((el, state) => {
         if (!imageList.length) return;
 
+        el.setStyles({ opacity: '0.4' });
         el.setAttributes({ src: imageList[state[indexKey]].url });
       }, [indexKey])
       .onCreate((el) => {

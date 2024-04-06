@@ -12,6 +12,9 @@ import Input from './Input';
 
 declare const fabricate: Fabricate<AppState>;
 
+/** Fixed row item height */
+const ROW_HEIGHT = 30;
+
 /**
  * Determine if subreddits are loaded.
  *
@@ -114,8 +117,6 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
   .onClick((el, { drawerOpen }) => {
     const newState = !drawerOpen;
 
-    delayedScrollTop(100);
-
     fabricate.update({ drawerOpen: newState });
     el.setStyles({
       backgroundColor: newState && !fabricate.isNarrow()
@@ -123,10 +124,6 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
         : '#0000',
     });
   });
-  // .onUpdate(
-  //   (el, state) => styleIconContrastColor(el, getCurrentSubredditColor(state)),
-  //   ['query'],
-  // );
 
 /**
  * UserInfo component.
@@ -162,6 +159,7 @@ const UserInfoRow = () => {
       padding: '12px 8px 8px 8px',
       alignItems: 'center',
       backgroundColor: palette.widgetPanel,
+      maxHeight: `${ROW_HEIGHT}px`,
     }))
     .setChildren([
       fabricate('Image', { src: 'assets/user.png' })
@@ -216,6 +214,7 @@ const SearchRow = () => fabricate('Row')
     padding: '0px 4px 8px 4px',
     backgroundColor: palette.widgetPanel,
     alignItems: 'center',
+    maxHeight: `${ROW_HEIGHT}px`,
   }))
   .setChildren([
     SearchInput(),
@@ -275,38 +274,41 @@ const FeedButton = () => {
  * @returns {FabricateComponent} Drawer component.
  */
 export const Drawer = () => {
-  const subredditList = fabricate('Column').setStyles({ margin: '0px 0px 10px 0px' });
+  const subredditList = fabricate('Column')
+    .setStyles({ overflowY: 'scroll' });
 
   return fabricate('Column')
     .setStyles({
-      position: 'absolute',
+      position: 'fixed',
       top: `${APP_NAV_BAR_HEIGHT}px`,
       left: '-300px',
       width: '300px',
       transition: '0.3s',
-      height: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
+      height: `calc(100vh - ${2 * ROW_HEIGHT}px + ${ROW_HEIGHT / 2}px)`,
       backgroundColor: '#222',
       zIndex: '1',
     })
     .setChildren([
       UserInfoRow(),
       SearchRow(),
-      FeedButton().displayWhen(subredditsLoaded),
       subredditList.displayWhen(subredditsLoaded),
       AppLoader().displayWhen((state) => !subredditsLoaded(state)),
     ])
     .onUpdate((el, { drawerOpen, subreddits }, keys) => {
-      el.setStyles({
-        left: drawerOpen ? '0px' : '-300px',
-        boxShadow: drawerOpen ? '2px 0px 16px black' : 'none',
-      });
+      if (keys.includes('drawerOpen')) {
+        el.setStyles({
+          left: drawerOpen ? '0px' : '-300px',
+          boxShadow: drawerOpen ? '2px 0px 16px black' : 'none',
+        });
+      }
 
       // Don't recreate items when drawerOpen changes
       const createItems = ['subreddits', fabricate.StateKeys.Init].some((k) => keys.includes(k));
       if (subreddits.length && createItems) {
-        subredditList.setChildren(
-          subreddits.map((subreddit: Subreddit) => DrawerItem({ subreddit })),
-        );
+        subredditList.setChildren([
+          FeedButton().displayWhen(subredditsLoaded),
+          ...subreddits.map((subreddit: Subreddit) => DrawerItem({ subreddit })),
+        ]);
       }
     }, [fabricate.StateKeys.Init, 'drawerOpen', 'subreddits']);
 };
