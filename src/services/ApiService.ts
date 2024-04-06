@@ -215,7 +215,6 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     ups,
     gallery_data,
   } = data;
-  // if (data.title.includes('MAXX')) console.log(data.secure_media);
 
   // Works for imgur and i.reddit
   let source = url_overridden_by_dest || '';
@@ -266,7 +265,6 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
   // Other video sources
   let videoSourceData: VideoSourceData | undefined;
   if (secure_media) {
-    // v.reddit.com (TODO: No sound)
     if (secure_media.reddit_video) {
       const { dash_url, fallback_url, hls_url } = secure_media.reddit_video;
 
