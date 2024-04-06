@@ -3,12 +3,12 @@
   "short_name": "Xeno",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#111",
+  "background_color": "#333",
   "description": "A minimal Reddit web client",
   "icons": [
     {
-      "src": "assets/icon.png",
-      "sizes": "86x86",
+      "src": "assets/icons/app_icon_256.png",
+      "sizes": "256x256",
       "type": "image/png"
     }
   ]
