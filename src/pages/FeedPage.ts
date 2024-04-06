@@ -39,7 +39,11 @@ const FeedPage = () => {
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
-    ]);
+    ])
+    .onCreate(() => {
+      // Loading the feed resets the last subreddit selection
+      fabricate.update({ query: '/r/all' });
+    });
 };
 
 export default FeedPage;

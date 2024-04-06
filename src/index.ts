@@ -44,9 +44,10 @@ const main = () => {
     displayMode: 'gallery',
     sortMode: 'hot',
     lastReloadTime: Date.now(),
+    newSinceTime: Date.now(),
+    landingPage: '/list',
 
     // Other
-    newSinceTime: Date.now(),
     posts: [],
     queryInput: '',
     subreddits: [],
@@ -74,6 +75,8 @@ const main = () => {
       'displayMode',
       'sortMode',
       'lastReloadTime',
+      'newSinceTime',
+      'landingPage',
     ],
     // logStateUpdates: true,
     theme: Theme,

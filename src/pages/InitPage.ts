@@ -15,7 +15,7 @@ declare const fabricate: Fabricate<AppState>;
  */
 const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
   const {
-    accessToken, refreshToken, lastReloadTime,
+    accessToken, refreshToken, lastReloadTime, landingPage, query,
   } = state;
 
   // Go to Login
@@ -33,7 +33,7 @@ const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
 
     // Proceed to app - commit this update with await before others
     fabricate.update({
-      query: '/r/all',
+      query: query || '/r/all',
       subreddits,
       accessToken: testedToken,
 
@@ -41,7 +41,7 @@ const onUpdate = async (el: FabricateComponent<AppState>, state: AppState) => {
       newSinceTime: lastReloadTime,
       lastReloadTime: Date.now(),
     });
-    fabricate.navigate('/feed');
+    fabricate.navigate(landingPage || '/list');
   } catch (e) {
     console.log(e);
 

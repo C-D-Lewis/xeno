@@ -74,6 +74,7 @@ export type AppState = {
   sortMode: SortMode;
   lastReloadTime: number;
   newSinceTime: number;
+  landingPage: '/feed' | '/list';
 
   // Other
   selectedPost: Post | null;
