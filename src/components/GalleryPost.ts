@@ -1,5 +1,5 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, Post } from '../types';
+import { AppState, GalleryImageList, Post } from '../types';
 import ImageButton from './ImageButton';
 import LinkButton from './LinkButton';
 import PostMetrics from './PostMetrics';
@@ -83,11 +83,12 @@ const PostHeader = ({ post }: { post: Post }) => {
  *
  * @param {object} props - Component props.
  * @param {string} props.id - Post ID.
- * @param {string[]} props.imageList - Image URL list.
+ * @param {GalleryImageList[]} props.imageList - Image URL list.
  * @returns {FabricateComponent} ImageListControls component.
  */
-const ImageListControls = ({ id, imageList }: { id: string, imageList: string[] }) => {
-  if (imageList.length < 2) return fabricate('div');
+const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryImageList[] }) => {
+  const numImages = imageList.length;
+  if (numImages < 2) return fabricate('div');
 
   const indexKey = fabricate.buildKey('imageListIndex', id);
   fabricate.update(indexKey, 0);
@@ -107,15 +108,15 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: string[] 
     .setStyles({ margin: '0px' })
     .onUpdate((el, state) => {
       el.setStyles({
-        filter: `brightness(${state[indexKey] === imageList.length - 1 ? '0.5' : '1'})`,
+        filter: `brightness(${state[indexKey] === numImages - 1 ? '0.5' : '1'})`,
       });
     }, [indexKey])
     .onClick((el, state) => {
-      if (state[indexKey] === imageList.length - 1) return;
+      if (state[indexKey] === numImages - 1) return;
 
       fabricate.update(
         indexKey,
-        Math.min(state[indexKey] + 1, imageList.length),
+        Math.min(state[indexKey] + 1, numImages),
       );
     });
 
@@ -125,15 +126,15 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: string[] 
       fontSize: '0.9rem',
       color: palette.text,
     }))
-    .setText(`1/${imageList.length}`)
+    .setText(`1/${numImages}`)
     .onUpdate(
-      (el, state) => el.setText(`${state[indexKey] + 1}/${imageList.length}`),
+      (el, state) => el.setText(`${state[indexKey] + 1}/${numImages}`),
       [indexKey],
     );
 
   return fabricate('Row')
     .setStyles({ alignItems: 'center', margin: '5px auto' })
-    .displayWhen(() => !!imageList.length)
+    .displayWhen(() => !!numImages)
     .setChildren([
       leftArrowImg,
       currentIndexText,
@@ -193,10 +194,10 @@ const GalleryPost = ({ post }: { post: Post }) => {
       .onUpdate((el, state) => {
         if (!imageList.length) return;
 
-        el.setAttributes({ src: imageList[state[indexKey]] });
+        el.setAttributes({ src: imageList[state[indexKey]].url });
       }, [indexKey])
       .onCreate((el) => {
-        el.dataset.src = imageSource;
+        el.dataset.src = imageList.length > 1 ? imageList[0].url : imageSource;
         imgObserver.observe(el);
 
         el.addEventListener('load', () => el.setStyles({ opacity: '1' }));

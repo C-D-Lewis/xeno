@@ -4,6 +4,7 @@ import { Fabricate } from 'fabricate.js';
 import {
   AppState,
   Comment,
+  GalleryImageList,
   Post,
   RedditApiComment,
   RedditApiCommentTree,
@@ -212,6 +213,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selftext,
     selftext_html,
     ups,
+    gallery_data,
   } = data;
   // if (data.title.includes('MAXX')) console.log(data.secure_media);
 
@@ -220,7 +222,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
   let backupThumbnail;
   let width;
   let height;
-  const imageList: string[] = [];
+  const imageList: GalleryImageList[] = [];
   try {
     ({ width, height } = preview && preview.images[0].source);
 
@@ -231,16 +233,31 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
 
   // reddit.com/gallery
   if (media_metadata) {
-    const ids = Object.keys(media_metadata);
+    const mediaIds = Object.keys(media_metadata);
 
     try {
       // First image as source fallback
-      source = media_metadata[ids[0]].s.u.split('&amp;').join('&');
+      source = media_metadata[mediaIds[0]].s.u.split('&amp;').join('&');
 
-      // Full list for paging (FIXME: How to know id order?)
-      ids.forEach((p) => {
-        imageList.push(media_metadata[p].s.u.split('&amp;').join('&'));
+      // Full list for paging
+      mediaIds.forEach((p) => {
+        imageList.push({
+          mediaId: p,
+          url: media_metadata[p].s.u.split('&amp;').join('&'),
+        });
       });
+
+      // Sort by ids
+      if (gallery_data) {
+        imageList.sort(({ mediaId: a }, { mediaId: b }) => {
+          // Have faith media_metadata and gallery_data always align
+          const foundA = gallery_data.items.find((p) => p.media_id === a);
+          const foundB = gallery_data.items.find((p) => p.media_id === b);
+
+          if (foundA && foundB) return foundA.id < foundB.id ? -1 : 1;
+          return 0;
+        });
+      }
     } catch (e) {
       console.warn(`source get from media_metadata failed: ${JSON.stringify(media_metadata)}`);
     }

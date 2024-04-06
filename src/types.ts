@@ -8,6 +8,12 @@ export type VideoSourceData = {
   fallbackUrl?: string;
 };
 
+/** Gallery image list type */
+export type GalleryImageList = {
+  mediaId: string;
+  url: string;
+}
+
 /** Single Reddit post */
 export type Post = {
   id: string;
@@ -20,7 +26,7 @@ export type Post = {
   width?: number;
   height?: number;
   imageSource?: string;
-  imageList: string[];
+  imageList: GalleryImageList[];
   videoSourceData?: VideoSourceData | undefined;
   thumbnail?: string;
   fallbackSource?: string;
@@ -124,6 +130,12 @@ export type RedditApiPost = {
         u: string;
       }
     }
+  },
+  gallery_data?: {
+    items: {
+      media_id: string;
+      id: number;
+    }[];
   }
 };
 
