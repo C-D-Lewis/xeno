@@ -2,7 +2,7 @@
 
 Lightweight Reddit browser.
 
-<img src="assets/screenshots/drawer.png" style="max-width: 300px;">
+<img src="assets/screenshots/drawer.png" width="300px;">
 
 ## Features
 
