@@ -1,8 +1,6 @@
 # xeno
 
-Lightweight Reddit browser.
-
-<img src="assets/screenshots/drawer.png" width="300px;">
+Lightweight Reddit browser PWA using [fabricate.js](https://github.com/c-d-lewis/fabricate.js).
 
 ## Features
 
