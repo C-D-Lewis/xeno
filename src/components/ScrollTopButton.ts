@@ -1,55 +1,60 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
+import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 
 declare const fabricate: Fabricate<AppState>;
 
 /**
  * ScrollTopButton component.
  *
- * @param {object} props - Component props.
- * @param {FabricateComponent} props.root - Root element to scroll.
  * @returns {FabricateComponent} ScrollTopButton component.
  */
-const ScrollTopButton = ({ root }: { root: FabricateComponent<AppState> }) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore Timeout not importable
-  let scrollHandle: Timeout;
+const ScrollTopButton = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let scrollHandle: any;
+  let lastScrollY = window.scrollY;
 
-  const div = fabricate('Column')
+  const root = fabricate('Row')
     .setStyles(({ palette }) => ({
       justifyContent: 'center',
       textAlign: 'center',
-      margin: '8px',
       alignItems: 'center',
-      color: palette.text,
       backgroundColor: palette.primary,
       transition: '0.5s',
       position: 'fixed',
       top: '-100px',
       left: fabricate.isNarrow() ? '33%' : '45%',
       borderRadius: '5px',
-      width: '120px',
+      minWidth: '120px',
       zIndex: '9999',
-      padding: '8px',
+      padding: '4px 8px',
       cursor: 'pointer',
     }))
-    .setText('Back to top')
-    .onClick(() => root.scrollTo(0, 0));
+    .setChildren([
+      fabricate('Image', { src: 'assets/arrow-up.png' })
+        .setStyles({ width: '24px', height: '24px' }),
+      fabricate('Text')
+        .setStyles(({ palette }) => ({ color: palette.text }))
+        .setText('Back to top'),
+    ])
+    .onClick(() => window.scrollTo(0, 0));
 
   // Can't use onEvent here
-  root.addEventListener('scroll', () => {
-    if (scrollHandle) clearTimeout(scrollHandle);
-    div.setStyles({ top: root.scrollTop === 0 ? '-100px' : '25px' });
+  window.addEventListener('scroll', () => {
+    const { scrollY: scrollYNow } = window;
+    const isScrollingUp = scrollYNow < lastScrollY;
+    lastScrollY = scrollYNow;
+    if (!isScrollingUp) return;
 
-    // TODO: Only in up direction?
+    root.setStyles({ top: scrollYNow === 0 ? '-100px' : `${APP_NAV_BAR_HEIGHT / 2}px` });
 
+    clearTimeout(scrollHandle);
     scrollHandle = setTimeout(() => {
-      scrollHandle = null;
-      div.setStyles({ top: '-100px' });
-    }, 3000);
+      root.setStyles({ top: '-100px' });
+    }, 1500);
   });
 
-  return div;
+  return root;
 };
 
 export default ScrollTopButton;

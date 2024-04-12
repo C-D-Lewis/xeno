@@ -54,7 +54,9 @@ const PostHeader = ({ post }: { post: Post }) => {
     .setStyles({ alignItems: 'center' })
     .setChildren([
       PostTitle({ post }),
-      LinkButton({ href: fallbackSource }),
+      LinkButton({ href: fallbackSource }).displayWhen(
+        (state) => state[fabricate.StateKeys.Route] === '/post',
+      ),
     ]);
 
   return fabricate('Column')
@@ -238,12 +240,24 @@ const GalleryPost = ({ post }: { post: Post }) => {
       )
     : undefined;
 
-  const revealEmbedButton = ImageButton({ src: 'assets/play-media.png' })
-    .setStyles({ margin: '10px auto' })
+  const revealEmbedButton = fabricate('Row')
+    .setStyles({
+      alignItems: 'center',
+      textAlign: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+    })
     .displayWhen(
       ({ visibleMediaPostId }) => (hasIframeEmbed || hasVideo) && visibleMediaPostId !== id,
     )
-    .onClick(() => fabricate.update({ visibleMediaPostId: id }));
+    .onClick(() => fabricate.update({ visibleMediaPostId: id }))
+    .setChildren([
+      ImageButton({ src: 'assets/play-media.png' })
+        .setStyles({ margin: '12px 0px' }),
+      fabricate('Text')
+        .setStyles(({ palette }) => ({ color: palette.text }))
+        .setText('Show media'),
+    ]);
 
   return Card()
     .setStyles({ width: fabricate.isNarrow() ? '95vw' : '29vw' })
@@ -261,7 +275,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       // Always wide on PostPage
       el.setStyles({ width: fabricate.isNarrow() ? '95vw' : '48vw' });
 
-      // Show body text only on detail page
+      // Show body text only on PostPage
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
     });
 };

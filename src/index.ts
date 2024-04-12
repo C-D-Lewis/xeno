@@ -9,6 +9,7 @@ import SettingsPage from './pages/SettingsPage';
 import { AppState } from './types';
 import InitPage from './pages/InitPage';
 import Theme from './theme';
+import ScrollTopButton from './components/ScrollTopButton';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -29,6 +30,7 @@ const App = () => fabricate('Column')
       '/post': PostPage,
       '/settings': SettingsPage,
     }),
+    ScrollTopButton(),
   ]);
 
 /**
