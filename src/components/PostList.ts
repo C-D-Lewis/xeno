@@ -29,9 +29,12 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
     el: FabricateComponent<AppState>,
     { posts, displayMode }: AppState,
   ) => {
-    el.setChildren(
-      posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
-    );
+    // Allow page to be created and navigated, then add lots of children
+    setTimeout(() => {
+      el.setChildren(
+        posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
+      );
+    }, 200);
   };
 
   /**
@@ -75,14 +78,8 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       flexWrap: 'wrap',
       margin: 'auto',
     })
-    .onUpdate((el, state, keys) => {
-      if (keys.includes(fabricate.StateKeys.Created)) {
-        onCreate(el, state);
-        return;
-      }
-
-      updateLayout(el, state);
-    }, [fabricate.StateKeys.Created, 'posts']);
+    .onCreate(onCreate)
+    .onUpdate((el, state) => updateLayout(el, state), ['posts']);
 };
 
 export default PostList;
