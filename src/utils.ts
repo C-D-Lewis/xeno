@@ -212,24 +212,7 @@ export const styleIconContrastColor = (
  * @param {FabricateComponent} el - Element to test.
  * @returns {boolean} true if in view.
  */
-const isInViewPort = (el: FabricateComponent<AppState>) => el.getBoundingClientRect().top >= -10;
-
-/**
- * Scroll a post into view until it is.
- *
- * @param {FabricateComponent} el - Component to scroll to.
- */
-export const scrollToPost = (el: FabricateComponent<AppState>) => {
-  el.scrollIntoView();
-
-  // Check again until in view
-  setTimeout(() => {
-    const postInView = isInViewPort(el);
-    if (postInView) return;
-
-    scrollToPost(el);
-  }, SCROLL_INTERVAL_MS);
-};
+export const isInViewPort = (el: FabricateComponent<AppState>) => el.getBoundingClientRect().top >= -10;
 
 /**
  * Return a rough representation of a larger number.
