@@ -58,6 +58,26 @@ const rateLimit = () => {
 };
 
 /**
+ * If logged out, use app only token.
+ *
+ * @returns {string} App only access_token.
+ */
+export const getAppOnlyToken = async () => {
+  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+    },
+    body: 'grant_type=client_credentials',
+  });
+  if (res.status >= 400) throw new Error(`getAppOnlyToken failed: ${res.status} ${(await res.text()).slice(0, 64)}`);
+
+  const json = await res.json();
+  return json.access_token;
+};
+
+/**
  * Make a request to the Reddit API.
  *
  * @param {string} accessToken - Access token.

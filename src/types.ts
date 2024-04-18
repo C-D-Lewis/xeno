@@ -68,6 +68,7 @@ export type AppState = {
   // Persisted
   accessToken: string | null;
   refreshToken: string | null;
+  isLoggedIn: boolean;
   username: string | null;
   query: string;
   displayMode: 'gallery' | 'list';

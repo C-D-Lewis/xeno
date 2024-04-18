@@ -186,7 +186,7 @@ const SettingsCard = () => Card()
   .setChildren([
     ViewModeSetting(),
     SortModeSetting(),
-    LandingPageSetting(),
+    LandingPageSetting().displayWhen((state) => state.isLoggedIn),
   ]);
 
 /**
@@ -207,7 +207,7 @@ const AccountCard = () => Card()
         const { used, remaining } = rateLimitInfo;
         el.setText(`Used ${used} of ${used + remaining} API requests (per 10 minutes)`);
       }),
-    LogoutButton(),
+    LogoutButton().displayWhen((state) => state.isLoggedIn),
   ]);
 
 /**

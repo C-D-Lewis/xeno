@@ -41,6 +41,7 @@ const main = () => {
     // Persisted
     accessToken: null,
     refreshToken: null,
+    isLoggedIn: false,
     username: null,
     query: '/r/all',
     displayMode: 'gallery',

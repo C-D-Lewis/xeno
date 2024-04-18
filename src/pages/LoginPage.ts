@@ -1,28 +1,14 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import { getQueryParam } from '../utils';
-import { LOGIN_URL, getAccessToken, getUsername } from '../services/ApiService';
+import { getAccessToken, getUsername } from '../services/ApiService';
 import AppPage from '../components/AppPage';
 import Theme from '../theme';
+import LoginButton from '../components/LoginButton';
 
 declare const fabricate: Fabricate<AppState>;
 
 const codeParam = getQueryParam('code');
-
-/**
- * LoginButton component.
- *
- * @returns {FabricateComponent} LoginButton component.
- */
-const LoginButton = () => fabricate('Button', {
-  backgroundColor: Theme.palette.primary,
-  color: Theme.palette.text,
-  text: 'Go to Reddit',
-})
-  .setStyles({ margin: '15px auto' })
-  .onClick(() => {
-    window.location.href = LOGIN_URL;
-  });
 
 /**
  * LoginPage component.

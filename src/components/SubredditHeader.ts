@@ -47,7 +47,8 @@ const SubredditHeader = () => {
       fabricate.update({ subreddit: updated });
       const subreddits = await getUserSubscriptions(accessToken);
       fabricate.update({ subreddits });
-    });
+    })
+    .displayWhen((state) => state.isLoggedIn);
 
   const description = fabricate('Text')
     .setStyles(({ palette }) => ({

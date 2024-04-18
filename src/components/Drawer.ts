@@ -2,13 +2,11 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { fetchPosts, submitQuery } from '../services/ApiService';
 import Theme from '../theme';
 import { AppState, Subreddit } from '../types';
-import {
-  delayedScrollTop,
-} from '../utils';
+import { delayedScrollTop } from '../utils';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
 import ImageButton from './ImageButton';
-import AppLoader from './AppLoader';
 import Input from './Input';
+import LoginButton from './LoginButton';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -139,9 +137,14 @@ const UserInfoRow = () => {
       cursor: 'default',
       fontWeight: 'bold',
     }))
-    .onUpdate((el, { username }) => {
+    .onUpdate((el, { username, isLoggedIn }) => {
+      if (!isLoggedIn) {
+        el.setText('Not logged in');
+        return;
+      }
+
       el.setText(username || '-');
-    }, [fabricate.StateKeys.Init, 'username']);
+    }, [fabricate.StateKeys.Init, 'username', 'isLoggedIn']);
 
   const settingsButton = ImageButton({ src: 'assets/settings.png' })
     .setStyles({
@@ -269,6 +272,23 @@ const FeedButton = () => {
 };
 
 /**
+ * LoginPrompt component.
+ *
+ * @returns {FabricateComponent} LoginPrompt commponent.
+ */
+const LoginPrompt = () => fabricate('Column')
+  .setStyles({
+    textAlign: 'center',
+    marginTop: '12px',
+  })
+  .setChildren([
+    fabricate('Text')
+      .setStyles({ color: 'white' })
+      .setText('Log in to see your subreddits'),
+    LoginButton(),
+  ]);
+
+/**
  * Drawer component.
  *
  * @returns {FabricateComponent} Drawer component.
@@ -292,7 +312,7 @@ export const Drawer = () => {
       UserInfoRow(),
       SearchRow(),
       subredditList.displayWhen(subredditsLoaded),
-      AppLoader().displayWhen((state) => !subredditsLoaded(state)),
+      LoginPrompt().displayWhen((state) => !state.isLoggedIn),
     ])
     .onUpdate((el, { drawerOpen, subreddits }, keys) => {
       if (keys.includes('drawerOpen')) {
