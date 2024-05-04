@@ -2,7 +2,6 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types';
 import { DrawerToggle } from './Drawer';
 import ImageButton from './ImageButton';
-import Theme from '../theme';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -44,6 +43,7 @@ const AppNavBar = () => {
   const title = fabricate('Text')
     .setStyles(({ palette }) => ({
       color: palette.text,
+      fontSize: '1.1rem',
       fontWeight: 'bold',
       margin: '0px 10px',
       cursor: 'default',
@@ -52,14 +52,17 @@ const AppNavBar = () => {
     .setText('Xeno');
 
   const subtitle = fabricate('Text')
-    .setStyles({
-      color: Theme.DrawerItem.unselected,
-      margin: '0px 0px 0px 5px',
+    .setStyles(({ palette }) => ({
+      color: palette.text,
       cursor: 'default',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'no-wrap',
-    });
+      position: 'absolute',
+      left: '0',
+      textAlign: 'center',
+      width: '100%',
+    }));
 
   return fabricate('Row')
     .setStyles(({ palette, styles }) => ({
