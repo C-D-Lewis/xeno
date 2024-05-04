@@ -31,7 +31,7 @@ const getSubtitle = ({ subreddit }: AppState) => {
  * @returns {FabricateComponent} BackButton component.
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
-  .setStyles({ marginLeft: '0px' })
+  .setStyles({ marginLeft: '0px', zIndex: '1000' })
   .onClick(() => fabricate.goBack());
 
 /**

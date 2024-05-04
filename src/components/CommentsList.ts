@@ -25,7 +25,6 @@ const CollapseButton = ({ id }: { id: string }) => {
       width: '15px',
       height: '15px',
       padding: '2px',
-      marginRight: '5px',
       borderRadius: '5px',
       cursor: 'pointer',
     })
@@ -68,7 +67,6 @@ const PostCommentTree = ({
   const commentMetadataRow = fabricate('Row')
     .setStyles({ alignItems: 'center' })
     .setChildren([
-      ...(hasComments ? [CollapseButton({ id })] : []),
       PostAuthorLink({
         author,
         isPostAuthor: author === postAuthor,
@@ -96,18 +94,21 @@ const PostCommentTree = ({
       el.setChildren(!state[isCollapsedKey] ? [childComments] : []);
     }, [isCollapsedKey]);
 
-  return fabricate('Column')
+  return fabricate('Row')
     .setStyles(({ palette }) => ({
-      borderRadius: '5px',
       backgroundColor: palette.widgetBackground,
       padding: '5px',
       marginTop: '5px',
       borderLeft: '3px solid #FFF5',
     }))
     .setChildren([
-      commentMetadataRow,
-      commentBody,
-      commentChildren,
+      ...(hasComments ? [CollapseButton({ id })] : []),
+      fabricate('Column')
+        .setChildren([
+          commentMetadataRow,
+          commentBody,
+          commentChildren,
+        ]),
     ]);
 };
 
