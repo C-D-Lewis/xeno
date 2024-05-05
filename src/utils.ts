@@ -85,14 +85,14 @@ export const decodeHtml = (html: string) => {
 export const getTimeAgoStr = (time: number) => {
   const minsAgo = Math.round((Date.now() - time) / (1000 * 60));
   if (minsAgo > (60 * 24)) {
-    return `${Math.round(minsAgo / (60 * 24))} days`;
+    return `${Math.round(minsAgo / (60 * 24))}d ago`;
   }
 
   if (minsAgo > 60) {
-    return `${Math.round(minsAgo / 60)} hours`;
+    return `${Math.round(minsAgo / 60)}h ago`;
   }
 
-  return `${minsAgo} mins`;
+  return `${minsAgo}m ago`;
 };
 
 /**

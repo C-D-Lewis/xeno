@@ -65,8 +65,9 @@ const PostCommentTree = ({
       : fabricate('div'))));
 
   const commentMetadataRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
+    .setStyles({ alignItems: 'center', marginLeft: '4px' })
     .setChildren([
+      ...(hasComments ? [CollapseButton({ id })] : []),
       PostAuthorLink({
         author,
         isPostAuthor: author === postAuthor,
@@ -94,21 +95,17 @@ const PostCommentTree = ({
       el.setChildren(!state[isCollapsedKey] ? [childComments] : []);
     }, [isCollapsedKey]);
 
-  return fabricate('Row')
+  return fabricate('Column')
     .setStyles(({ palette }) => ({
       backgroundColor: palette.widgetBackground,
       padding: '5px',
-      marginTop: '5px',
       borderLeft: '3px solid #FFF5',
+      paddingTop: '5px',
     }))
     .setChildren([
-      ...(hasComments ? [CollapseButton({ id })] : []),
-      fabricate('Column')
-        .setChildren([
-          commentMetadataRow,
-          commentBody,
-          commentChildren,
-        ]),
+      commentMetadataRow,
+      commentBody,
+      commentChildren,
     ]);
 };
 
@@ -121,6 +118,9 @@ const CommentsList = () => fabricate('Column')
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
+    borderTopRightRadius: '5px',
+    borderTopLeftRadius: '5px',
+    overflow: 'hidden',
   })
   .onUpdate((el, { selectedPost, postComments, accessToken }, keys) => {
     if (accessToken && selectedPost && keys.includes(fabricate.StateKeys.Created)) {

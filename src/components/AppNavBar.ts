@@ -80,8 +80,7 @@ const AppNavBar = () => {
       transition: '2s',
     }))
     .addChildren([
-      DrawerToggle()
-        .displayWhen((state) => ['/list', '/feed'].includes(state[fabricate.StateKeys.Route])),
+      DrawerToggle().displayWhen((state) => !['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),
       BackButton()
         .displayWhen((state) => ['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),
       title,
