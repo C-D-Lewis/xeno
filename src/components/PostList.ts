@@ -15,13 +15,21 @@ let searchStart = Date.now();
  */
 export const scrollToPost = (id: string) => {
   const found = document.getElementById(`post-${id}`) as FabricateComponent<AppState>;
-  if (!found && (Date.now() - searchStart > MAX_JUMP_TO_TIME_MS)) return;
+
+  // Search failed
+  if (!found && (Date.now() - searchStart > MAX_JUMP_TO_TIME_MS)) {
+    fabricate.update({ seekingLastPost: false });
+    return;
+  }
 
   setTimeout(() => {
     if (found) {
       found.scrollIntoView();
       const postInView = isInViewPort(found);
-      if (postInView) return;
+      if (postInView) {
+        fabricate.update({ seekingLastPost: false });
+        return;
+      }
     }
 
     // Check again until in view
@@ -47,17 +55,24 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
    *
    * @param {FabricateComponent} el - Element to update.
    * @param {AppState} state - App state.
+   * @param {string[]} keys - Keys changed in this state update.
    */
   const updateLayout = (
     el: FabricateComponent<AppState>,
-    { posts, displayMode }: AppState,
+    { posts, displayMode, seekingLastPost }: AppState,
+    keys: string[],
   ) => {
-    // Allow page to be created and navigated, then add lots of children
-    setTimeout(() => {
-      el.setChildren(
-        posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
-      );
-    }, 200);
+    // Only visibly show if not seeking last post
+    el.setStyles({ opacity: seekingLastPost ? '0' : '1' });
+
+    if (keys.includes('posts')) {
+      // Allow page to be created and navigated, then add lots of children
+      setTimeout(() => {
+        el.setChildren(
+          posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
+        );
+      }, 200);
+    }
   };
 
   /**
@@ -78,7 +93,7 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       // Fetch new content
       await onFetchPosts(state);
     } else {
-      updateLayout(el, state);
+      updateLayout(el, state, ['posts']);
     }
 
     // If navigating back, scroll to the last viewed post
@@ -86,6 +101,8 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       setTimeout(() => {
         // Begin the search
         searchStart = Date.now();
+        fabricate.update({ seekingLastPost: true });
+
         scrollToPost(selectedPost.id);
       }, SCROLL_INTERVAL_MS);
     }
@@ -97,9 +114,10 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
       flex: '1',
       flexWrap: 'wrap',
       margin: 'auto',
+      opacity: '0',
     })
     .onCreate(onCreate)
-    .onUpdate((el, state) => updateLayout(el, state), ['posts']);
+    .onUpdate(updateLayout, ['posts', 'seekingLastPost']);
 };
 
 export default PostList;

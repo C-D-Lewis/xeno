@@ -4,6 +4,7 @@ import AppPage from '../components/AppPage';
 import { fetchFeedPosts } from '../services/ApiService';
 import PostList from '../components/PostList';
 import AppLoader from '../components/AppLoader';
+import FeedHeader from '../components/FeedHeader';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -36,13 +37,15 @@ const FeedPage = () => {
 
   return AppPage()
     .setChildren([
+      fabricate.conditional(({ postsLoading }) => !postsLoading, FeedHeader),
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
-      AppLoader().displayWhen(({ postsLoading }) => postsLoading),
+      AppLoader()
+        .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
       PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
     ])
     .onCreate(() => {
       // Loading the feed resets the last subreddit selection
-      fabricate.update({ query: '/r/all' });
+      fabricate.update({ query: '/r/all', landingPage: '/feed' });
     });
 };
 

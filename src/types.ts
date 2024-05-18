@@ -94,6 +94,7 @@ export type AppState = {
   },
   postComments: Comment[] | null;
   visibleMediaPostId: string | null;
+  seekingLastPost: boolean;
 };
 
 /** Reddit API post type */

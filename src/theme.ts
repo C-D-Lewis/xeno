@@ -1,7 +1,7 @@
 /** App Theme colors */
 const Theme = {
   palette: {
-    primary: '#FF5700',
+    primary: '#de4b02', // '#FF5700',
     background: '#222',
     text: 'white',
     textSecondary: '#ccc',

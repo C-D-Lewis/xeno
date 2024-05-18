@@ -101,6 +101,7 @@ const PostCommentTree = ({
       padding: '5px',
       borderLeft: '3px solid #FFF5',
       paddingTop: '5px',
+      marginTop: '5px',
     }))
     .setChildren([
       commentMetadataRow,
