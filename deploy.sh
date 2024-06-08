@@ -55,8 +55,7 @@ aws s3 sync styles $BUCKET/styles || true
 aws s3 sync feed $BUCKET/feed || true
 aws s3 sync dist $BUCKET/dist || true
 aws s3 cp favicon.ico $BUCKET || true
-aws s3 cp sw.js $BUCKET || true
-aws s3 cp manifest.json $BUCKET || true # custom
+aws s3 cp sw.js $BUCKET || true # custom
 
 # Restore template
 mv index.html.bak index.html
@@ -72,7 +71,7 @@ terraform apply -auto-approve
 cd -
 
 # Get CloudFront distribution ID
-CF_DIST_ID=$(aws cloudfront list-distributions | jq -r ".DistributionList.Items[] | select(.Aliases.Items[0] == \"$SITE_DOMAIN\") | .Id")
+CF_DIST_ID=$(aws cloudfront list-distributions | jq -r ".DistributionList.Items[] | select(.Aliases.Items | tostring | contains(\"$SITE_DOMAIN\")) | .Id")
 
 # Create new invalidation
 RES=$(aws cloudfront create-invalidation --distribution-id $CF_DIST_ID --paths "/*")
