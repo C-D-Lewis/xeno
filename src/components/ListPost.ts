@@ -29,56 +29,13 @@ const imgObserver = new IntersectionObserver((entries) => {
  */
 const PostSummary = ({ post }: { post: Post }) => {
   const {
-    subreddit, created, author, thumbnail, imageSource, fallbackSource, selfText,
+    subreddit, created, author, fallbackSource,
   } = post;
 
-  const showImage = (imageSource || thumbnail) && !selfText;
-
-  const thumbnailEl = fabricate('img')
-    .setStyles({
-      cursor: 'pointer',
-      width: '75px',
-      height: 'auto',
-      objectFit: 'cover',
-      maxHeight: '75px',
-      margin: '5px 10px 5px 5px',
-      borderRadius: '5px',
-      transition: '0.3s',
-      borderBottomLeftRadius: '5px',
-      borderBottomRightRadius: '5px',
-    })
-    .onClick(() => {
-      if (imageSource) window.open(imageSource, '_blank');
-    })
-    .onCreate((el) => {
-      // Use thumbnail by default
-      el.setAttributes({ src: thumbnail });
-
-      // No image or is a text post
-      if (!showImage) {
-        el.setAttributes({ src: 'assets/textpost.png' });
-        el.setStyles({
-          width: '40px',
-          height: '40px',
-          padding: '14px',
-        });
-        return;
-      }
-
-      // No full image source identified, use thumbnail
-      if (!imageSource) return;
-
-      // Lazy load when in view
-      el.setStyles({ opacity: '0.2' });
-      el.dataset.src = imageSource;
-      imgObserver.observe(el);
-
-      // Detect failure to load
-      el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
-      el.onEvent('error', () => el.setAttributes({ src: 'assets/gallerypost.png' }));
-    });
-
-  const itemContent = fabricate('Column')
+  return fabricate('Column')
+    .setStyles(({ palette }) => ({
+      padding: '8px', backgroundColor: palette.widgetPanel,
+    }))
     .setChildren([
       fabricate('Row')
         .setStyles({ alignItems: 'center' })
@@ -95,12 +52,6 @@ const PostSummary = ({ post }: { post: Post }) => {
         ]),
       PostMetrics({ post }),
     ]);
-
-  return fabricate('Row')
-    .setStyles(({ palette }) => ({
-      padding: '8px', backgroundColor: palette.widgetPanel,
-    }))
-    .setChildren([thumbnailEl, itemContent]);
 };
 
 /**

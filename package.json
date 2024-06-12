@@ -19,7 +19,8 @@
     "clean": "rm -rf ./dist",
     "build": "npm run clean && webpack --mode production",
     "build:dev": "npm run clean && webpack --mode development",
-    "start": "npm run build:dev && http-server"
+    "start:dev": "npm run build:dev && http-server",
+    "start": "pm2 start --name 'xeno' 'npm run start:dev'"
   },
   "eslintConfig": {
     "extends": [
