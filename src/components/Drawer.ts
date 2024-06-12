@@ -111,8 +111,17 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
     marginLeft: '0px',
     backgroundColor: '#0000',
     transition: '2s',
+    zIndex: '1000',
   })
-  .onClick((el, { drawerOpen }) => {
+  .onUpdate((el, state) => {
+    const enabled = ['/list', '/feed'].includes(state[fabricate.StateKeys.Route]);
+
+    el.setStyles({ filter: `brightness(${enabled ? 1 : 0.5})` });
+  }, [fabricate.StateKeys.Route])
+  .onClick((el, state) => {
+    if (state[fabricate.StateKeys.Route] === '/init') return;
+
+    const { drawerOpen } = state;
     const newState = !drawerOpen;
 
     fabricate.update({ drawerOpen: newState });

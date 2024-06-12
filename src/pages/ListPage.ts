@@ -32,7 +32,8 @@ const ListPage = () => {
       AppLoader().displayWhen(({ postsLoading }) => postsLoading),
       fabricate.conditional(({ postsLoading }) => !postsLoading, SubredditHeader),
       PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
-    ]);
+    ])
+    .onCreate(() => fabricate.update({ landingPage: '/list' }));
 };
 
 export default ListPage;

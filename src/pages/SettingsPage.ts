@@ -156,27 +156,6 @@ const SortModeSetting = () => SettingsWrapper({
 });
 
 /**
- * LandingPageSetting component.
- *
- * @returns {FabricateComponent} LandingPageSetting comment.
- */
-const LandingPageSetting = () => SettingsWrapper({
-  title: 'Landing page',
-  children: [
-    Option({
-      label: 'Last subreddit',
-      setting: 'landingPage',
-      value: '/list',
-    }),
-    Option({
-      label: 'Feed',
-      setting: 'landingPage',
-      value: '/feed',
-    }),
-  ],
-});
-
-/**
  * SettingsCard component.
  *
  * @returns {FabricateComponent} SettingsCard component.
@@ -186,7 +165,6 @@ const SettingsCard = () => Card()
   .setChildren([
     ViewModeSetting(),
     SortModeSetting(),
-    LandingPageSetting().displayWhen((state) => state.isLoggedIn),
   ]);
 
 /**

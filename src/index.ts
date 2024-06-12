@@ -67,6 +67,7 @@ const main = () => {
     commentsLoading: false,
     postComments: null,
     visibleMediaPostId: null,
+    seekingLastPost: false,
   };
 
   const options: FabricateOptions = {

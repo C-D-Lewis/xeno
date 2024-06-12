@@ -25,7 +25,6 @@ const CollapseButton = ({ id }: { id: string }) => {
       width: '15px',
       height: '15px',
       padding: '2px',
-      marginRight: '5px',
       borderRadius: '5px',
       cursor: 'pointer',
     })
@@ -66,7 +65,7 @@ const PostCommentTree = ({
       : fabricate('div'))));
 
   const commentMetadataRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
+    .setStyles({ alignItems: 'center', marginLeft: '4px' })
     .setChildren([
       ...(hasComments ? [CollapseButton({ id })] : []),
       PostAuthorLink({
@@ -98,11 +97,11 @@ const PostCommentTree = ({
 
   return fabricate('Column')
     .setStyles(({ palette }) => ({
-      borderRadius: '5px',
       backgroundColor: palette.widgetBackground,
       padding: '5px',
-      marginTop: '5px',
       borderLeft: '3px solid #FFF5',
+      paddingTop: '5px',
+      marginTop: '5px',
     }))
     .setChildren([
       commentMetadataRow,
@@ -120,6 +119,9 @@ const CommentsList = () => fabricate('Column')
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
+    borderTopRightRadius: '5px',
+    borderTopLeftRadius: '5px',
+    overflow: 'hidden',
   })
   .onUpdate((el, { selectedPost, postComments, accessToken }, keys) => {
     if (accessToken && selectedPost && keys.includes(fabricate.StateKeys.Created)) {

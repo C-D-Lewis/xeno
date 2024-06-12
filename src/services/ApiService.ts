@@ -30,7 +30,7 @@ const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
 /** Max feed items */
 const MAX_FEED_LENGTH = 128;
 /** Minimum upvotes for feed posts, despite 'applied' hot or top sort order... */
-const MIN_FEED_UPVOTES = 10;
+const MIN_FEED_UPVOTES = 20;
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
