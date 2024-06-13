@@ -38,7 +38,7 @@ const FeedPage = () => {
       } = state;
 
       // Loading the feed resets the last subreddit selection
-      fabricate.update({ query: '/r/all', landingPage: '/feed' });
+      fabricate.update({ query: '/r/all', landingPage: '/feed', posts: [] });
 
       // Allow revisiting from another page
       if (feedPosts.length === 0) {
