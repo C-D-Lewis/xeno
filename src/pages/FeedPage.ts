@@ -14,17 +14,6 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} FeedPage component.
  */
 const FeedPage = () => {
-  /**
-   * When content should be fetched.
-   *
-   * @param {AppState} state - App state.
-   * @returns {Promise<void>}
-   */
-  const onFetchPosts = (state: AppState) => {
-    const { accessToken, subreddits, sortMode } = state;
-    return fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
-  };
-
   const loadingTitle = fabricate('Text')
     .setStyles(({ palette }) => ({
       color: palette.text,
@@ -41,11 +30,16 @@ const FeedPage = () => {
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
       AppLoader()
         .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
-      PostList({ onFetchPosts }).displayWhen(({ postsLoading }) => !postsLoading),
+      PostList().displayWhen(({ postsLoading }) => !postsLoading),
     ])
-    .onCreate(() => {
+    .onCreate((el, state) => {
+      const { accessToken, subreddits, sortMode } = state;
+
       // Loading the feed resets the last subreddit selection
       fabricate.update({ query: '/r/all', landingPage: '/feed' });
+
+      // Get feed content
+      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
     });
 };
 

@@ -124,7 +124,7 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
     const { drawerOpen } = state;
     const newState = !drawerOpen;
 
-    fabricate.update({ drawerOpen: newState });
+    fabricate.update({ drawerOpen: newState, usernameVisible: false });
     el.setStyles({
       backgroundColor: newState && !fabricate.isNarrow()
         ? Theme.DrawerToggle.activated
@@ -146,14 +146,15 @@ const UserInfoRow = () => {
       cursor: 'default',
       fontWeight: 'bold',
     }))
-    .onUpdate((el, { username, isLoggedIn }) => {
+    .onClick(() => fabricate.update({ usernameVisible: true }))
+    .onUpdate((el, { username, isLoggedIn, usernameVisible }) => {
       if (!isLoggedIn) {
         el.setText('Not logged in');
         return;
       }
 
-      el.setText(username || '-');
-    }, [fabricate.StateKeys.Init, 'username', 'isLoggedIn']);
+      el.setText(usernameVisible ? username! : 'Logged in' || '-');
+    }, [fabricate.StateKeys.Created, 'username', 'isLoggedIn', 'usernameVisible']);
 
   const settingsButton = ImageButton({ src: 'assets/settings.png' })
     .setStyles({

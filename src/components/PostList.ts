@@ -37,19 +37,12 @@ export const scrollToPost = (id: string) => {
   }, SCROLL_INTERVAL_MS);
 };
 
-/** PostList prop types */
-type PostListPropTypes = {
-  onFetchPosts: (state: AppState) => void;
-};
-
 /**
  * PostList component for use in both ListPage and FeedPage.
  *
- * @param {object} props - Component props.
- * @param {Function} props.onFetchPosts - When content should be fetched.
  * @returns {FabricateComponent} PostList component.
  */
-const PostList = ({ onFetchPosts }: PostListPropTypes) => {
+const PostList = () => {
   /**
    * When created or updated.
    *
@@ -89,10 +82,8 @@ const PostList = ({ onFetchPosts }: PostListPropTypes) => {
     // Initial load or settings changed, refresh posts
     const [lastRoute] = fabricate.getRouteHistory().slice(-2);
 
-    if (lastRoute !== '/post') {
-      // Fetch new content
-      await onFetchPosts(state);
-    } else {
+    // If returning from a post, display loaded posts
+    if (lastRoute === '/post') {
       updateLayout(el, state, ['posts']);
     }
 

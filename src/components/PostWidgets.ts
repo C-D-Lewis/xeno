@@ -38,15 +38,19 @@ export const PostAuthorLink = ({
         : palette.transparent,
     }))
     .onClick((el, state) => {
-      const { accessToken, sortMode } = state;
-      if (!accessToken) return;
+      const { query, accessToken, sortMode } = state;
 
-      delayedScrollTop();
       fabricate.update({ query: fullAuthor });
+      delayedScrollTop();
 
-      // Go there and load
-      fetchPosts(accessToken, fullAuthor, sortMode);
-      fabricate.navigate('/list');
+      if (fabricate.getRouteHistory().pop()! !== '/list') {
+        // Navigation does the fetchPosts
+        fabricate.navigate('/list');
+        return;
+      }
+      if (query !== fullAuthor) {
+        fetchPosts(accessToken!, fullAuthor, sortMode);
+      }
     });
 };
 
@@ -75,16 +79,20 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     });
   })
   .onClick((el, state) => {
-    const { accessToken, sortMode } = state;
-    if (!accessToken) return;
+    const { accessToken, query, sortMode } = state;
 
-    const query = `/r/${subreddit}`;
+    const newQuery = `/r/${subreddit}`;
+    fabricate.update({ query: newQuery });
     delayedScrollTop();
-    fabricate.update({ query });
 
-    // Go there and load
-    fetchPosts(accessToken, query, sortMode);
-    fabricate.navigate('/list');
+    if (fabricate.getRouteHistory().pop()! !== '/list') {
+      // Navigation does the fetchPosts
+      fabricate.navigate('/list');
+      return;
+    }
+    if (query !== newQuery) {
+      fetchPosts(accessToken!, newQuery, sortMode);
+    }
   });
 
 /**

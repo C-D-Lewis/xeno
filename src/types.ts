@@ -95,6 +95,7 @@ export type AppState = {
   postComments: Comment[] | null;
   visibleMediaPostId: string | null;
   seekingLastPost: boolean;
+  usernameVisible: boolean;
 };
 
 /** Reddit API post type */
