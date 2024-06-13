@@ -74,12 +74,13 @@ export type AppState = {
   displayMode: 'gallery' | 'list';
   sortMode: SortMode;
   lastReloadTime: number;
-  newSinceTime: number;
+  lastLaunchTime: number;
   landingPage: '/feed' | '/list';
 
   // Other
   selectedPost: Post | null;
   posts: Post[];
+  feedPosts: Post[];
   queryInput: string;
   subreddits: Subreddit[] | [];
   subreddit: Subreddit | null;
@@ -175,3 +176,6 @@ export type RedditApiSubreddit = {
   icon_size: number[];
   user_is_subscriber: boolean;
 };
+
+/** List keys in the state for posts */
+export type ListStateKey = 'posts' | 'feedPosts';

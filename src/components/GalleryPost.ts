@@ -63,9 +63,9 @@ const PostHeader = ({ post }: { post: Post }) => {
     .setStyles(({ palette }) => ({
       backgroundColor: palette.widgetPanel, padding: '8px',
     }))
-    .onCreate((el, { newSinceTime }) => {
+    .onCreate((el, { lastLaunchTime }) => {
       const createdTime = new Date(created).getTime();
-      const isNew = createdTime > newSinceTime;
+      const isNew = createdTime > lastLaunchTime;
 
       if (isNew) {
         el.setStyles(({ palette }) => ({

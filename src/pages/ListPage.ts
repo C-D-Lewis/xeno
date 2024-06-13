@@ -19,7 +19,7 @@ const ListPage = () => AppPage()
   .setChildren([
     AppLoader().displayWhen(({ postsLoading }) => postsLoading),
     fabricate.conditional(({ postsLoading }) => !postsLoading, SubredditHeader),
-    PostList().displayWhen(({ postsLoading }) => !postsLoading),
+    PostList({ listStateKey: 'posts' }).displayWhen(({ postsLoading }) => !postsLoading),
   ])
   .onCreate((el, state) => {
     const { accessToken, query, sortMode } = state;

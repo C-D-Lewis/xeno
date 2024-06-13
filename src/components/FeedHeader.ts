@@ -27,7 +27,7 @@ const FeedHeader = () => {
   const description = fabricate('Text')
     .setStyles(({ palette }) => ({
       color: palette.text,
-      fontSize: '0.9rem',
+      fontSize: '1rem',
     }));
 
   /**
@@ -37,10 +37,10 @@ const FeedHeader = () => {
    * @param {AppState} state - App state.
    */
   const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
-    const { posts, subreddits } = state;
+    const { feedPosts, subreddits } = state;
 
     title.setText('Your feed');
-    description.setText(`Showing ${posts.length} posts from ${subreddits.length} subreddits.`);
+    description.setText(`Showing ${feedPosts.length} posts from ${subreddits.length} subreddits.`);
   };
 
   return fabricate('Row')

@@ -1,5 +1,5 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
+import { AppState, ListStateKey, Post } from '../types';
 import GalleryPost from './GalleryPost';
 import ListPost from './ListPost';
 import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils';
@@ -40,9 +40,11 @@ export const scrollToPost = (id: string) => {
 /**
  * PostList component for use in both ListPage and FeedPage.
  *
+ * @param {object} props - Component props.
+ * @param {ListStateKey} props.listStateKey - State key to load list of posts from.
  * @returns {FabricateComponent} PostList component.
  */
-const PostList = () => {
+const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
   /**
    * When created or updated.
    *
@@ -52,17 +54,21 @@ const PostList = () => {
    */
   const updateLayout = (
     el: FabricateComponent<AppState>,
-    { posts, displayMode, seekingLastPost }: AppState,
+    state: AppState,
     keys: string[],
   ) => {
+    const { displayMode, seekingLastPost } = state;
+
+    const list = state[listStateKey] as Post[];
+
     // Only visibly show if not seeking last post
     el.setStyles({ opacity: seekingLastPost ? '0' : '1' });
 
-    if (keys.includes('posts')) {
+    if (keys.includes(listStateKey)) {
       // Allow page to be created and navigated, then add lots of children
       setTimeout(() => {
         el.setChildren(
-          posts.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
+          list.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
         );
       }, 200);
     }
@@ -76,16 +82,9 @@ const PostList = () => {
    */
   const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
     // Reload data if returning from settings page
-    const { accessToken, selectedPost } = state;
-    if (!accessToken) return;
+    const { selectedPost } = state;
 
-    // Initial load or settings changed, refresh posts
-    const [lastRoute] = fabricate.getRouteHistory().slice(-2);
-
-    // If returning from a post, display loaded posts
-    if (lastRoute === '/post') {
-      updateLayout(el, state, ['posts']);
-    }
+    updateLayout(el, state, [listStateKey]);
 
     // If navigating back, scroll to the last viewed post
     if (selectedPost) {
@@ -108,7 +107,7 @@ const PostList = () => {
       opacity: '0',
     })
     .onCreate(onCreate)
-    .onUpdate(updateLayout, ['posts', 'seekingLastPost']);
+    .onUpdate(updateLayout, [listStateKey, 'seekingLastPost']);
 };
 
 export default PostList;

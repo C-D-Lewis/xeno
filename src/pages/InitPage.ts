@@ -38,7 +38,7 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
       isLoggedIn: false,
 
       // Keep note of last reload time for 'isNew' calculations without replacing it
-      newSinceTime: lastReloadTime,
+      lastLaunchTime: lastReloadTime,
       lastReloadTime: Date.now(),
     });
     fabricate.navigate('/list');
@@ -61,7 +61,7 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
       isLoggedIn: true,
 
       // Keep note of last reload time for 'isNew' calculations without replacing it
-      newSinceTime: lastReloadTime,
+      lastLaunchTime: lastReloadTime,
       lastReloadTime: Date.now(),
     });
     fabricate.navigate(landingPage || '/list');

@@ -561,6 +561,7 @@ export const fetchFeedPosts = async (
   try {
     fabricate.update({
       posts: [],
+      feedPosts: [],
       postsLoading: true,
       postsLoadingProgress: 0,
       subreddit: null,
@@ -602,7 +603,7 @@ export const fetchFeedPosts = async (
     }
 
     fabricate.update({
-      posts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
+      feedPosts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
       postsLoading: false,
       postsLoadingProgress: 100,
     });

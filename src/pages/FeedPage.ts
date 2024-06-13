@@ -30,16 +30,21 @@ const FeedPage = () => {
       loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
       AppLoader()
         .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
-      PostList().displayWhen(({ postsLoading }) => !postsLoading),
+      PostList({ listStateKey: 'feedPosts' }).displayWhen(({ postsLoading }) => !postsLoading),
     ])
     .onCreate((el, state) => {
-      const { accessToken, subreddits, sortMode } = state;
+      const {
+        accessToken, subreddits, sortMode, feedPosts,
+      } = state;
 
       // Loading the feed resets the last subreddit selection
       fabricate.update({ query: '/r/all', landingPage: '/feed' });
 
-      // Get feed content
-      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+      // Allow revisiting from another page
+      if (feedPosts.length === 0) {
+        // Get feed content
+        fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+      }
     });
 };
 
