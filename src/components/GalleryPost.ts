@@ -178,6 +178,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const hasIframeEmbed = !!iframe;
   const showImage = !hasVideo && !hasIframeEmbed && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
+  const isGif = showImage && imageSource.includes('.gif');
 
   const imageEl = showImage
     ? fabricate('img')
@@ -206,6 +207,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
         el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
       })
+      .displayWhen((state) => state.visibleMediaPostId === id)
     : undefined;
 
   /**
@@ -249,7 +251,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       cursor: 'pointer',
     })
     .displayWhen(
-      ({ visibleMediaPostId }) => (hasIframeEmbed || hasVideo) && visibleMediaPostId !== id,
+      (state) => !!((hasIframeEmbed || hasVideo || isGif) && state.visibleMediaPostId !== id),
     )
     .onClick(() => fabricate.update({ visibleMediaPostId: id }))
     .setChildren([
