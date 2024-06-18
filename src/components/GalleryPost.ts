@@ -176,11 +176,11 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const indexKey = fabricate.buildKey('imageListIndex', id);
   const hasVideo = !!videoSourceData;
   const hasIframeEmbed = !!iframe;
-  const showImage = !hasVideo && !hasIframeEmbed && imageSource;
+  const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
-  const isGif = showImage && imageSource.includes('.gif');
+  const isGif = imageSource?.endsWith('.gif');
 
-  const imageEl = showImage
+  const imageEl = hasImage
     ? fabricate('img')
       .setStyles({
         cursor: 'pointer',
@@ -207,8 +207,8 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
         el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
       })
-      .displayWhen((state) => state.visibleMediaPostId === id)
     : undefined;
+  if (imageEl && isGif) imageEl.displayWhen((state) => state.visibleMediaPostId === id);
 
   /**
    * Video element component.
@@ -255,18 +255,18 @@ const GalleryPost = ({ post }: { post: Post }) => {
     )
     .onClick(() => fabricate.update({ visibleMediaPostId: id }))
     .setChildren([
-      ImageButton({ src: 'assets/play-media.png' })
+      ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
         .setStyles({ margin: '12px 0px' }),
       fabricate('Text')
         .setStyles(({ palette }) => ({ color: palette.text }))
-        .setText('Show media'),
+        .setText(isGif ? 'Show gif' : 'Show video'),
     ]);
 
   return Card()
     .setStyles({ width: fabricate.isNarrow() ? '95vw' : '29vw' })
     .setChildren([
       PostHeader({ post }),
-      ...showImage ? [imageEl!] : [],
+      ...hasImage ? [imageEl!] : [],
       ...hasVideo ? [VideoElement()] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
       revealEmbedButton,
