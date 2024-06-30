@@ -34,6 +34,7 @@ export type Post = {
   selfText?: string;
   selfTextHtml?: string;
   upvotes: number;
+  mediaEmbedHtml?: string;
 };
 
 /** Refined comment object */
@@ -128,6 +129,9 @@ export type RedditApiPost = {
       fallback_url: string;
       hls_url?: string;
     }
+  }
+  media_embed?: {
+    content?: string;
   }
   media_metadata?: {
     [key: string]: {

@@ -234,6 +234,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selftext_html,
     ups,
     gallery_data,
+    media_embed,
   } = data;
 
   // Works for imgur and i.reddit
@@ -317,6 +318,11 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     </iframe>`;
   }
 
+  let mediaEmbedHtml;
+  if (media_embed?.content) {
+    mediaEmbedHtml = media_embed.content;
+  }
+
   const post: Post = {
     id,
     author,
@@ -340,6 +346,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     videoSourceData,
     fallbackSource: source,
     imageList,
+    mediaEmbedHtml,
   };
   // console.log(post);
   return post;

@@ -170,7 +170,7 @@ const BodyText = ({ text }: { text: string }) => fabricate('Text')
  */
 const GalleryPost = ({ post }: { post: Post }) => {
   const {
-    id, iframe, imageSource, videoSourceData, imageList, selfText, selfTextHtml,
+    id, iframe, imageSource, videoSourceData, imageList, selfText, selfTextHtml, mediaEmbedHtml,
   } = post;
 
   const indexKey = fabricate.buildKey('imageListIndex', id);
@@ -179,6 +179,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
   const isGif = imageSource?.endsWith('.gif');
+  const hasMediaEmbed = !!mediaEmbedHtml?.length;
 
   const imageEl = hasImage
     ? fabricate('img')
@@ -243,6 +244,18 @@ const GalleryPost = ({ post }: { post: Post }) => {
       )
     : undefined;
 
+  // At least YouTube
+  const mediaEmbedEl = hasMediaEmbed
+    ? fabricate('Row')
+      .setStyles({ justifyContent: 'center' })
+      .onUpdate(
+        (el, { visibleMediaPostId }) => {
+          el.innerHTML = visibleMediaPostId === id ? decodeHtml(mediaEmbedHtml)! : '';
+        },
+        ['visibleMediaPostId'],
+      )
+    : undefined;
+
   const revealEmbedButton = fabricate('Row')
     .setStyles({
       alignItems: 'center',
@@ -251,7 +264,8 @@ const GalleryPost = ({ post }: { post: Post }) => {
       cursor: 'pointer',
     })
     .displayWhen(
-      (state) => !!((hasIframeEmbed || hasVideo || isGif) && state.visibleMediaPostId !== id),
+      (state) => !!(
+        (hasIframeEmbed || hasVideo || isGif || hasMediaEmbed) && state.visibleMediaPostId !== id),
     )
     .onClick(() => fabricate.update({ visibleMediaPostId: id }))
     .setChildren([
@@ -269,6 +283,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       ...hasImage ? [imageEl!] : [],
       ...hasVideo ? [VideoElement()] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
+      ...hasMediaEmbed ? [mediaEmbedEl!] : [],
       revealEmbedButton,
       ImageListControls({ id, imageList }),
     ])
