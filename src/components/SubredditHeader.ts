@@ -114,7 +114,8 @@ const SubredditHeader = () => {
           description,
         ]),
     ])
-    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query', 'subreddit', 'posts']);
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['query', 'subreddit', 'posts']);
 };
 
 export default SubredditHeader;

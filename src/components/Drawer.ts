@@ -78,14 +78,23 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    * @param {FabricateComponent} el - This element.
    * @param {AppState} state - App state.
    */
-  const onClick = (el: FabricateComponent<AppState>, { accessToken, sortMode }: AppState) => {
+  const onClick = (
+    el: FabricateComponent<AppState>,
+    { accessToken, sortMode, query }: AppState,
+  ) => {
     if (!accessToken) return;
 
     delayedScrollTop();
     fabricate.update({ drawerOpen: false, query: url });
-    fabricate.navigate('/list');
 
-    fetchPosts(accessToken, url, sortMode);
+    if (fabricate.getRouteHistory().pop()! !== '/list') {
+      // Navigation does the fetchPosts
+      fabricate.navigate('/list');
+      return;
+    }
+    if (query !== url) {
+      fetchPosts(accessToken, url, sortMode);
+    }
   };
 
   return fabricate('Row')

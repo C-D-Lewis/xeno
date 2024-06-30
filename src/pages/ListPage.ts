@@ -26,8 +26,10 @@ const ListPage = () => AppPage()
 
     fabricate.update({ landingPage: '/list' });
 
-    // Load list page content
-    fetchPosts(accessToken!, query, sortMode);
+    // Load list page content if not returning from a post
+    if (fabricate.getRouteHistory().slice(-2)[0]! !== '/post') {
+      fetchPosts(accessToken!, query, sortMode);
+    }
   });
 
 export default ListPage;
