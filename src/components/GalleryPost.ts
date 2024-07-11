@@ -176,10 +176,10 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const indexKey = fabricate.buildKey('imageListIndex', id);
   const hasVideo = !!videoSourceData;
   const hasIframeEmbed = !!iframe;
+  const hasMediaEmbed = !hasIframeEmbed && !!mediaEmbedHtml?.length;
   const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
   const showSelfText = !!(selfTextHtml || selfText);
   const isGif = imageSource?.endsWith('.gif');
-  const hasMediaEmbed = !!mediaEmbedHtml?.length;
 
   const imageEl = hasImage
     ? fabricate('img')
