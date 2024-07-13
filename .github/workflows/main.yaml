@@ -29,6 +29,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Download deploy.sh
+        run: |
+          curl https://gist.githubusercontent.com/C-D-Lewis/ab4d0f9aee31fa016b713518a3a9303a/raw/deploy.sh >> ./deploy.sh
+          sudo chmod +x ./deploy.sh
       
       - name: Build and deploy
         run: ./deploy.sh ${{ vars.SITE_DOMAIN }}
