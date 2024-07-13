@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, GalleryImageList, Post } from '../types';
 import ImageButton from './ImageButton';
@@ -35,9 +36,10 @@ const imgObserver = new IntersectionObserver((entries) => {
  *
  * @param {object} props - Component props.
  * @param {Post} props.post - Post.
+ * @param {boolean} props.isMax - True if max layout required.
  * @returns {HTMLElement} Fabricate component.
  */
-const PostHeader = ({ post }: { post: Post }) => {
+const PostHeader = ({ post, isMax }: { post: Post, isMax?: boolean }) => {
   const {
     subreddit, created, author, fallbackSource,
   } = post;
@@ -74,9 +76,9 @@ const PostHeader = ({ post }: { post: Post }) => {
       }
     })
     .setChildren([
-      postMetadataRow,
+      ...!isMax ? [postMetadataRow] : [],
       postTitleRow,
-      PostMetrics({ post }),
+      ...!isMax ? [PostMetrics({ post })] : [],
     ]);
 };
 
@@ -166,9 +168,10 @@ const BodyText = ({ text }: { text: string }) => fabricate('Text')
  *
  * @param {object} props - Component props.
  * @param {Post} props.post - Post.
+ * @param {boolean} props.isMax - True if max layout required.
  * @returns {HTMLElement} Fabricate component.
  */
-const GalleryPost = ({ post }: { post: Post }) => {
+const GalleryPost = ({ post, isMax }: { post: Post, isMax?: boolean }) => {
   const {
     id, iframe, imageSource, videoSourceData, imageList, selfText, selfTextHtml, mediaEmbedHtml,
   } = post;
@@ -181,6 +184,10 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const showSelfText = !!(selfTextHtml || selfText);
   const isGif = imageSource?.endsWith('.gif');
 
+  const maxImageHeight = isMax
+    ? '100vh'
+    : fabricate.isNarrow() ? '70vh' : '75vh';
+
   const imageEl = hasImage
     ? fabricate('img')
       .setStyles({
@@ -188,7 +195,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
         width: '100%',
         height: 'auto',
         objectFit: 'contain',
-        maxHeight: fabricate.isNarrow() ? '70vh' : '75vh',
+        maxHeight: maxImageHeight,
         margin: 'auto',
         opacity: '0.2',
         transition: '0.3s',
@@ -276,10 +283,13 @@ const GalleryPost = ({ post }: { post: Post }) => {
         .setText(isGif ? 'Show gif' : 'Show video'),
     ]);
 
+  const maxCardWidth = isMax
+    ? '100vw'
+    : fabricate.isNarrow() ? '95vw' : '48vw';
   return Card()
-    .setStyles({ width: fabricate.isNarrow() ? '95vw' : '29vw' })
+    .setStyles({ width: maxCardWidth })
     .setChildren([
-      PostHeader({ post }),
+      PostHeader({ post, isMax }),
       ...hasImage ? [imageEl!] : [],
       ...hasVideo ? [VideoElement()] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
@@ -289,9 +299,6 @@ const GalleryPost = ({ post }: { post: Post }) => {
     ])
     .onCreate((el, state) => {
       if (state[fabricate.StateKeys.Route] !== '/post') return;
-
-      // Always wide on PostPage
-      el.setStyles({ width: fabricate.isNarrow() ? '95vw' : '48vw' });
 
       // Show body text only on PostPage
       if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);

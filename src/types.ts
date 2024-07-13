@@ -60,6 +60,9 @@ export type Subreddit = {
   isSubscribed: boolean;
 };
 
+/** Available display modes */
+export type DisplayMode = 'gallery' | 'list' | 'max';
+
 /** App state type */
 export type AppState = {
   // Required for key indexing like state['fabricate:route'] (need other solution)
@@ -72,7 +75,7 @@ export type AppState = {
   isLoggedIn: boolean;
   username: string | null;
   query: string;
-  displayMode: 'gallery' | 'list';
+  displayMode: DisplayMode;
   sortMode: SortMode;
   lastReloadTime: number;
   lastLaunchTime: number;
