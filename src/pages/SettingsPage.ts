@@ -126,11 +126,6 @@ const ViewModeSetting = () => SettingsWrapper({
       setting: 'displayMode',
       value: 'gallery',
     }),
-    Option({
-      label: 'Max',
-      setting: 'displayMode',
-      value: 'max',
-    }),
   ],
 });
 

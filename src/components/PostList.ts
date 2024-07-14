@@ -17,9 +17,8 @@ let searchStart = Date.now();
  * @param {DisplayMode} displayMode - Preferred display mode.
  * @returns {FabricateComponent} The preferred component.
  */
-const getPostType = (post: Post, displayMode: DisplayMode) => {
+const getPostComponentByType = (post: Post, displayMode: DisplayMode) => {
   if (displayMode === 'gallery') return GalleryPost({ post });
-  if (displayMode === 'max') return GalleryPost({ post, isMax: true });
 
   return ListPost({ post });
 };
@@ -84,7 +83,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       // Allow page to be created and navigated, then add lots of children
       setTimeout(() => {
         el.setChildren(
-          list.map((post) => getPostType(post, displayMode)),
+          list.map((post) => getPostComponentByType(post, displayMode)),
         );
       }, 200);
     }

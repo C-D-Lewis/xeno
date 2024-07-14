@@ -12,19 +12,12 @@ declare const fabricate: Fabricate<AppState>;
  */
 const AppPage = () => fabricate('Column')
   .setStyles({
+    width: fabricate.isNarrow() ? '100vw' : '100%',
     margin: '0px auto',
     overflowY: 'scroll',
     minHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
     maxHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
     paddingTop: `${APP_NAV_BAR_HEIGHT}px`,
-  })
-  .onCreate((el, state) => {
-    const { displayMode } = state;
-
-    const finalWidth = displayMode === 'max'
-      ? '100vw'
-      : fabricate.isNarrow() ? '95vw' : '100%';
-    el.setStyles({ width: finalWidth });
   });
 
 export default AppPage;
