@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, GalleryImageList, Post } from '../types';
+import { AppState, GalleryImageItem, Post } from '../types';
 import ImageButton from './ImageButton';
 import LinkButton from './LinkButton';
 import PostMetrics from './PostMetrics';
@@ -86,10 +86,10 @@ const PostHeader = ({ post }: { post: Post }) => {
  *
  * @param {object} props - Component props.
  * @param {string} props.id - Post ID.
- * @param {GalleryImageList[]} props.imageList - Image URL list.
+ * @param {GalleryImageItem[]} props.imageList - Image URL list.
  * @returns {FabricateComponent} ImageListControls component.
  */
-const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryImageList[] }) => {
+const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryImageItem[] }) => {
   const numImages = imageList.length;
   if (numImages < 2) return fabricate('div');
 
@@ -97,7 +97,13 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
   fabricate.update(indexKey, 0);
 
   const leftArrowImg = ImageButton({ src: 'assets/arrow-left.png' })
-    .setStyles({ filter: 'brightness(0.5)', margin: '0px' })
+    .setStyles({
+      filter: 'brightness(0.5)',
+      margin: '0px',
+      width: '100%',
+      height: '32px',
+      objectFit: 'contain',
+    })
     .onUpdate((el, state) => {
       el.setStyles({ filter: `brightness(${state[indexKey] === 0 ? '0.5' : '1'})` });
     }, [indexKey])
@@ -107,8 +113,25 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       fabricate.update(indexKey, state[indexKey] - 1);
     });
 
+  const currentIndexText = fabricate('Text')
+    .setStyles(({ palette }) => ({
+      padding: '0px 15px',
+      fontSize: '1rem',
+      color: palette.text,
+    }))
+    .setText(`1/${numImages}`)
+    .onUpdate(
+      (el, state) => el.setText(`${state[indexKey] + 1}/${numImages}`),
+      [indexKey],
+    );
+
   const rightArrowImg = ImageButton({ src: 'assets/arrow-right.png' })
-    .setStyles({ margin: '0px' })
+    .setStyles({
+      margin: '0px',
+      width: '100%',
+      objectFit: 'contain',
+      height: '32px',
+    })
     .onUpdate((el, state) => {
       el.setStyles({
         filter: `brightness(${state[indexKey] === numImages - 1 ? '0.5' : '1'})`,
@@ -123,20 +146,12 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       );
     });
 
-  const currentIndexText = fabricate('Text')
-    .setStyles(({ palette }) => ({
-      margin: '0px 5px',
-      fontSize: '0.9rem',
-      color: palette.text,
-    }))
-    .setText(`1/${numImages}`)
-    .onUpdate(
-      (el, state) => el.setText(`${state[indexKey] + 1}/${numImages}`),
-      [indexKey],
-    );
-
   return fabricate('Row')
-    .setStyles({ alignItems: 'center', margin: '5px auto' })
+    .setStyles({
+      alignItems: 'center',
+      margin: '0px auto',
+      width: '100%',
+    })
     .displayWhen(() => !!numImages)
     .setChildren([
       leftArrowImg,
@@ -179,7 +194,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const hasIframeEmbed = !!iframe;
   const hasMediaEmbed = !hasIframeEmbed && !!mediaEmbedHtml?.length;
   const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
-  const showSelfText = !!(selfTextHtml || selfText);
+  const hasSelfText = !!(selfTextHtml || selfText);
   const isGif = imageSource?.endsWith('.gif');
 
   const imageEl = hasImage
@@ -217,23 +232,23 @@ const GalleryPost = ({ post }: { post: Post }) => {
    *
    * @returns {FabricateComponent} Component.
    */
-  const VideoElement = () => fabricate.conditional(
+  const videoEl = fabricate.conditional(
     (state) => state.visibleMediaPostId === id,
     () => fabricate('video')
       .setStyles({ width: '100%', objectFit: 'cover' })
       .setAttributes({ controls: 'controls', muted: false })
       .onCreate((el) => {
-        // Try DASH
-        if (videoSourceData) {
-          if (!videoSourceData.dashUrl) {
-            // Fallback
-            el.setAttributes({ src: videoSourceData.fallbackUrl });
-          } else {
-            // Use dashjs
-            const player = dashjs.MediaPlayer().create();
-            player.initialize(el, videoSourceData.dashUrl, false);
-          }
+        if (!videoSourceData) return;
+
+        if (!videoSourceData.dashUrl) {
+          // Fallback
+          el.setAttributes({ src: videoSourceData.fallbackUrl });
+          return;
         }
+
+        // Use dashjs
+        const player = dashjs.MediaPlayer().create();
+        player.initialize(el, videoSourceData.dashUrl, false);
       }),
   );
 
@@ -257,7 +272,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
       )
     : undefined;
 
-  const revealEmbedButton = fabricate('Row')
+  const revealEmbedEl = fabricate('Row')
     .setStyles({
       alignItems: 'center',
       textAlign: 'center',
@@ -282,17 +297,18 @@ const GalleryPost = ({ post }: { post: Post }) => {
     .setChildren([
       PostHeader({ post }),
       ...hasImage ? [imageEl!] : [],
-      ...hasVideo ? [VideoElement()] : [],
+      ...hasVideo ? [videoEl] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
       ...hasMediaEmbed ? [mediaEmbedEl!] : [],
-      revealEmbedButton,
+      revealEmbedEl,
       ImageListControls({ id, imageList }),
     ])
-    .onCreate((el, state) => {
-      if (state[fabricate.StateKeys.Route] !== '/post') return;
+    .onCreate((el) => {
+      const route = fabricate.getRouteHistory().pop()!;
+      if (route !== '/post') return;
 
       // Show body text only on PostPage
-      if (showSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
+      if (hasSelfText) el.addChildren([BodyText({ text: selfTextHtml || selfText! })]);
     });
 };
 

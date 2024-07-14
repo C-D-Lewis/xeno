@@ -22,12 +22,14 @@ const ListPage = () => AppPage()
     PostList({ listStateKey: 'posts' }).displayWhen(({ postsLoading }) => !postsLoading),
   ])
   .onCreate((el, state) => {
-    const { accessToken, query, sortMode } = state;
+    const {
+      posts, accessToken, sortMode, query,
+    } = state;
 
     fabricate.update({ landingPage: '/list' });
 
-    // Load list page content if not returning from a post
-    if (fabricate.getRouteHistory().slice(-2)[0]! !== '/post') {
+    // If initial load, fetch posts
+    if (!posts.length) {
       fetchPosts(accessToken!, query, sortMode);
     }
   });

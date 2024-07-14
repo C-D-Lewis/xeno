@@ -9,7 +9,7 @@ export type VideoSourceData = {
 };
 
 /** Gallery image list type */
-export type GalleryImageList = {
+export type GalleryImageItem = {
   mediaId: string;
   url: string;
 }
@@ -26,7 +26,7 @@ export type Post = {
   width?: number;
   height?: number;
   imageSource?: string;
-  imageList: GalleryImageList[];
+  imageList: GalleryImageItem[];
   videoSourceData?: VideoSourceData | undefined;
   thumbnail?: string;
   fallbackSource?: string;

@@ -80,20 +80,16 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    */
   const onClick = (
     el: FabricateComponent<AppState>,
-    { accessToken, sortMode, query }: AppState,
+    { accessToken, sortMode }: AppState,
   ) => {
     if (!accessToken) return;
 
     delayedScrollTop();
     fabricate.update({ drawerOpen: false, query: url });
 
+    fetchPosts(accessToken, url, sortMode);
     if (fabricate.getRouteHistory().pop()! !== '/list') {
-      // Navigation does the fetchPosts
       fabricate.navigate('/list');
-      return;
-    }
-    if (query !== url) {
-      fetchPosts(accessToken, url, sortMode);
     }
   };
 
@@ -122,13 +118,15 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
     transition: '2s',
     zIndex: '1000',
   })
-  .onUpdate((el, state) => {
-    const enabled = ['/list', '/feed'].includes(state[fabricate.StateKeys.Route]);
+  .onUpdate((el) => {
+    const route = fabricate.getRouteHistory().pop()!;
+    const enabled = ['/list', '/feed'].includes(route);
 
     el.setStyles({ filter: `brightness(${enabled ? 1 : 0.5})` });
   }, [fabricate.StateKeys.Route])
   .onClick((el, state) => {
-    if (state[fabricate.StateKeys.Route] === '/init') return;
+    const route = fabricate.getRouteHistory().pop()!;
+    if (route === '/init') return;
 
     const { drawerOpen } = state;
     const newState = !drawerOpen;
@@ -263,13 +261,11 @@ const FeedButton = () => {
    * Update layout.
    *
    * @param {FabricateComponent} el - The component.
-   * @param {AppState} state - App state.
    * @returns {void}
    */
   const updateLayout = (
     el:FabricateComponent<AppState>,
-    state: AppState,
-  ) => setSelectedStyles(el, label, state[fabricate.StateKeys.Route] === '/feed');
+  ) => setSelectedStyles(el, label, fabricate.getRouteHistory().pop()! === '/feed');
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({
@@ -287,7 +283,8 @@ const FeedButton = () => {
       fabricate.update({ drawerOpen: false, query: '', selectedPost: null });
       fabricate.navigate('/feed');
     })
-    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query', fabricate.StateKeys.Route]);
+    .onCreate(updateLayout)
+    .onUpdate(updateLayout, ['query', fabricate.StateKeys.Route]);
 };
 
 /**
