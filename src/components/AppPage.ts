@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { APP_NAV_BAR_HEIGHT } from './AppNavBar.ts';
 import { AppState } from '../types.ts';
@@ -11,7 +12,7 @@ declare const fabricate: Fabricate<AppState>;
  */
 const AppPage = () => fabricate('Column')
   .setStyles({
-    width: fabricate.isNarrow() ? '95vw' : '100%',
+    width: fabricate.isNarrow() ? '100vw' : '100%',
     margin: '0px auto',
     overflowY: 'scroll',
     minHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,

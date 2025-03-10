@@ -9,7 +9,7 @@ export type VideoSourceData = {
 };
 
 /** Gallery image list type */
-export type GalleryImageList = {
+export type GalleryImageItem = {
   mediaId: string;
   url: string;
 }
@@ -26,7 +26,7 @@ export type Post = {
   width?: number;
   height?: number;
   imageSource?: string;
-  imageList: GalleryImageList[];
+  imageList: GalleryImageItem[];
   videoSourceData?: VideoSourceData | undefined;
   thumbnail?: string;
   fallbackSource?: string;
@@ -34,6 +34,7 @@ export type Post = {
   selfText?: string;
   selfTextHtml?: string;
   upvotes: number;
+  mediaEmbedHtml?: string;
 };
 
 /** Refined comment object */
@@ -59,6 +60,9 @@ export type Subreddit = {
   isSubscribed: boolean;
 };
 
+/** Available display modes */
+export type DisplayMode = 'gallery' | 'list';
+
 /** App state type */
 export type AppState = {
   // Required for key indexing like state['fabricate:route'] (need other solution)
@@ -71,7 +75,7 @@ export type AppState = {
   isLoggedIn: boolean;
   username: string | null;
   query: string;
-  displayMode: 'gallery' | 'list';
+  displayMode: DisplayMode;
   sortMode: SortMode;
   lastReloadTime: number;
   lastLaunchTime: number;
@@ -128,6 +132,9 @@ export type RedditApiPost = {
       fallback_url: string;
       hls_url?: string;
     }
+  }
+  media_embed?: {
+    content?: string;
   }
   media_metadata?: {
     [key: string]: {

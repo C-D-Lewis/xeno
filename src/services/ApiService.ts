@@ -4,7 +4,7 @@ import { Fabricate } from 'fabricate.js';
 import {
   AppState,
   Comment,
-  GalleryImageList,
+  GalleryImageItem,
   Post,
   RedditApiComment,
   RedditApiCommentTree,
@@ -234,6 +234,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selftext_html,
     ups,
     gallery_data,
+    media_embed,
   } = data;
 
   // Works for imgur and i.reddit
@@ -241,7 +242,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
   let backupThumbnail;
   let width;
   let height;
-  const imageList: GalleryImageList[] = [];
+  const imageList: GalleryImageItem[] = [];
   try {
     ({ width, height } = preview && preview.images[0].source);
 
@@ -317,6 +318,11 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     </iframe>`;
   }
 
+  let mediaEmbedHtml;
+  if (media_embed?.content) {
+    mediaEmbedHtml = media_embed.content;
+  }
+
   const post: Post = {
     id,
     author,
@@ -340,6 +346,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     videoSourceData,
     fallbackSource: source,
     imageList,
+    mediaEmbedHtml,
   };
   // console.log(post);
   return post;

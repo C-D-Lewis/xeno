@@ -9,4 +9,4 @@ devItems.json
 env.js
 env-prod.js
 env-local.js
-
+deploy.sh

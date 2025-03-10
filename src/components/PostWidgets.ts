@@ -38,19 +38,15 @@ export const PostAuthorLink = ({
         : palette.transparent,
     }))
     .onClick((el, state) => {
-      const { query, accessToken, sortMode } = state;
+      const { accessToken, sortMode } = state;
 
       fabricate.update({ query: fullAuthor });
       delayedScrollTop();
 
       if (fabricate.getRouteHistory().pop()! !== '/list') {
-        // Navigation does the fetchPosts
         fabricate.navigate('/list');
-        return;
       }
-      if (query !== fullAuthor) {
-        fetchPosts(accessToken!, fullAuthor, sortMode);
-      }
+      fetchPosts(accessToken!, fullAuthor, sortMode);
     });
 };
 
@@ -79,20 +75,16 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
     });
   })
   .onClick((el, state) => {
-    const { accessToken, query, sortMode } = state;
+    const { accessToken, sortMode } = state;
 
     const newQuery = `/r/${subreddit}`;
     fabricate.update({ query: newQuery });
     delayedScrollTop();
 
     if (fabricate.getRouteHistory().pop()! !== '/list') {
-      // Navigation does the fetchPosts
       fabricate.navigate('/list');
-      return;
     }
-    if (query !== newQuery) {
-      fetchPosts(accessToken!, newQuery, sortMode);
-    }
+    fetchPosts(accessToken!, newQuery, sortMode);
   });
 
 /**
@@ -124,26 +116,31 @@ export const PostAgeView = ({ created }: { created: number }) => {
  * @param {Post} props.post - The post.
  * @returns {FabricateComponent} PostTitle component.
  */
-export const PostTitle = ({ post }: { post: Post }) => fabricate('Text')
-  .setText(post.title)
-  .setAttributes({ id: `post-${post.id}` })
-  .setStyles(({ palette }) => ({
-    color: palette.text,
-    cursor: 'pointer',
-    margin: '5px',
-    fontSize: '1rem',
-    fontWeight: 'bold',
-  }))
-  .onClick((el, state) => {
-    const route = state[fabricate.StateKeys.Route];
-    if (route === '/post') {
-      window.open(`https://reddit.com${post.permalink}`, '_blank');
-      return;
-    }
+export const PostTitle = ({ post }: { post: Post }) => {
+  const finalPostTitle = post.title
+    .split('&amp;').join('&');
 
-    if (['/list', '/feed'].includes(route)) {
-      delayedScrollTop();
-      fabricate.update({ selectedPost: post, drawerOpen: false });
-      fabricate.navigate('/post');
-    }
-  });
+  return fabricate('Text')
+    .setText(finalPostTitle)
+    .setAttributes({ id: `post-${post.id}` })
+    .setStyles(({ palette }) => ({
+      color: palette.text,
+      cursor: 'pointer',
+      margin: '5px',
+      fontSize: '1.1rem',
+      fontWeight: 'bold',
+    }))
+    .onClick(() => {
+      const route = fabricate.getRouteHistory().pop()!;
+      if (route === '/post') {
+        window.open(`https://reddit.com${post.permalink}`, '_blank');
+        return;
+      }
+
+      if (['/list', '/feed'].includes(route)) {
+        delayedScrollTop();
+        fabricate.update({ selectedPost: post, drawerOpen: false });
+        fabricate.navigate('/post');
+      }
+    });
+};

@@ -47,7 +47,6 @@ const AppNavBar = () => {
       fontWeight: 'bold',
       margin: '0px 10px',
       cursor: 'default',
-      transition: '2s',
     }))
     .setText('Xeno');
 
@@ -77,7 +76,6 @@ const AppNavBar = () => {
       right: '0',
       zIndex: '999',
       boxShadow: styles.boxShadow,
-      transition: '2s',
     }))
     .addChildren([
       DrawerToggle().displayWhen((state) => !['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),

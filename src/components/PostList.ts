@@ -1,5 +1,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, ListStateKey, Post } from '../types.ts';
+import {
+  AppState, DisplayMode, ListStateKey, Post,
+} from '../types.ts';
 import GalleryPost from './GalleryPost.ts';
 import ListPost from './ListPost.ts';
 import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.ts';
@@ -7,6 +9,19 @@ import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.
 declare const fabricate: Fabricate<AppState>;
 
 let searchStart = Date.now();
+
+/**
+ * Get the displayed mode component.
+ *
+ * @param {Post} post - Post to display.
+ * @param {DisplayMode} displayMode - Preferred display mode.
+ * @returns {FabricateComponent} The preferred component.
+ */
+const getPostComponentByType = (post: Post, displayMode: DisplayMode) => {
+  if (displayMode === 'gallery') return GalleryPost({ post });
+
+  return ListPost({ post });
+};
 
 /**
  * Scroll a post into view until it is.
@@ -68,7 +83,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       // Allow page to be created and navigated, then add lots of children
       setTimeout(() => {
         el.setChildren(
-          list.map((post) => (displayMode === 'gallery' ? GalleryPost({ post }) : ListPost({ post }))),
+          list.map((post) => getPostComponentByType(post, displayMode)),
         );
       }, 200);
     }

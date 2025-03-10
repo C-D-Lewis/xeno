@@ -22,12 +22,16 @@ const ListPage = () => AppPage()
     PostList({ listStateKey: 'posts' }).displayWhen(({ postsLoading }) => !postsLoading),
   ])
   .onCreate((el, state) => {
-    const { accessToken, query, sortMode } = state;
+    const {
+      posts, accessToken, sortMode, query,
+    } = state;
 
     fabricate.update({ landingPage: '/list' });
 
-    // Load list page content
-    fetchPosts(accessToken!, query, sortMode);
+    // If initial load, fetch posts
+    if (!posts.length) {
+      fetchPosts(accessToken!, query, sortMode);
+    }
   });
 
 export default ListPage;
