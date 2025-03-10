@@ -1,10 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import { getQueryParam } from '../utils';
-import { getAccessToken, getUsername } from '../services/ApiService';
-import AppPage from '../components/AppPage';
-import Theme from '../theme';
-import LoginButton from '../components/LoginButton';
+import { AppState } from '../types.ts';
+import { getQueryParam } from '../utils.ts';
+import { getAccessToken, getUsername } from '../services/ApiService.ts';
+import AppPage from '../components/AppPage.ts';
+import Theme from '../theme.ts';
+import LoginButton from '../components/LoginButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

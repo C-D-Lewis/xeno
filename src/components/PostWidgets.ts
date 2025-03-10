@@ -1,10 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme';
-import { AppState, Post } from '../types';
+import Theme from '../theme.ts';
+import { AppState, Post } from '../types.ts';
 import {
   delayedScrollTop, getContrastColor, getSubredditColor, getTimeAgoStr,
-} from '../utils';
-import { fetchPosts } from '../services/ApiService';
+} from '../utils.ts';
+import { fetchPosts } from '../services/ApiService.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

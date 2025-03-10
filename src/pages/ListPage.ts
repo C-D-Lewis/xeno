@@ -1,10 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import AppLoader from '../components/AppLoader';
-import AppPage from '../components/AppPage';
-import SubredditHeader from '../components/SubredditHeader';
-import PostList from '../components/PostList';
-import { fetchPosts } from '../services/ApiService';
+import { AppState } from '../types.ts';
+import AppLoader from '../components/AppLoader.ts';
+import AppPage from '../components/AppPage.ts';
+import SubredditHeader from '../components/SubredditHeader.ts';
+import PostList from '../components/PostList.ts';
+import { fetchPosts } from '../services/ApiService.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

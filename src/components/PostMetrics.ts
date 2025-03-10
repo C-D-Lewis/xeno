@@ -1,6 +1,6 @@
 import { Fabricate } from 'fabricate.js';
-import { AppState, Post } from '../types';
-import { roughNumber } from '../utils';
+import { AppState, Post } from '../types.ts';
+import { roughNumber } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

@@ -1,10 +1,10 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPostComments } from '../services/ApiService';
-import { AppState, Comment } from '../types';
-import { decodeHtml, parseMarkdown } from '../utils';
-import AppLoader from './AppLoader';
-import { PostAgeView, PostAuthorLink } from './PostWidgets';
-import Theme from '../theme';
+import { fetchPostComments } from '../services/ApiService.ts';
+import { AppState, Comment } from '../types.ts';
+import { decodeHtml, parseMarkdown } from '../utils.ts';
+import AppLoader from './AppLoader.ts';
+import { PostAgeView, PostAuthorLink } from './PostWidgets.ts';
+import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

@@ -1,12 +1,12 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPosts, submitQuery } from '../services/ApiService';
-import Theme from '../theme';
-import { AppState, Subreddit } from '../types';
-import { delayedScrollTop } from '../utils';
-import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
-import ImageButton from './ImageButton';
-import Input from './Input';
-import LoginButton from './LoginButton';
+import { fetchPosts, submitQuery } from '../services/ApiService.ts';
+import Theme from '../theme.ts';
+import { AppState, Subreddit } from '../types.ts';
+import { delayedScrollTop } from '../utils.ts';
+import { APP_NAV_BAR_HEIGHT } from './AppNavBar.ts';
+import ImageButton from './ImageButton.ts';
+import Input from './Input.ts';
+import LoginButton from './LoginButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -153,7 +153,7 @@ const UserInfoRow = () => {
         return;
       }
 
-      el.setText(usernameVisible ? username! : 'Logged in' || '-');
+      el.setText(usernameVisible ? username! : 'Logged in');
     }, [fabricate.StateKeys.Created, 'username', 'isLoggedIn', 'usernameVisible']);
 
   const settingsButton = ImageButton({ src: 'assets/settings.png' })

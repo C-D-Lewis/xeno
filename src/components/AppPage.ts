@@ -1,6 +1,6 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { APP_NAV_BAR_HEIGHT } from './AppNavBar';
-import { AppState } from '../types';
+import { APP_NAV_BAR_HEIGHT } from './AppNavBar.ts';
+import { AppState } from '../types.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

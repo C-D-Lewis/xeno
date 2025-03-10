@@ -2,8 +2,8 @@
 
 # This script is intended to be a complete build assuming:
 #
-#   - Using C-D-Lewis/terraform-s3-cloudfront-website
-#   - Using COMMIT in index.html
+#   - Using C-D-Lewis/terraform-modules/s3-cloudfront-website
+#   - Using $COMMIT in index.html
 #   - Standardized Node/AWS/Terraform/Build GitHub workflow with variables:
 #     - SITE_DOMAIN
 #
@@ -36,12 +36,14 @@ if [[ ! -z $(git status -s) ]]; then
   exit 1
 fi
 
+# DISABLED FOR VITE
+#
 # Check template variable is ready and replace it for cache update
-if [ ! "$(cat index.html | grep COMMIT)" ]; then
-  echo "COMMIT not found in index.html"
-  exit 1
-fi
-sed -i.bak "s/COMMIT/$COMMIT/g" index.html
+# if [ ! "$(cat index.html | grep COMMIT)" ]; then
+#   echo "COMMIT not found in index.html"
+#   exit 1
+# fi
+# sed -i.bak "s/COMMIT/$COMMIT/g" index.html
 
 ############################################### Push ###############################################
 
@@ -57,8 +59,10 @@ aws s3 sync dist $BUCKET/dist || true
 aws s3 cp favicon.ico $BUCKET || true
 aws s3 cp sw.js $BUCKET || true # custom
 
+# DISABLED FOR VITE
+#
 # Restore template
-mv index.html.bak index.html
+# mv index.html.bak index.html
 
 ########################################## Infrastructure ##########################################
 
@@ -85,15 +89,25 @@ echo "Invalidation completed"
 
 ############################################## Verify ##############################################
 
-printf "\n\n>>> Checking deployment\n\n"
+# printf "\n\n>>> Checking deployment\n\n"
 
-RES=""
-while [[ ! "$RES" =~ "$COMMIT" ]]; do
-  sleep 5
-  URL="https://$SITE_DOMAIN?t=$(date +%s)"
-  echo $URL
-  RES=$(curl -s $URL)
-done
-echo "Commit $COMMIT found in live site"
+# DISABLED FOR VITE
+#
+# RES=""
+# while [[ ! "$RES" =~ "$COMMIT" ]]; do
+#   sleep 5
+#   URL="https://$SITE_DOMAIN?t=$(date +%s)"
+#   echo $URL
+#   RES=$(curl -s $URL)
+# done
+# echo "Commit $COMMIT found in live site"
 
 printf "\n\n>>> Deployment complete!\n\n"
+
+########################################### Post-deploy? ###########################################
+
+if test -f ./post-deploy.sh; then
+  printf "\n\n>>> Running post-deploy.sh\n\n"
+
+  ./post-deploy.sh
+fi

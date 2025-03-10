@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import AppLoader from '../components/AppLoader';
-import { ensureAccessToken, getAppOnlyToken, getUserSubscriptions } from '../services/ApiService';
-import AppPage from '../components/AppPage';
-import { getQueryParam } from '../utils';
+import { AppState } from '../types.ts';
+import AppLoader from '../components/AppLoader.ts';
+import { ensureAccessToken, getAppOnlyToken, getUserSubscriptions } from '../services/ApiService.ts';
+import AppPage from '../components/AppPage.ts';
+import { getQueryParam } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

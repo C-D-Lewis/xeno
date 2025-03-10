@@ -13,8 +13,8 @@ import {
   SortMode,
   Subreddit,
   VideoSourceData,
-} from '../types';
-import { sortByDate, sortByTitleCaseInsensitive } from '../utils';
+} from '../types.ts';
+import { sortByDate, sortByTitleCaseInsensitive } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 declare const CLIENT_ID: string;

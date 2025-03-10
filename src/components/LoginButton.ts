@@ -1,7 +1,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import Theme from '../theme';
-import { LOGIN_URL } from '../services/ApiService';
+import { AppState } from '../types.ts';
+import Theme from '../theme.ts';
+import { LOGIN_URL } from '../services/ApiService.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

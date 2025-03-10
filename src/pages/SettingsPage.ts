@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import AppPage from '../components/AppPage';
-import Card from '../components/Card';
-import RateLimitBar from '../components/RateLimitBar';
-import Theme from '../theme';
+import { AppState } from '../types.ts';
+import AppPage from '../components/AppPage.ts';
+import Card from '../components/Card.ts';
+import RateLimitBar from '../components/RateLimitBar.ts';
+import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

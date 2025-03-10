@@ -1,11 +1,11 @@
 import { Fabricate } from 'fabricate.js';
-import { AppState, Post } from '../types';
+import { AppState, Post } from '../types.ts';
 import {
   PostAgeView, PostAuthorLink, PostTitle, SubredditPill,
-} from './PostWidgets';
-import LinkButton from './LinkButton';
-import PostMetrics from './PostMetrics';
-import Card from './Card';
+} from './PostWidgets.ts';
+import LinkButton from './LinkButton.ts';
+import PostMetrics from './PostMetrics.ts';
+import Card from './Card.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

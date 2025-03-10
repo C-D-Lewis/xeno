@@ -1,15 +1,15 @@
 import { Fabricate, FabricateOptions } from 'fabricate.js';
-import AppNavBar from './components/AppNavBar';
-import { Drawer } from './components/Drawer';
-import LoginPage from './pages/LoginPage';
-import ListPage from './pages/ListPage';
-import FeedPage from './pages/FeedPage';
-import PostPage from './pages/PostPage';
-import SettingsPage from './pages/SettingsPage';
-import { AppState } from './types';
-import InitPage from './pages/InitPage';
-import Theme from './theme';
-import ScrollTopButton from './components/ScrollTopButton';
+import AppNavBar from './components/AppNavBar.ts';
+import { Drawer } from './components/Drawer.ts';
+import LoginPage from './pages/LoginPage.ts';
+import ListPage from './pages/ListPage.ts';
+import FeedPage from './pages/FeedPage.ts';
+import PostPage from './pages/PostPage.ts';
+import SettingsPage from './pages/SettingsPage.ts';
+import { AppState } from './types.ts';
+import InitPage from './pages/InitPage.ts';
+import Theme from './theme.ts';
+import ScrollTopButton from './components/ScrollTopButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

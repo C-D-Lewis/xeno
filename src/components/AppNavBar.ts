@@ -1,7 +1,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import { DrawerToggle } from './Drawer';
-import ImageButton from './ImageButton';
+import { AppState } from '../types.ts';
+import { DrawerToggle } from './Drawer.ts';
+import ImageButton from './ImageButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

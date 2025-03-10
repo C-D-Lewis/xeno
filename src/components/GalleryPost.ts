@@ -1,13 +1,13 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, GalleryImageList, Post } from '../types';
-import ImageButton from './ImageButton';
-import LinkButton from './LinkButton';
-import PostMetrics from './PostMetrics';
+import { AppState, GalleryImageList, Post } from '../types.ts';
+import ImageButton from './ImageButton.ts';
+import LinkButton from './LinkButton.ts';
+import PostMetrics from './PostMetrics.ts';
 import {
   PostAgeView, PostAuthorLink, PostTitle, SubredditPill,
-} from './PostWidgets';
-import Card from './Card';
-import { decodeHtml } from '../utils';
+} from './PostWidgets.ts';
+import Card from './Card.ts';
+import { decodeHtml } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 declare const dashjs: {

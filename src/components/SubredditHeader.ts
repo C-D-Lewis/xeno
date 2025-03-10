@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState } from '../types';
-import { getContrastColor, styleIconContrastColor } from '../utils';
-import ImageButton from './ImageButton';
-import { fetchSubreddit, getUserSubscriptions, modifySubscription } from '../services/ApiService';
-import Theme from '../theme';
+import { AppState } from '../types.ts';
+import { getContrastColor, styleIconContrastColor } from '../utils.ts';
+import ImageButton from './ImageButton.ts';
+import { fetchSubreddit, getUserSubscriptions, modifySubscription } from '../services/ApiService.ts';
+import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

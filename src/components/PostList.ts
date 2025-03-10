@@ -1,8 +1,8 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, ListStateKey, Post } from '../types';
-import GalleryPost from './GalleryPost';
-import ListPost from './ListPost';
-import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils';
+import { AppState, ListStateKey, Post } from '../types.ts';
+import GalleryPost from './GalleryPost.ts';
+import ListPost from './ListPost.ts';
+import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
