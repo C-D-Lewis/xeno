@@ -113,7 +113,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     }
   };
 
-  return fabricate('Row')
+  return fabricate('Column')
     .setStyles({
       padding: '5px 0px',
       flex: '1',

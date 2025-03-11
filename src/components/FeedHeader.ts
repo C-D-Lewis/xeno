@@ -45,11 +45,18 @@ const FeedHeader = () => {
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({
-      padding: '22px 4px 4px 4px',
+      padding: '22px 16px 16px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
       backgroundColor: palette.primary,
+      maxWidth: '60vw',
+      margin: '0 auto',
     }))
+    .setNarrowStyles({
+      maxWidth: '100%',
+      margin: '0',
+      padding: '22px 4px 4px',
+    })
     .setChildren([
       icon,
       fabricate('Column')
