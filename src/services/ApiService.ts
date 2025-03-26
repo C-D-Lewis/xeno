@@ -10,6 +10,7 @@ import {
   RedditApiCommentTree,
   RedditApiPost,
   RedditApiSubreddit,
+  RedditApiTypePrefix,
   SortMode,
   Subreddit,
   VideoSourceData,
@@ -22,7 +23,7 @@ declare const CLIENT_SECRET: string;
 declare const REDIRECT_URI: string;
 
 /** Requested scopes */
-const SCOPE_STRING = 'identity read history mysubreddits subscribe';
+const SCOPE_STRING = 'identity read history mysubreddits subscribe vote';
 /** Group of feed queries to fetch at once (600 per 10 mins) */
 const GROUP_SIZE = 100;
 /** One week ago in ms */
@@ -235,6 +236,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     ups,
     gallery_data,
     media_embed,
+    likes,
   } = data;
 
   // Works for imgur and i.reddit
@@ -339,6 +341,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     numComments: num_comments,
     selfText: selftext,
     selfTextHtml: selftext_html,
+    isUpvoted: likes,
 
     // Media
     thumbnail: thumbnail || backupThumbnail,
@@ -622,7 +625,7 @@ export const fetchFeedPosts = async (
 /**
  * Submit the current query or query text.
  *
- * @param {string} accessToken - Acces token.
+ * @param {string} accessToken - Access token.
  * @param {string} query - Query or queryInput
  * @param {SortMode} sortMode - sort mode.
  */
@@ -644,7 +647,7 @@ export const submitQuery = (accessToken: string, query: string, sortMode: SortMo
 /**
  * Modify a subscriptin.
  *
- * @param {string} accessToken - Acces token.
+ * @param {string} accessToken - Access token.
  * @param {string} fullName - Subreddit fullname
  * @param {boolean} subscribed - Whether to be subscribed now.
  */
@@ -656,4 +659,22 @@ export const modifySubscription = async (
   const action = subscribed ? 'sub' : 'unsub';
   const body = `action=${action}&api_type=json&sr_name=${fullName}`;
   await apiRequest(accessToken, '/api/subscribe', 'POST', body);
+};
+
+/**
+ * Cast a vote.
+ *
+ * @param {string} accessToken - Access token.
+ * @param {string} id - Post ID.
+ * @param {number} dir - 1 for upvote, 0 for unvote, -1 for downvote.
+ * @param {RedditApiTypePrefix} typePrefix - Post type prefix.
+ */
+export const castVote = async (
+  accessToken: string,
+  id: string,
+  dir: number,
+  typePrefix: RedditApiTypePrefix,
+) => {
+  const body = `dir=${dir}&id=${typePrefix}${id}`;
+  await apiRequest(accessToken, '/api/vote', 'POST', body);
 };

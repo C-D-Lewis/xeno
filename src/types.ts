@@ -35,6 +35,7 @@ export type Post = {
   selfTextHtml?: string;
   upvotes: number;
   mediaEmbedHtml?: string;
+  isUpvoted: boolean | null;
 };
 
 /** Refined comment object */
@@ -149,6 +150,7 @@ export type RedditApiPost = {
       id: number;
     }[];
   }
+  likes: boolean | null;
 };
 
 /** Single API comment type */
@@ -186,3 +188,14 @@ export type RedditApiSubreddit = {
 
 /** List keys in the state for posts */
 export type ListStateKey = 'posts' | 'feedPosts';
+
+/**
+ * Thing type prefixes
+ * t1_ Comment
+ * t2_ Account
+ * t3_ Link
+ * t4_ Message
+ * t5_ Subreddit
+ * t6_ Award
+ */
+export type RedditApiTypePrefix = 't1_' | 't2_' | 't3_' | 't4_' | 't5_' | 't6_';
