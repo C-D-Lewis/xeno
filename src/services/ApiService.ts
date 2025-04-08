@@ -341,7 +341,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     numComments: num_comments,
     selfText: selftext,
     selfTextHtml: selftext_html,
-    isUpvoted: likes,
+    isUpvoted: !!likes,
 
     // Media
     thumbnail: thumbnail || backupThumbnail,
@@ -476,6 +476,8 @@ const convertComment = ({ data }: RedditApiComment): Comment => ({
   bodyHtml: data.body_html,
   createdUtc: data.created_utc * 1000,
   replies: data.replies ? data.replies.data.children.map(convertComment) : [],
+  upvotes: data.ups,
+  isUpvoted: !!data.likes,
 });
 
 /**

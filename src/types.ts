@@ -35,7 +35,7 @@ export type Post = {
   selfTextHtml?: string;
   upvotes: number;
   mediaEmbedHtml?: string;
-  isUpvoted: boolean | null;
+  isUpvoted: boolean;
 };
 
 /** Refined comment object */
@@ -46,6 +46,8 @@ export type Comment = {
   bodyHtml: string;
   createdUtc: number;
   replies: Comment[];
+  upvotes: number;
+  isUpvoted: boolean;
 };
 
 /** Refined subreddit object */
@@ -163,6 +165,8 @@ export type RedditApiComment = {
     created_utc: number;
     // eslint-disable-next-line no-use-before-define
     replies: RedditApiCommentTree;
+    ups: number;
+    likes: boolean | null;
   }
 };
 
@@ -193,7 +197,7 @@ export type ListStateKey = 'posts' | 'feedPosts';
  * Thing type prefixes
  * t1_ Comment
  * t2_ Account
- * t3_ Link
+ * t3_ Link / Post
  * t4_ Message
  * t5_ Subreddit
  * t6_ Award

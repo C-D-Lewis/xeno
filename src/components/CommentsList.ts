@@ -5,6 +5,7 @@ import { decodeHtml, parseMarkdown } from '../utils.ts';
 import AppLoader from './AppLoader.ts';
 import { PostAgeView, PostAuthorLink } from './PostWidgets.ts';
 import Theme from '../theme.ts';
+import VoteButton from './VoteButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -68,6 +69,12 @@ const PostCommentTree = ({
     .setStyles({ alignItems: 'center', marginLeft: '4px' })
     .setChildren([
       ...(hasComments ? [CollapseButton({ id })] : []),
+      VoteButton({
+        id,
+        isUpvoted: comment.isUpvoted,
+        upvotes: comment.upvotes,
+        type: 'comment',
+      }),
       PostAuthorLink({
         author,
         isPostAuthor: author === postAuthor,
