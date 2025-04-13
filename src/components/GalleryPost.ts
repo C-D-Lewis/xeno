@@ -197,6 +197,17 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const hasSelfText = !!(selfTextHtml || selfText);
   const isGif = imageSource?.endsWith('.gif');
 
+  /**
+   * When the image is loaded, set the opacity to 1.
+   *
+   * @param {Event} e - Event.
+   * @returns {void}
+   */
+  const onImageLoad = (e: Event) => {
+    const el = e.target as FabricateComponent<AppState>;
+    el.setStyles({ opacity: '1' });
+  };
+
   const imageEl = hasImage
     ? fabricate('img')
       .setStyles({
@@ -220,9 +231,14 @@ const GalleryPost = ({ post }: { post: Post }) => {
       }, [indexKey])
       .onCreate((el) => {
         el.dataset.src = imageList.length > 1 ? imageList[0].url : imageSource;
-        imgObserver.observe(el);
 
-        el.addEventListener('load', () => el.setStyles({ opacity: '1' }));
+        imgObserver.observe(el);
+        el.addEventListener('load', onImageLoad);
+      })
+      .onDestroy((el) => {
+        // Don't leak observer references
+        imgObserver.unobserve(el);
+        el.removeEventListener('load', onImageLoad);
       })
     : undefined;
   if (imageEl && isGif) imageEl.displayWhen((state) => state.visibleMediaPostId === id);
