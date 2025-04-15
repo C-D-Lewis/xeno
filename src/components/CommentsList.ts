@@ -101,7 +101,7 @@ const PostCommentTree = ({
       padding: '5px',
       borderLeft: '3px solid #FFF5',
       paddingTop: '5px',
-      marginTop: '5px',
+      marginBottom: '5px',
     }))
     .setChildren([
       commentMetadataRow,
@@ -117,7 +117,7 @@ const PostCommentTree = ({
  */
 const CommentsList = () => fabricate('Column')
   .setStyles({
-    width: fabricate.isNarrow() ? '95vw' : '48vw',
+    width: fabricate.isNarrow() ? '100vw' : '50vw',
     margin: '0px auto',
     borderTopRightRadius: '5px',
     borderTopLeftRadius: '5px',
