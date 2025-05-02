@@ -95,6 +95,7 @@ export const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate
  * @returns {FabricateComponent} PostAgeView component.
  */
 export const PostAgeView = ({ created }: { created: number }) => {
+  let updateHandle: NodeJS.Timer;
   const ageText = fabricate('Text')
     .setText(getTimeAgoStr(created))
     .setStyles({
@@ -102,7 +103,13 @@ export const PostAgeView = ({ created }: { created: number }) => {
       fontSize: '0.9rem',
       cursor: 'default',
       margin: '0px 5px',
-    });
+    })
+    .onCreate(() => {
+      updateHandle = setInterval(() => {
+        ageText.setText(getTimeAgoStr(created));
+      }, 60 * 1000);
+    })
+    .onDestroy(() => clearInterval(updateHandle));
 
   return fabricate('Row')
     .setStyles({ alignItems: 'center' })

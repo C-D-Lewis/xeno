@@ -179,7 +179,7 @@ export const getContrastColor = (input: string) => {
   }
 
   if (input.length !== 6) {
-    console.log(`Unexpected color format: ${input}`);
+    // console.log(`Unexpected color format: ${input}`);
     return 'white';
   }
 
