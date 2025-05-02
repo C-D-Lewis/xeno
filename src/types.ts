@@ -104,6 +104,7 @@ export type AppState = {
   visibleMediaPostId: string | null;
   seekingLastPost: boolean;
   usernameVisible: boolean;
+  localUpvoteIds: string[];
 };
 
 /** Reddit API post type */

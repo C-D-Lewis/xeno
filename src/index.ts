@@ -70,6 +70,7 @@ const main = () => {
     visibleMediaPostId: null,
     seekingLastPost: false,
     usernameVisible: false,
+    localUpvoteIds: [],
   };
 
   const options: FabricateOptions = {
