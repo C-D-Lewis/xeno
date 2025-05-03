@@ -96,7 +96,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        padding: fabricate.isNarrow() ? '4px' : '8px',
+        padding: fabricate.isNarrow() ? '0px' : '8px',
       });
     }
   };
