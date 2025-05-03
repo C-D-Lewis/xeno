@@ -41,8 +41,8 @@ const TilePost = ({ post }: { post: Post }) => {
   const onImageLoad = (e: Event) => {
     const el = e.target as FabricateComponent<AppState>;
     const img = e.target as HTMLImageElement;
-    const partialPortraitWidth = fabricate.isNarrow() ? '49%' : '24%';
-    const partialLandscapeWidth = fabricate.isNarrow() ? '100%' : '49%';
+    const partialPortraitWidth = fabricate.isNarrow() ? '48%' : '24%';
+    const partialLandscapeWidth = fabricate.isNarrow() ? '100%' : '48%';
     el.setStyles({
       opacity: '1',
       width: img.naturalWidth > img.naturalHeight ? partialLandscapeWidth : partialPortraitWidth,
@@ -53,7 +53,7 @@ const TilePost = ({ post }: { post: Post }) => {
     ? fabricate('img')
       .setStyles({
         cursor: 'pointer',
-        width: '49%',
+        width: '100%',
         height: 'auto',
         objectFit: 'contain',
         maxHeight: fabricate.isNarrow() ? '100vh' : '75vh',
