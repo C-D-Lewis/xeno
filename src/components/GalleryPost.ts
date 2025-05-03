@@ -2,13 +2,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, GalleryImageItem, Post } from '../types.ts';
 import ImageButton from './ImageButton.ts';
-import LinkButton from './LinkButton.ts';
-import PostMetrics from './PostMetrics.ts';
-import {
-  PostAgeView, PostAuthorLink, PostTitle, SubredditPill,
-} from './PostWidgets.ts';
 import Card from './Card.ts';
 import { decodeHtml } from '../utils.ts';
+import PostHeader from './PostHeader.ts';
 
 declare const fabricate: Fabricate<AppState>;
 declare const dashjs: {
@@ -30,56 +26,6 @@ const imgObserver = new IntersectionObserver((entries) => {
     imgObserver.unobserve(img);
   });
 }, { root: null, rootMargin: '100px', threshold: 1 });
-
-/**
- * PostHeader component.
- *
- * @param {object} props - Component props.
- * @param {Post} props.post - Post.
- * @returns {HTMLElement} Fabricate component.
- */
-const PostHeader = ({ post }: { post: Post }) => {
-  const {
-    subreddit, created, author, fallbackSource,
-  } = post;
-
-  const postMetadataRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
-    .setChildren([
-      PostAuthorLink({ author }),
-      SubredditPill({ subreddit }),
-      PostAgeView({ created }),
-    ]);
-
-  const postTitleRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
-    .setChildren([
-      PostTitle({ post }),
-      LinkButton({ href: fallbackSource }).displayWhen(
-        (state) => state[fabricate.StateKeys.Route] === '/post',
-      ),
-    ]);
-
-  return fabricate('Column')
-    .setStyles(({ palette }) => ({
-      backgroundColor: palette.widgetPanel, padding: '8px',
-    }))
-    .onCreate((el, { lastLaunchTime }) => {
-      const createdTime = new Date(created).getTime();
-      const isNew = createdTime > lastLaunchTime;
-
-      if (isNew) {
-        el.setStyles(({ palette }) => ({
-          borderTop: `${palette.primary} 4px solid`,
-        }));
-      }
-    })
-    .setChildren([
-      postMetadataRow,
-      postTitleRow,
-      PostMetrics({ post }),
-    ]);
-};
 
 /**
  * ImageListControls component.
@@ -243,11 +189,6 @@ const GalleryPost = ({ post }: { post: Post }) => {
     : undefined;
   if (imageEl && isGif) imageEl.displayWhen((state) => state.visibleMediaPostId === id);
 
-  /**
-   * Video element component.
-   *
-   * @returns {FabricateComponent} Component.
-   */
   const videoEl = fabricate.conditional(
     (state) => state.visibleMediaPostId === id,
     () => fabricate('video')

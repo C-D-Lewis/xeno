@@ -64,7 +64,7 @@ export type Subreddit = {
 };
 
 /** Available display modes */
-export type DisplayMode = 'gallery' | 'list';
+export type DisplayMode = 'gallery' | 'list' | 'tiles';
 
 /** App state type */
 export type AppState = {

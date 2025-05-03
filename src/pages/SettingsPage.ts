@@ -126,6 +126,11 @@ const ViewModeSetting = () => SettingsWrapper({
       setting: 'displayMode',
       value: 'gallery',
     }),
+    Option({
+      label: 'Tiles',
+      setting: 'displayMode',
+      value: 'tiles',
+    }),
   ],
 });
 

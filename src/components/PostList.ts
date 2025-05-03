@@ -5,6 +5,7 @@ import {
 import GalleryPost from './GalleryPost.ts';
 import ListPost from './ListPost.ts';
 import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.ts';
+import TilePost from './TilePost.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -19,6 +20,7 @@ let searchStart = Date.now();
  */
 const getPostComponentByType = (post: Post, displayMode: DisplayMode) => {
   if (displayMode === 'gallery') return GalleryPost({ post });
+  if (displayMode === 'tiles') return TilePost({ post });
 
   return ListPost({ post });
 };
@@ -86,6 +88,16 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
           list.map((post) => getPostComponentByType(post, displayMode)),
         );
       }, 200);
+    }
+
+    // HACK
+    if (state.displayMode === 'tiles') {
+      el.setStyles({
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        padding: fabricate.isNarrow() ? '4px' : '8px',
+      });
     }
   };
 
