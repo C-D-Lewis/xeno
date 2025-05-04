@@ -82,10 +82,10 @@ const TilePost = ({ post }: { post: Post }) => {
     : undefined;
 
   const nonImageTile = Card()
-    .setStyles({ width: '48%', margin: '2px' })
+    .setStyles({ width: '47%', margin: '4px' })
     .setChildren([
       PostTitle({ post })
-        .setStyles({ fontSize: '1rem' }),
+        .setStyles({ fontSize: '0.9rem', margin: '8px' }),
     ]);
 
   // Show the image or just the post info

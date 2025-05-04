@@ -84,19 +84,18 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     if (keys.includes(listStateKey)) {
       // Allow page to be created and navigated, then add lots of children
       setTimeout(() => {
+        // FIXME: TilePage initially adds too many images and are observed at once
         el.setChildren(
           list.map((post) => getPostComponentByType(post, displayMode)),
         );
       }, 200);
     }
 
-    // HACK
     if (state.displayMode === 'tiles') {
       el.setStyles({
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        padding: fabricate.isNarrow() ? '0px' : '8px',
+        padding: fabricate.isNarrow() ? '2px' : '8px',
       });
     }
   };
