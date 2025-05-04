@@ -84,14 +84,9 @@ export const decodeHtml = (html: string) => {
  */
 export const getTimeAgoStr = (time: number) => {
   const minsAgo = Math.round((Date.now() - time) / (1000 * 60));
-  if (minsAgo > (60 * 24)) {
-    return `${Math.round(minsAgo / (60 * 24))}d ago`;
-  }
 
-  if (minsAgo > 60) {
-    return `${Math.round(minsAgo / 60)}h ago`;
-  }
-
+  if (minsAgo > (60 * 24)) return `${Math.round(minsAgo / (60 * 24))}d ago`;
+  if (minsAgo > 60) return `${Math.round(minsAgo / 60)}h ago`;
   return `${minsAgo}m ago`;
 };
 
@@ -221,3 +216,14 @@ export const isInViewPort = (el: FabricateComponent<AppState>) => el.getBounding
  * @returns {string} Formatted number.
  */
 export const roughNumber = (n: number) => n < 1000 ? String(n) : `${Math.round(n / 1000)}k`;
+
+/**
+ * Open a specific post from a list page.
+ *
+ * @param {Post} post - Post to open.
+ */
+export const openPost = (post: Post) => {
+  delayedScrollTop();
+  fabricate.update({ selectedPost: post, drawerOpen: false });
+  fabricate.navigate('/post');
+};
