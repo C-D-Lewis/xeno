@@ -12,7 +12,7 @@ declare const fabricate: Fabricate<AppState>;
  */
 const AppPage = () => fabricate('Column')
   .setStyles({
-    width: fabricate.isNarrow() ? '100vw' : '100%',
+    width: fabricate.isNarrow() ? '100vw' : '60vw',
     margin: '0px auto',
     overflowY: 'scroll',
     minHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,

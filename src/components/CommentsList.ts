@@ -125,7 +125,7 @@ const PostCommentTree = ({
  */
 const CommentsList = () => fabricate('Column')
   .setStyles({
-    width: fabricate.isNarrow() ? '100vw' : '50vw',
+    width: fabricate.isNarrow() ? '100vw' : '60vw',
     margin: '0px auto',
     borderTopRightRadius: '5px',
     borderTopLeftRadius: '5px',

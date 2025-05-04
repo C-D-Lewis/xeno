@@ -250,7 +250,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     ]);
 
   return Card()
-    .setStyles({ width: fabricate.isNarrow() ? '100vw' : '50vw' })
+    .setStyles({ width: fabricate.isNarrow() ? '100vw' : '60vw' })
     .setChildren([
       PostHeader({ post }),
       ...hasImage ? [imageEl!] : [],
