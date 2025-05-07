@@ -67,6 +67,7 @@ const TilePost = ({ post }: { post: Post }) => {
         borderRadius: '5px',
         overflow: 'hidden',
       })
+      .setAttributes({ id: `post-${post.id}` })
       .onClick(() => openPost(post))
       .onCreate((el) => {
         el.dataset.src = imageList.length > 1 ? imageList[0].url : imageSource;
