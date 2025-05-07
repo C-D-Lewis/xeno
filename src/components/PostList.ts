@@ -18,7 +18,7 @@ let searchStart = Date.now();
  * @param {DisplayMode} displayMode - Preferred display mode.
  * @returns {FabricateComponent} The preferred component.
  */
-const getPostComponentByType = (post: Post, displayMode: DisplayMode) => {
+const getPostComponentByDisplayMode = (post: Post, displayMode: DisplayMode) => {
   if (displayMode === 'gallery') return GalleryPost({ post });
   if (displayMode === 'tiles') return TilePost({ post });
 
@@ -86,7 +86,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       setTimeout(() => {
         // FIXME: TilePage initially adds too many images and are observed at once
         el.setChildren(
-          list.map((post) => getPostComponentByType(post, displayMode)),
+          list.map((post) => getPostComponentByDisplayMode(post, displayMode)),
         );
       }, 200);
     }

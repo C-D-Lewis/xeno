@@ -154,6 +154,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     el.setStyles({ opacity: '1' });
   };
 
+  // FIXME: Allocating this and returning just a div is enough to leak watchers...
   const imageEl = hasImage
     ? fabricate('img')
       .setStyles({
