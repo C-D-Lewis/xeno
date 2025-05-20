@@ -193,7 +193,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const videoEl = fabricate.conditional(
     (state) => state.visibleMediaPostId === id,
     () => fabricate('video')
-      .setStyles({ width: '100%', objectFit: 'cover' })
+      .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
       .setAttributes({ controls: 'controls', muted: false })
       .onCreate((el) => {
         if (!videoSourceData) return;
