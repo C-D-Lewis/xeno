@@ -190,25 +190,27 @@ const GalleryPost = ({ post }: { post: Post }) => {
     : undefined;
   if (imageEl && isGif) imageEl.displayWhen((state) => state.visibleMediaPostId === id);
 
-  const videoEl = fabricate.conditional(
-    (state) => state.visibleMediaPostId === id,
-    () => fabricate('video')
-      .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
-      .setAttributes({ controls: 'controls', muted: false })
-      .onCreate((el) => {
-        if (!videoSourceData) return;
+  const videoEl = hasVideo
+    ? fabricate.conditional(
+      (state) => state.visibleMediaPostId === id,
+      () => fabricate('video')
+        .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
+        .setAttributes({ controls: 'controls', muted: false })
+        .onCreate((el) => {
+          if (!videoSourceData) return;
 
-        if (!videoSourceData.dashUrl) {
-          // Fallback
-          el.setAttributes({ src: videoSourceData.fallbackUrl });
-          return;
-        }
+          if (!videoSourceData.dashUrl) {
+            // Fallback
+            el.setAttributes({ src: videoSourceData.fallbackUrl });
+            return;
+          }
 
-        // Use dashjs
-        const player = dashjs.MediaPlayer().create();
-        player.initialize(el, videoSourceData.dashUrl, false);
-      }),
-  );
+          // Use dashjs
+          const player = dashjs.MediaPlayer().create();
+          player.initialize(el, videoSourceData.dashUrl, false);
+        }),
+    )
+    : undefined;
 
   const iframeEl = hasIframeEmbed
     ? fabricate('div')
@@ -255,7 +257,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     .setChildren([
       PostHeader({ post }),
       ...hasImage ? [imageEl!] : [],
-      ...hasVideo ? [videoEl] : [],
+      ...hasVideo ? [videoEl!] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
       ...hasMediaEmbed ? [mediaEmbedEl!] : [],
       revealEmbedEl,
