@@ -87,7 +87,7 @@ const main = () => {
     ],
     // logStateUpdates: true,
     theme: Theme,
-    debugStateUpdates: true,
+    // debugStateUpdates: true,
   };
 
   fabricate.app(App, initialState, options);
