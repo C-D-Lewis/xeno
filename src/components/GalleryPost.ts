@@ -3,7 +3,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, GalleryImageItem, Post } from '../types.ts';
 import ImageButton from './ImageButton.ts';
 import Card from './Card.ts';
-import { decodeHtml } from '../utils.ts';
+import { decodeHtml, getRevealText } from '../utils.ts';
 import PostHeader from './PostHeader.ts';
 
 declare const fabricate: Fabricate<AppState>;
@@ -42,13 +42,17 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
   const indexKey = fabricate.buildKey('imageListIndex', id);
   fabricate.update(indexKey, 0);
 
+  const arrowStyles = {
+    margin: '0px',
+    width: '100%',
+    objectFit: 'contain',
+    height: '32px',
+  };
+
   const leftArrowImg = ImageButton({ src: 'assets/arrow-left.png' })
     .setStyles({
+      ...arrowStyles,
       filter: 'brightness(0.5)',
-      margin: '0px',
-      width: '100%',
-      height: '32px',
-      objectFit: 'contain',
     })
     .onUpdate((el, state) => {
       el.setStyles({ filter: `brightness(${state[indexKey] === 0 ? '0.5' : '1'})` });
@@ -61,9 +65,11 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
 
   const currentIndexText = fabricate('Text')
     .setStyles(({ palette }) => ({
-      padding: '0px 15px',
+      padding: '8px 15px',
       fontSize: '1rem',
       color: palette.text,
+      margin: '0px',
+      backgroundColor: '#0003',
     }))
     .setText(`1/${numImages}`)
     .onUpdate(
@@ -72,12 +78,7 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
     );
 
   const rightArrowImg = ImageButton({ src: 'assets/arrow-right.png' })
-    .setStyles({
-      margin: '0px',
-      width: '100%',
-      objectFit: 'contain',
-      height: '32px',
-    })
+    .setStyles(arrowStyles)
     .onUpdate((el, state) => {
       el.setStyles({
         filter: `brightness(${state[indexKey] === numImages - 1 ? '0.5' : '1'})`,
@@ -124,24 +125,30 @@ const BodyText = ({ text }: { text: string }) => fabricate('Text')
   .setHtml(decodeHtml(text) || 'Failed to load text post');
 
 /**
- * GalleryPost component.
+ * Image component for gallery posts.
  *
  * @param {object} props - Component props.
- * @param {Post} props.post - Post.
- * @returns {HTMLElement} Fabricate component.
+ * @param {string} props.id - Post ID.
+ * @param {string} props.imageSource - Image source URL.
+ * @param {GalleryImageItem[]} props.imageList - List of images in the gallery.
+ * @param {boolean} props.isGif - Whether the post is a GIF.
+ * @param {boolean} props.nsfw - Whether the post is marked as NSFW.
+ * @returns {FabricateComponent} GalleryImage component.
  */
-const GalleryPost = ({ post }: { post: Post }) => {
-  const {
-    id, iframe, imageSource, videoSourceData, imageList, selfText, selfTextHtml, mediaEmbedHtml,
-  } = post;
-
+const GalleryImage = ({
+  id,
+  imageSource,
+  imageList,
+  isGif,
+  nsfw,
+}: {
+  id: string;
+  imageSource: string;
+  imageList: GalleryImageItem[];
+  isGif: boolean;
+  nsfw: boolean;
+}) => {
   const indexKey = fabricate.buildKey('imageListIndex', id);
-  const hasVideo = !!videoSourceData;
-  const hasIframeEmbed = !!iframe;
-  const hasMediaEmbed = !hasIframeEmbed && !!mediaEmbedHtml?.length;
-  const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
-  const hasSelfText = !!(selfTextHtml || selfText);
-  const isGif = imageSource?.endsWith('.gif');
 
   /**
    * When the image is loaded, set the opacity to 1.
@@ -154,63 +161,179 @@ const GalleryPost = ({ post }: { post: Post }) => {
     el.setStyles({ opacity: '1' });
   };
 
-  // FIXME: Allocating this and returning just a div is enough to leak watchers...
-  const imageEl = hasImage
-    ? fabricate('img')
-      .setStyles({
-        cursor: 'pointer',
-        width: '100%',
-        height: 'auto',
-        objectFit: 'contain',
-        maxHeight: fabricate.isNarrow() ? '100vh' : '75vh',
-        margin: 'auto',
-        opacity: '0.2',
-        transition: '0.3s',
-        borderBottomLeftRadius: '5px',
-        borderBottomRightRadius: '5px',
-      })
-      .onClick(() => window.open(imageSource, '_blank'))
-      .onUpdate((el, state) => {
-        if (!imageList.length) return;
+  const imageEl = fabricate('img')
+    .setStyles({
+      cursor: 'pointer',
+      width: '100%',
+      height: 'auto',
+      objectFit: 'contain',
+      maxHeight: fabricate.isNarrow() ? '100vh' : '75vh',
+      margin: 'auto',
+      opacity: '0.2',
+      transition: '0.3s',
+      borderBottomLeftRadius: '5px',
+      borderBottomRightRadius: '5px',
+    })
+    .onClick(() => window.open(imageSource, '_blank'))
+    .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
+    .onUpdate((el, state) => {
+      if (!imageList.length) return;
 
-        el.setStyles({ opacity: '0.4' });
-        el.setAttributes({ src: imageList[state[indexKey]].url });
-      }, [indexKey])
-      .onCreate((el) => {
-        el.dataset.src = imageList.length > 1 ? imageList[0].url : imageSource;
+      el.setStyles({ opacity: '0.4' });
+      el.setAttributes({ src: imageList[state[indexKey]].url });
+    }, [indexKey])
+    .onCreate((el) => {
+      el.dataset.src = imageList.length > 1 ? imageList[0].url : imageSource;
 
-        imgObserver.observe(el);
-        el.addEventListener('load', onImageLoad);
-      })
-      .onDestroy((el) => {
-        // Don't leak observer references
-        imgObserver.unobserve(el);
-        el.removeEventListener('load', onImageLoad);
-      })
-    : undefined;
-  if (imageEl && isGif) imageEl.displayWhen((state) => state.visibleMediaPostId === id);
+      imgObserver.observe(el);
+      el.addEventListener('load', onImageLoad);
+    })
+    .onDestroy((el) => {
+      imgObserver.unobserve(el);
+      el.removeEventListener('load', onImageLoad);
+    });
 
-  const videoEl = hasVideo
-    ? fabricate.conditional(
-      (state) => state.visibleMediaPostId === id,
-      () => fabricate('video')
-        .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
-        .setAttributes({ controls: 'controls', muted: false })
-        .onCreate((el) => {
-          if (!videoSourceData) return;
+  return fabricate('Column')
+    .setChildren([
+      imageEl,
+      ImageListControls({ id, imageList }),
+    ]);
+};
 
-          if (!videoSourceData.dashUrl) {
-            // Fallback
-            el.setAttributes({ src: videoSourceData.fallbackUrl });
-            return;
-          }
+/**
+ * GalleryVideo component.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.id - Post ID.
+ * @param {object} [props.videoSourceData] - Video source data.
+ * @param {string} [props.videoSourceData.dashUrl] - DASH video URL.
+ * @param {string} [props.videoSourceData.fallbackUrl] - Fallback video URL.
+ * @returns {FabricateComponent} GalleryVideo component.
+ */
+const GalleryVideo = ({
+  id,
+  videoSourceData,
+}: {
+  id: string;
+  videoSourceData?: { dashUrl?: string; fallbackUrl?: string };
+}) => fabricate.conditional(
+  (state) => state.visibleMediaPostId === id,
+  () => fabricate('video')
+    .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
+    .setAttributes({ controls: 'controls', muted: false })
+    .onCreate((el) => {
+      if (!videoSourceData) {
+        console.warn(`No video source data for post ${id}`);
+        return;
+      }
 
-          // Use dashjs
-          const player = dashjs.MediaPlayer().create();
-          player.initialize(el, videoSourceData.dashUrl, false);
-        }),
-    )
-    : undefined;
+      if (!videoSourceData.dashUrl) {
+        // Fallback
+        el.setAttributes({ src: videoSourceData.fallbackUrl });
+        return;
+      }
+
+      // Use dashjs
+      const player = dashjs.MediaPlayer().create();
+      player.initialize(el, videoSourceData.dashUrl, false);
+    }),
+);
+
+/**
+ * RevealMediaButton component.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.id - Post ID.
+ * @param {boolean} [props.isGif=false] - Whether the post is a GIF.
+ * @param {boolean} [props.nsfw=false] - Whether the post is marked as NSFW.
+ * @param {boolean} [props.hasIframeEmbed=false] - Whether the post has an iframe embed.
+ * @param {boolean} [props.hasVideo=false] - Whether the post has a video.
+ * @param {boolean} [props.hasMediaEmbed=false] - Whether the post has a media embed.
+ * @returns {FabricateComponent} RevealMediaButton component.
+ */
+const RevealMediaButton = ({
+  id,
+  isGif,
+  nsfw,
+  hasIframeEmbed,
+  hasVideo,
+  hasMediaEmbed,
+}: {
+  id: string;
+  isGif: boolean;
+  nsfw: boolean;
+  hasIframeEmbed: boolean;
+  hasVideo: boolean;
+  hasMediaEmbed: boolean;
+}) => fabricate.conditional(
+  (state) => state.visibleMediaPostId !== id,
+  () => fabricate('Row')
+    .setStyles({
+      alignItems: 'center',
+      textAlign: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+    })
+    .onClick(() => fabricate.update({ visibleMediaPostId: id }))
+    .setChildren([
+      ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
+        .setStyles({ margin: '12px 0px' }),
+      fabricate('Text')
+        .setStyles(({ palette }) => ({ color: palette.text }))
+        .setText(getRevealText(isGif, hasIframeEmbed, hasVideo, hasMediaEmbed, nsfw)),
+    ]),
+);
+
+/**
+ * CloseMediaButton component.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.id - Post ID.
+ * @returns {FabricateComponent} CloseMediaButton component.
+ */
+const CloseMediaButton = ({
+  id,
+}: {
+  id: string;
+}) => fabricate.conditional(
+  (state) => state.visibleMediaPostId === id,
+  () => fabricate('Row')
+    .setStyles({
+      alignItems: 'center',
+      textAlign: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+    })
+    .onClick(() => fabricate.update({ visibleMediaPostId: null }))
+    .setChildren([
+      ImageButton({ src: 'assets/close.png' })
+        .setStyles({ margin: '12px 0px' }),
+      fabricate('Text')
+        .setStyles(({ palette }) => ({ color: palette.text }))
+        .setText('Close media'),
+    ]),
+);
+
+/**
+ * GalleryPost component.
+ *
+ * @param {object} props - Component props.
+ * @param {Post} props.post - Post.
+ * @returns {HTMLElement} Fabricate component.
+ */
+const GalleryPost = ({ post }: { post: Post }) => {
+  const {
+    id, iframe, imageSource, videoSourceData, imageList,
+    selfText, selfTextHtml, mediaEmbedHtml, nsfw,
+  } = post;
+
+  const hasVideo = !!videoSourceData;
+  const hasIframeEmbed = !!iframe;
+  const hasMediaEmbed = !hasIframeEmbed && !!mediaEmbedHtml?.length;
+  const hasImage = !hasVideo && !hasIframeEmbed && imageSource;
+  const hasSelfText = !!(selfTextHtml || selfText);
+  const isGif = !!imageSource?.endsWith('.gif');
+  const shouldRevealMedia = hasIframeEmbed || hasVideo || isGif || hasMediaEmbed || nsfw;
 
   const iframeEl = hasIframeEmbed
     ? fabricate('div')
@@ -232,36 +355,26 @@ const GalleryPost = ({ post }: { post: Post }) => {
       )
     : undefined;
 
-  const revealEmbedEl = fabricate('Row')
-    .setStyles({
-      alignItems: 'center',
-      textAlign: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-    })
-    .displayWhen(
-      (state) => !!(
-        (hasIframeEmbed || hasVideo || isGif || hasMediaEmbed) && state.visibleMediaPostId !== id),
-    )
-    .onClick(() => fabricate.update({ visibleMediaPostId: id }))
-    .setChildren([
-      ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
-        .setStyles({ margin: '12px 0px' }),
-      fabricate('Text')
-        .setStyles(({ palette }) => ({ color: palette.text }))
-        .setText(isGif ? 'Show gif' : 'Show video'),
-    ]);
-
   return Card()
     .setStyles({ width: fabricate.isNarrow() ? '100vw' : '60vw' })
     .setChildren([
       PostHeader({ post }),
-      ...hasImage ? [imageEl!] : [],
-      ...hasVideo ? [videoEl!] : [],
+      ...hasImage ? [GalleryImage({
+        id,
+        imageSource,
+        imageList,
+        isGif,
+        nsfw,
+      })] : [],
+      ...hasVideo ? [GalleryVideo({ id, videoSourceData })] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
       ...hasMediaEmbed ? [mediaEmbedEl!] : [],
-      revealEmbedEl,
-      ImageListControls({ id, imageList }),
+      ...shouldRevealMedia
+        ? [RevealMediaButton({
+          id, isGif, hasIframeEmbed, hasMediaEmbed, hasVideo, nsfw,
+        })]
+        : [],
+      ...shouldRevealMedia ? [CloseMediaButton({ id })] : [],
     ])
     .onCreate((el) => {
       const route = fabricate.getRouteHistory().pop()!;

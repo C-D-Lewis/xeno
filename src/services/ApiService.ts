@@ -237,6 +237,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     gallery_data,
     media_embed,
     likes,
+    over_18,
   } = data;
 
   // Works for imgur and i.reddit
@@ -342,6 +343,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selfText: selftext,
     selfTextHtml: selftext_html,
     isUpvoted: !!likes,
+    nsfw: over_18,
 
     // Media
     thumbnail: thumbnail || backupThumbnail,

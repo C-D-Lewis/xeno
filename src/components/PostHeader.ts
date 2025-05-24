@@ -6,6 +6,7 @@ import PostAgeView from './PostAgeView.ts';
 import PostAuthorLink from './PostAuthorLink.ts';
 import PostTitle from './PostTitle.ts';
 import SubredditPill from './SubredditPill.ts';
+import { openPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -33,14 +34,17 @@ const PostHeader = ({ post }: { post: Post }) => {
     .setStyles({ alignItems: 'center' })
     .setChildren([
       PostTitle({ post }),
-      LinkButton({ href: fallbackSource }).displayWhen(
-        (state) => state[fabricate.StateKeys.Route] === '/post',
-      ),
+      LinkButton({ href: fallbackSource })
+        .displayWhen(
+          (state) => state[fabricate.StateKeys.Route] === '/post',
+        ),
     ]);
 
   return fabricate('Column')
     .setStyles(({ palette }) => ({
-      backgroundColor: palette.widgetPanel, padding: '8px',
+      backgroundColor: palette.widgetPanel,
+      padding: '8px',
+      cursor: 'pointer',
     }))
     .onCreate((el, { lastLaunchTime }) => {
       const createdTime = new Date(created).getTime();
@@ -56,7 +60,11 @@ const PostHeader = ({ post }: { post: Post }) => {
       postMetadataRow,
       postTitleRow,
       PostMetrics({ post }),
-    ]);
+    ])
+    .onClick(() => {
+      const route = fabricate.getRouteHistory().pop()!;
+      if (route !== '/post') openPost(post);
+    });
 };
 
 export default PostHeader;

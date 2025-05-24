@@ -36,6 +36,7 @@ export type Post = {
   upvotes: number;
   mediaEmbedHtml?: string;
   isUpvoted: boolean;
+  nsfw: boolean;
 };
 
 /** Refined comment object */
@@ -154,6 +155,7 @@ export type RedditApiPost = {
     }[];
   }
   likes: boolean | null;
+  over_18: boolean;
 };
 
 /** Single API comment type */

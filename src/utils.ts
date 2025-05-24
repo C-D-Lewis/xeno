@@ -227,3 +227,25 @@ export const openPost = (post: Post) => {
   fabricate.update({ selectedPost: post, drawerOpen: false });
   fabricate.navigate('/post');
 };
+
+/**
+ * Choose button text depending on media type.
+ *
+ * @param {boolean} isGif - True if media is a GIF.
+ * @returns {string} Reveal button text.
+ */
+export const getRevealText = (
+  isGif: boolean,
+  hasIframeEmbed: boolean,
+  hasVideo: boolean,
+  hasMediaEmbed: boolean,
+  nsfw: boolean,
+) => {
+  if (isGif) return 'Show GIF';
+  if (hasIframeEmbed) return 'Show embed';
+  if (hasVideo) return 'Show video';
+  if (hasMediaEmbed) return 'Show media';
+  if (nsfw) return 'Show NSFW';
+  
+  return 'Show';
+};
