@@ -6,7 +6,6 @@ import PostAgeView from './PostAgeView.ts';
 import PostAuthorLink from './PostAuthorLink.ts';
 import PostTitle from './PostTitle.ts';
 import SubredditPill from './SubredditPill.ts';
-import { openPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -60,11 +59,12 @@ const PostHeader = ({ post }: { post: Post }) => {
       postMetadataRow,
       postTitleRow,
       PostMetrics({ post }),
-    ])
-    .onClick(() => {
-      const route = fabricate.getRouteHistory().pop()!;
-      if (route !== '/post') openPost(post);
-    });
+    ]);
+  // Strange behavior when navigating to subreddit pill or back etc
+  // .onClick(() => {
+  //   const route = fabricate.getRouteHistory().pop()!;
+  //   if (route !== '/post') openPost(post);
+  // });
 };
 
 export default PostHeader;

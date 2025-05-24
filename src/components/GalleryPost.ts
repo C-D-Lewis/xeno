@@ -175,7 +175,6 @@ const GalleryImage = ({
       borderBottomRightRadius: '5px',
     })
     .onClick(() => window.open(imageSource, '_blank'))
-    .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
     .onUpdate((el, state) => {
       if (!imageList.length) return;
 
@@ -194,6 +193,7 @@ const GalleryImage = ({
     });
 
   return fabricate('Column')
+    .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
     .setChildren([
       imageEl,
       ImageListControls({ id, imageList }),
@@ -274,7 +274,12 @@ const RevealMediaButton = ({
       justifyContent: 'center',
       cursor: 'pointer',
     })
-    .onClick(() => fabricate.update({ visibleMediaPostId: id }))
+    .onClick(() => {
+      fabricate.update({ visibleMediaPostId: id });
+
+      const found = document.getElementById(`post-${id}`) as FabricateComponent<AppState>;
+      if (found) found.scrollIntoView({ behavior: 'smooth' });
+    })
     .setChildren([
       ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
         .setStyles({ margin: '12px 0px' }),
