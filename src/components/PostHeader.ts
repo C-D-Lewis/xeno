@@ -43,7 +43,6 @@ const PostHeader = ({ post }: { post: Post }) => {
     .setStyles(({ palette }) => ({
       backgroundColor: palette.widgetPanel,
       padding: '8px',
-      cursor: 'pointer',
     }))
     .onCreate((el, { lastLaunchTime }) => {
       const createdTime = new Date(created).getTime();

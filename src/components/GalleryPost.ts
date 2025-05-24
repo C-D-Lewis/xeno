@@ -69,7 +69,6 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       fontSize: '1rem',
       color: palette.text,
       margin: '0px',
-      backgroundColor: '#0003',
     }))
     .setText(`1/${numImages}`)
     .onUpdate(
