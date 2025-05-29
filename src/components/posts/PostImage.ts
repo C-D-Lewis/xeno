@@ -61,7 +61,7 @@ const PostImage = ({
 }) => {
   const indexKey = fabricate.buildKey('imageListIndex', id);
   const loadedKey = fabricate.buildKey('imageLoaded', id);
-  fabricate.update(loadedKey, false);
+  // fabricate.update(loadedKey, false);
 
   /**
    * When the image is loaded, set the opacity to 1.
@@ -115,8 +115,8 @@ const PostImage = ({
     .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
     .setChildren([
       imageEl,
-      // ImageLoader()
-      //   .displayWhen((state) => !state[loadedKey]),
+      ImageLoader()
+        .displayWhen((state) => !state[loadedKey]),
       ImageListControls({ id, imageList }),
     ]);
 };

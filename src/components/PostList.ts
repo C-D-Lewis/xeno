@@ -113,7 +113,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
           ...visiblePosts,
           ...visiblePosts.length !== list.length ? [ShowAllPostsButton()] : [],
         ]);
-      }, 100);
+      }, 200);
     }
 
     if (state.displayMode === 'tiles') {
