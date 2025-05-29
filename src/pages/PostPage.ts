@@ -41,12 +41,9 @@ export const PostPage = () => AppPage()
     if (!selectedPost) return;
 
     el.setChildren([
-      fabricate('Fader')
-        .setChildren([
-          GalleryPost({ post: selectedPost }),
-          CommentsList(),
-          FloatingBackButton(),
-        ]),
+      GalleryPost({ post: selectedPost }),
+      CommentsList(),
+      FloatingBackButton(),
     ]);
   });
 

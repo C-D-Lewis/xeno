@@ -8,8 +8,7 @@ declare const fabricate: Fabricate<AppState>;
  *
  * @returns {HTMLElement} Card component.
  */
-const Card = () => fabricate('Fader')
-  .asFlex('column')
+const Card = () => fabricate('Column')
   .setStyles(({ palette }) => ({
     margin: '10px auto',
     backgroundColor: palette.widgetBackground,

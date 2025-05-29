@@ -2,6 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types.ts';
 import { DrawerToggle } from './Drawer.ts';
 import ImageButton from './ImageButton.ts';
+import { fetchFeedPosts, fetchPosts } from '../services/ApiService.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -32,7 +33,36 @@ const getSubtitle = ({ subreddit }: AppState) => {
  */
 const BackButton = () => ImageButton({ src: 'assets/back.png' })
   .setStyles({ marginLeft: '0px', zIndex: '1000' })
-  .onClick(() => fabricate.goBack());
+  .displayWhen((state) => ['/settings', '/post'].includes(state[fabricate.StateKeys.Route]))
+  .onClick(fabricate.goBack);
+
+/**
+ * ReloadButton component.
+ *
+ * @returns {FabricateComponent} ReloadButton component.
+ */
+const ReloadButton = () => ImageButton({ src: 'assets/reload.png' })
+  .setStyles({ marginLeft: 'auto', zIndex: '1000' })
+  .displayWhen((state) => {
+    const { postsLoading } = state;
+    const isListLikePage = ['/list', '/feed'].includes(state[fabricate.StateKeys.Route]);
+    return isListLikePage && !postsLoading;
+  })
+  .onClick((el, state) => {
+    const {
+      accessToken, query, sortMode, subreddits,
+    } = state;
+    const route = fabricate.getRouteHistory().pop()!;
+
+    if (route === '/list') {
+      fetchPosts(accessToken!, query, sortMode);
+    }
+
+    if (route === '/feed') {
+      // TODO: Pass state, do subreddit mapping in there
+      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+    }
+  });
 
 /**
  * AppNavBar component.
@@ -78,11 +108,11 @@ const AppNavBar = () => {
       boxShadow: styles.boxShadow,
     }))
     .addChildren([
-      DrawerToggle().displayWhen((state) => !['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),
-      BackButton()
-        .displayWhen((state) => ['/settings', '/post'].includes(state[fabricate.StateKeys.Route])),
+      DrawerToggle(),
+      BackButton(),
       title,
       subtitle,
+      ReloadButton(),
     ])
     .onUpdate((el: FabricateComponent<AppState>, state: AppState) => {
       subtitle.setText(getSubtitle(state));

@@ -203,14 +203,9 @@ export const SettingsPage = () => AppPage()
     width: fabricate.isNarrow() ? '95vw' : '48vw',
     margin: '0px auto',
   })
-  .onCreate((el) => {
-    el.setChildren([
-      fabricate('Fader')
-        .setChildren([
-          SettingsCard(),
-          AccountCard(),
-        ]),
-    ]);
-  });
+  .setChildren([
+    SettingsCard(),
+    AccountCard(),
+  ]);
 
 export default SettingsPage;

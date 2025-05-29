@@ -264,29 +264,26 @@ const RevealMediaButton = ({
   hasIframeEmbed: boolean;
   hasVideo: boolean;
   hasMediaEmbed: boolean;
-}) => fabricate.conditional(
-  (state) => state.visibleMediaPostId !== id,
-  () => fabricate('Row')
-    .setStyles({
-      alignItems: 'center',
-      textAlign: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-    })
-    .onClick(() => {
-      fabricate.update({ visibleMediaPostId: id });
+}) => fabricate('Row')
+  .setStyles({
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+  })
+  .onClick(() => {
+    fabricate.update({ visibleMediaPostId: id });
 
-      const found = document.getElementById(`post-${id}`) as FabricateComponent<AppState>;
-      if (found) found.scrollIntoView({ behavior: 'smooth' });
-    })
-    .setChildren([
-      ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
-        .setStyles({ margin: '12px 0px' }),
-      fabricate('Text')
-        .setStyles(({ palette }) => ({ color: palette.text }))
-        .setText(getRevealText(isGif, hasIframeEmbed, hasVideo, hasMediaEmbed, nsfw)),
-    ]),
-);
+    const found = document.getElementById(`post-${id}`) as FabricateComponent<AppState>;
+    if (found) found.scrollIntoView({ behavior: 'smooth' });
+  })
+  .setChildren([
+    ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
+      .setStyles({ margin: '12px 0px' }),
+    fabricate('Text')
+      .setStyles(({ palette }) => ({ color: palette.text }))
+      .setText(getRevealText(isGif, hasIframeEmbed, hasVideo, hasMediaEmbed, nsfw)),
+  ]);
 
 /**
  * CloseMediaButton component.
@@ -330,6 +327,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     id, iframe, imageSource, videoSourceData, imageList,
     selfText, selfTextHtml, mediaEmbedHtml, nsfw,
   } = post;
+  const route = fabricate.getRouteHistory().pop()!;
 
   const hasVideo = !!videoSourceData;
   const hasIframeEmbed = !!iframe;
@@ -338,6 +336,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const hasSelfText = !!(selfTextHtml || selfText);
   const isGif = !!imageSource?.endsWith('.gif');
   const shouldRevealMedia = hasIframeEmbed || hasVideo || isGif || hasMediaEmbed || nsfw;
+  const revealImmediately = route === '/post' && shouldRevealMedia;
 
   const iframeEl = hasIframeEmbed
     ? fabricate('div')
@@ -359,6 +358,14 @@ const GalleryPost = ({ post }: { post: Post }) => {
       )
     : undefined;
 
+  const revealMediaButton = RevealMediaButton({
+    id, isGif, hasIframeEmbed, hasMediaEmbed, hasVideo, nsfw,
+  });
+  if (revealImmediately) {
+    // Show immediately on PostPage
+    revealMediaButton.click();
+  }
+
   return Card()
     .setStyles({ width: fabricate.isNarrow() ? '100vw' : '60vw' })
     .setChildren([
@@ -373,15 +380,13 @@ const GalleryPost = ({ post }: { post: Post }) => {
       ...hasVideo ? [GalleryVideo({ id, videoSourceData })] : [],
       ...hasIframeEmbed ? [iframeEl!] : [],
       ...hasMediaEmbed ? [mediaEmbedEl!] : [],
-      ...shouldRevealMedia
-        ? [RevealMediaButton({
-          id, isGif, hasIframeEmbed, hasMediaEmbed, hasVideo, nsfw,
-        })]
-        : [],
-      ...shouldRevealMedia ? [CloseMediaButton({ id })] : [],
+      fabricate.conditional(
+        (state) => shouldRevealMedia && state.visibleMediaPostId !== id,
+        () => revealMediaButton,
+      ),
+      ...shouldRevealMedia && !revealImmediately ? [CloseMediaButton({ id })] : [],
     ])
     .onCreate((el) => {
-      const route = fabricate.getRouteHistory().pop()!;
       if (route !== '/post') return;
 
       // Show body text only on PostPage

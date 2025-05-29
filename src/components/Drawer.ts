@@ -124,6 +124,7 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
 
     el.setStyles({ filter: `brightness(${enabled ? 1 : 0.5})` });
   }, [fabricate.StateKeys.Route])
+  .displayWhen((state) => !['/settings', '/post'].includes(state[fabricate.StateKeys.Route]))
   .onClick((el, state) => {
     const route = fabricate.getRouteHistory().pop()!;
     if (route === '/init') return;

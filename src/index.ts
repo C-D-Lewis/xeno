@@ -49,10 +49,10 @@ const main = () => {
     lastReloadTime: Date.now(),
     lastLaunchTime: Date.now(),
     landingPage: '/list',
+    feedPosts: [],
 
     // Other
     posts: [],
-    feedPosts: [],
     queryInput: '',
     subreddits: [],
     subreddit: null,
@@ -84,6 +84,7 @@ const main = () => {
       'lastReloadTime',
       'lastLaunchTime',
       'landingPage',
+      'feedPosts',
     ],
     // logStateUpdates: true,
     theme: Theme,
