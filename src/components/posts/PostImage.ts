@@ -115,8 +115,8 @@ const PostImage = ({
     .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
     .setChildren([
       imageEl,
-      ImageLoader()
-        .displayWhen((state) => !state[loadedKey]),
+      // ImageLoader()
+      //   .displayWhen((state) => !state[loadedKey]),
       ImageListControls({ id, imageList }),
     ]);
 };
