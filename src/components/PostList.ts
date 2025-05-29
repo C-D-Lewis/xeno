@@ -6,6 +6,7 @@ import GalleryPost from './GalleryPost.ts';
 import ListPost from './ListPost.ts';
 import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.ts';
 import TilePost from './TilePost.ts';
+import TextButton from './TextButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -55,6 +56,14 @@ export const scrollToPost = (id: string) => {
 };
 
 /**
+ * ShowAllPostsButton component.
+ *
+ * @returns {FabricateComponent} ShowAllPostsButton component.
+ */
+const ShowAllPostsButton = () => TextButton({ label: 'Show all posts' })
+  .onClick(() => fabricate.update({ showAllPostsNow: true }));
+
+/**
  * PostList component for use in both ListPage and FeedPage.
  *
  * @param {object} props - Component props.
@@ -74,21 +83,37 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     state: AppState,
     keys: string[],
   ) => {
-    const { displayMode, seekingLastPost } = state;
+    const {
+      displayMode, seekingLastPost, showOnlyNewPosts, lastFeedFetchTime, showAllPostsNow,
+    } = state;
 
     const list = state[listStateKey] as Post[];
 
     // Only visibly show if not seeking last post
     el.setStyles({ opacity: seekingLastPost ? '0' : '1' });
 
-    if (keys.includes(listStateKey)) {
+    if ([listStateKey, 'showAllPostsNow'].some((key) => keys.includes(key))) {
+      const visiblePosts = list
+        .filter(({ created }) => {
+          // Only feed page filters based on new and this setting
+          const route = fabricate.getRouteHistory().pop();
+          if (route !== '/feed') return true;
+
+          const createdTime = new Date(created).getTime();
+          const isNew = createdTime > lastFeedFetchTime;
+
+          return showAllPostsNow || !showOnlyNewPosts || isNew;
+        })
+        .map((post) => getPostComponentByDisplayMode(post, displayMode));
+
       // Allow page to be created and navigated, then add lots of children
       setTimeout(() => {
         // FIXME: TilePage initially adds too many images and are observed at once
-        el.setChildren(
-          list.map((post) => getPostComponentByDisplayMode(post, displayMode)),
-        );
-      }, 200);
+        el.setChildren([
+          ...visiblePosts,
+          ...visiblePosts.length !== list.length ? [ShowAllPostsButton()] : [],
+        ]);
+      }, 100);
     }
 
     if (state.displayMode === 'tiles') {
@@ -132,8 +157,9 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       margin: 'auto',
       opacity: '0',
     })
+    .displayWhen(({ postsLoading }) => !postsLoading)
     .onCreate(onCreate)
-    .onUpdate(updateLayout, [listStateKey, 'seekingLastPost']);
+    .onUpdate(updateLayout, [listStateKey, 'seekingLastPost', 'showAllPostsNow']);
 };
 
 export default PostList;

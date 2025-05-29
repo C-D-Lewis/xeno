@@ -59,6 +59,8 @@ const ReloadButton = () => ImageButton({ src: 'assets/reload.png' })
     }
 
     if (route === '/feed') {
+      fabricate.update({ showAllPostsNow: false });
+
       // TODO: Pass state, do subreddit mapping in there
       fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
     }

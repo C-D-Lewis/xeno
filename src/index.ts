@@ -44,12 +44,12 @@ const main = () => {
     isLoggedIn: false,
     username: null,
     query: '/r/all',
-    displayMode: 'gallery',
-    sortMode: 'hot',
-    lastReloadTime: Date.now(),
-    lastLaunchTime: Date.now(),
+    lastFeedFetchTime: Date.now(),
     landingPage: '/list',
     feedPosts: [],
+    displayMode: 'gallery',
+    sortMode: 'hot',
+    showOnlyNewPosts: false,
 
     // Other
     posts: [],
@@ -71,6 +71,7 @@ const main = () => {
     seekingLastPost: false,
     usernameVisible: false,
     localUpvoteIds: [],
+    showAllPostsNow: false,
   };
 
   const options: FabricateOptions = {
@@ -79,12 +80,12 @@ const main = () => {
       'refreshToken',
       'username',
       'query',
-      'displayMode',
-      'sortMode',
-      'lastReloadTime',
-      'lastLaunchTime',
+      'lastFeedFetchTime',
       'landingPage',
       'feedPosts',
+      'displayMode',
+      'sortMode',
+      'showOnlyNewPosts',
     ],
     // logStateUpdates: true,
     theme: Theme,

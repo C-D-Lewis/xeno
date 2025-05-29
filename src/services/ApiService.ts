@@ -620,6 +620,7 @@ export const fetchFeedPosts = async (
       feedPosts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
       postsLoading: false,
       postsLoadingProgress: 100,
+      lastFeedFetchTime: Date.now(),
     });
   } catch (e: unknown) {
     alert(e);

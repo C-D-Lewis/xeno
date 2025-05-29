@@ -79,11 +79,11 @@ export type AppState = {
   isLoggedIn: boolean;
   username: string | null;
   query: string;
+  lastFeedFetchTime: number;
+  landingPage: '/feed' | '/list';
   displayMode: DisplayMode;
   sortMode: SortMode;
-  lastReloadTime: number;
-  lastLaunchTime: number;
-  landingPage: '/feed' | '/list';
+  showOnlyNewPosts: boolean;
 
   // Other
   selectedPost: Post | null;
@@ -106,6 +106,7 @@ export type AppState = {
   seekingLastPost: boolean;
   usernameVisible: boolean;
   localUpvoteIds: string[];
+  showAllPostsNow: boolean;
 };
 
 /** Reddit API post type */

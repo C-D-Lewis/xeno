@@ -18,7 +18,7 @@ const codeParam = getQueryParam('code');
  */
 const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
   const {
-    accessToken, refreshToken, lastReloadTime, landingPage, query,
+    accessToken, refreshToken, landingPage, query,
   } = state;
 
   if (codeParam) {
@@ -36,10 +36,6 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
       subreddits: [],
       accessToken: appOnlyToken,
       isLoggedIn: false,
-
-      // Keep note of last reload time for 'isNew' calculations without replacing it
-      lastLaunchTime: lastReloadTime,
-      lastReloadTime: Date.now(),
     });
     fabricate.navigate('/list');
     return;
@@ -59,10 +55,6 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
       subreddits,
       accessToken: testedToken,
       isLoggedIn: true,
-
-      // Keep note of last reload time for 'isNew' calculations without replacing it
-      lastLaunchTime: lastReloadTime,
-      lastReloadTime: Date.now(),
     });
     fabricate.navigate(landingPage || '/list');
   } catch (e) {

@@ -4,6 +4,7 @@ import AppPage from '../components/AppPage.ts';
 import Card from '../components/Card.ts';
 import RateLimitBar from '../components/RateLimitBar.ts';
 import Theme from '../theme.ts';
+import TextButton from '../components/TextButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -73,18 +74,7 @@ const Option = ({ label, setting, value }: OptionProps) => {
     }));
   };
 
-  return fabricate('Text')
-    .setStyles(({ palette }) => ({
-      fontSize: '1rem',
-      color: palette.text,
-      cursor: 'pointer',
-      flex: '1',
-      margin: '5px',
-      padding: '8px',
-      borderRadius: '5px',
-      textAlign: 'center',
-    }))
-    .setText(label)
+  return TextButton({ label })
     .onClick(() => fabricate.update(setting, value))
     .onUpdate(onCreateOrUpdate, [fabricate.StateKeys.Created, setting]);
 };
@@ -161,15 +151,40 @@ const SortModeSetting = () => SettingsWrapper({
 });
 
 /**
+ * OnlyNewSetting component.
+ *
+ * @returns {FabricateComponent} OnlyNewSetting comment.
+ */
+const OnlyNewSetting = () => SettingsWrapper({
+  title: 'Show only new posts',
+  children: [
+    Option({
+      label: 'Yes',
+      setting: 'showOnlyNewPosts',
+      value: true,
+    }),
+    Option({
+      label: 'No',
+      setting: 'showOnlyNewPosts',
+      value: false,
+    }),
+  ],
+});
+
+/**
  * SettingsCard component.
  *
  * @returns {FabricateComponent} SettingsCard component.
  */
 const SettingsCard = () => Card()
-  .setStyles({ padding: '8px' })
+  .setStyles({
+    padding: '8px',
+    margin: '5px',
+  })
   .setChildren([
     ViewModeSetting(),
     SortModeSetting(),
+    OnlyNewSetting(),
   ]);
 
 /**
@@ -201,7 +216,7 @@ const AccountCard = () => Card()
 export const SettingsPage = () => AppPage()
   .setStyles({
     width: fabricate.isNarrow() ? '95vw' : '48vw',
-    margin: '0px auto',
+    margin: '10px auto',
   })
   .setChildren([
     SettingsCard(),

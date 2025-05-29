@@ -40,7 +40,7 @@ const FeedHeader = () => {
     const { feedPosts, subreddits } = state;
 
     title.setText('Your feed');
-    description.setText(`Showing ${feedPosts.length} posts from ${subreddits.length} subreddits.`);
+    description.setText(`Loaded ${feedPosts.length} posts from ${subreddits.length} subreddits.`);
   };
 
   return fabricate('Row')

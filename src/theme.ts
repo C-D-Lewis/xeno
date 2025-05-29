@@ -7,6 +7,7 @@ const Theme = {
     textSecondary: '#ccc',
     widgetBackground: '#333',
     widgetPanel: '#444',
+    skeletonLoad: '#aaa',
     transparent: '#0000',
     transparentGrey: '#2229',
     error: '#df3737',

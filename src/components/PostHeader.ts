@@ -44,11 +44,12 @@ const PostHeader = ({ post }: { post: Post }) => {
       backgroundColor: palette.widgetPanel,
       padding: '8px',
     }))
-    .onCreate((el, { lastLaunchTime }) => {
+    .onCreate((el, { lastFeedFetchTime }) => {
+      const route = fabricate.getRouteHistory().pop();
       const createdTime = new Date(created).getTime();
-      const isNew = createdTime > lastLaunchTime;
+      const isNew = createdTime > lastFeedFetchTime;
 
-      if (isNew) {
+      if (route === '/feed' && isNew) {
         el.setStyles(({ palette }) => ({
           borderTop: `${palette.primary} 4px solid`,
         }));

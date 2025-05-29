@@ -13,39 +13,25 @@ declare const fabricate: Fabricate<AppState>;
  *
  * @returns {FabricateComponent} FeedPage component.
  */
-const FeedPage = () => {
-  const loadingTitle = fabricate('Text')
-    .setStyles(({ palette }) => ({
-      color: palette.text,
-      margin: '20px auto 5px auto',
-    }))
-    .setText('Building feed...');
-    // .onUpdate((el, { postsLoadingProgress }) => {
-    //   el.setText(`Building feed... ${postsLoadingProgress}%`);
-    // }, ['postsLoadingProgress']);
+const FeedPage = () => AppPage()
+  .setChildren([
+    fabricate.conditional(({ postsLoading }) => !postsLoading, FeedHeader),
+    AppLoader()
+      .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
+    PostList({ listStateKey: 'feedPosts' }),
+  ])
+  .onCreate((el, state) => {
+    const {
+      accessToken, subreddits, sortMode, feedPosts,
+    } = state;
 
-  return AppPage()
-    .setChildren([
-      fabricate.conditional(({ postsLoading }) => !postsLoading, FeedHeader),
-      loadingTitle.displayWhen(({ postsLoading }) => postsLoading),
-      AppLoader()
-        .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
-      PostList({ listStateKey: 'feedPosts' }).displayWhen(({ postsLoading }) => !postsLoading),
-    ])
-    .onCreate((el, state) => {
-      const {
-        accessToken, subreddits, sortMode, feedPosts,
-      } = state;
+    // Loading the feed resets the last subreddit selection
+    fabricate.update({ query: '/r/all', landingPage: '/feed', posts: [] });
 
-      // Loading the feed resets the last subreddit selection
-      fabricate.update({ query: '/r/all', landingPage: '/feed', posts: [] });
-
-      // Allow revisiting from another page
-      if (feedPosts.length === 0) {
-        // Get feed content
-        fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
-      }
-    });
-};
+    // Allow revisiting from another page
+    if (feedPosts.length === 0) {
+      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+    }
+  });
 
 export default FeedPage;
