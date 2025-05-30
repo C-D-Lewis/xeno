@@ -96,17 +96,17 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       const visiblePosts = list
         .filter(({ created }) => {
           // Only feed page filters based on new and this setting
-          const route = fabricate.getRouteHistory().pop();
+          const route = fabricate.getRoute();
           if (route !== '/feed') return true;
 
           const createdTime = new Date(created).getTime();
           const isNew = createdTime > lastFeedFetchTime;
-
-          return showAllPostsNow || !showOnlyNewPosts || isNew;
+          return showAllPostsNow || (showOnlyNewPosts && isNew);
         })
         .map((post) => getPostComponentByDisplayMode(post, displayMode));
 
       // Allow page to be created and navigated, then add lots of children
+      el.empty();
       setTimeout(() => {
         // FIXME: TilePage initially adds too many images and are observed at once
         el.setChildren([

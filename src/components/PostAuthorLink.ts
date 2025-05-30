@@ -43,7 +43,7 @@ const PostAuthorLink = ({
       fabricate.update({ query: fullAuthor });
       delayedScrollTop();
 
-      if (fabricate.getRouteHistory().pop()! !== '/list') {
+      if (fabricate.getRoute() !== '/list') {
         fabricate.navigate('/list');
       }
       fetchPosts(accessToken!, fullAuthor, sortMode);

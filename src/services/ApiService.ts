@@ -562,16 +562,13 @@ export const getUserSubscriptions = async (accessToken: string) => {
 /**
  * Fetch a list of posts for a user or subreddit
  *
- * @param {string} accessToken - Access token.
- * @param {string} queries - User's subscriptions items.
- * @param {SortMode} sortMode - Sort mode.
+ * @param {AppState} state - Current app state.
  * @returns {Promise<void>}
  */
-export const fetchFeedPosts = async (
-  accessToken: string,
-  queries: string[],
-  sortMode: SortMode,
-) => {
+export const fetchFeedPosts = async (state: AppState) => {
+  const {
+    accessToken, sortMode, feedFetchTime, subreddits,
+  } = state;
   try {
     fabricate.update({
       posts: [],
@@ -579,7 +576,11 @@ export const fetchFeedPosts = async (
       postsLoading: true,
       postsLoadingProgress: 0,
       subreddit: null,
+      showAllPostsNow: false,
+      lastFeedFetchTime: feedFetchTime,
     });
+
+    const queries = subreddits.map((s) => s.url);
 
     // Don't have a super huge final list
     const maxPerQuery = queries.length > 20 ? 10 : 20;
@@ -591,14 +592,14 @@ export const fetchFeedPosts = async (
 
     const list = [...queries];
     while (list.length) {
-      const next = list.splice(0, GROUP_SIZE);
-      await Promise.all(next.map(
+      const group = list.splice(0, GROUP_SIZE);
+      await Promise.all(group.map(
         // eslint-disable-next-line no-loop-func
         async (query) => {
           counter += 1;
 
           try {
-            const posts = await fetchQueryPosts(accessToken, query, sortMode);
+            const posts = await fetchQueryPosts(accessToken!, query, sortMode);
             allPosts.push(
               ...posts
                 .sort(sortByDate)
@@ -620,7 +621,7 @@ export const fetchFeedPosts = async (
       feedPosts: allPosts.sort(sortByDate).slice(0, MAX_FEED_LENGTH),
       postsLoading: false,
       postsLoadingProgress: 100,
-      lastFeedFetchTime: Date.now(),
+      feedFetchTime: Date.now(),
     });
   } catch (e: unknown) {
     alert(e);

@@ -45,7 +45,7 @@ const PostHeader = ({ post }: { post: Post }) => {
       padding: '8px',
     }))
     .onCreate((el, { lastFeedFetchTime }) => {
-      const route = fabricate.getRouteHistory().pop();
+      const route = fabricate.getRoute();
       const createdTime = new Date(created).getTime();
       const isNew = createdTime > lastFeedFetchTime;
 
@@ -62,7 +62,7 @@ const PostHeader = ({ post }: { post: Post }) => {
     ]);
   // Strange behavior when navigating to subreddit pill or back etc
   // .onClick(() => {
-  //   const route = fabricate.getRouteHistory().pop()!;
+  //   const route = fabricate.getRoute()!;
   //   if (route !== '/post') openPost(post);
   // });
 };

@@ -2,7 +2,7 @@
   "name": "xeno",
   "version": "1.0.0",
   "dependencies": {
-    "fabricate.js": "^3.6.3"
+    "fabricate.js": "^3.7.0"
   },
   "type": "module",
   "devDependencies": {
@@ -19,6 +19,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "npm run clean && vite build",
+    "check": "tsc --noEmit",
     "start": "vite"
   },
   "eslintConfig": {

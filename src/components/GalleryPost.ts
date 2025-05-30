@@ -23,7 +23,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
     id, iframe, imageSource, videoSourceData, imageList,
     selfText, selfTextHtml, mediaEmbedHtml, nsfw,
   } = post;
-  const route = fabricate.getRouteHistory().pop()!;
+  const route = fabricate.getRoute();
 
   const hasVideo = !!videoSourceData;
   const hasIframeEmbed = !!iframe;

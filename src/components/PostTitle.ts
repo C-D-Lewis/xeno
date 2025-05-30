@@ -28,7 +28,7 @@ const PostTitle = ({ post }: { post: Post }) => {
       fontWeight: 'bold',
     }))
     .onClick(() => {
-      const route = fabricate.getRouteHistory().pop()!;
+      const route = fabricate.getRoute();
       if (route === '/post') {
         window.open(`https://reddit.com${post.permalink}`, '_blank');
         return;

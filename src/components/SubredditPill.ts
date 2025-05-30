@@ -39,7 +39,7 @@ const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate('Pill'
     fabricate.update({ query: newQuery });
     delayedScrollTop();
 
-    if (fabricate.getRouteHistory().pop()! !== '/list') {
+    if (fabricate.getRoute() !== '/list') {
       fabricate.navigate('/list');
     }
     fetchPosts(accessToken!, newQuery, sortMode);

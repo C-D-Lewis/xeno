@@ -21,16 +21,14 @@ const FeedPage = () => AppPage()
     PostList({ listStateKey: 'feedPosts' }),
   ])
   .onCreate((el, state) => {
-    const {
-      accessToken, subreddits, sortMode, feedPosts,
-    } = state;
+    const { feedPosts } = state;
 
     // Loading the feed resets the last subreddit selection
     fabricate.update({ query: '/r/all', landingPage: '/feed', posts: [] });
 
     // Allow revisiting from another page
     if (feedPosts.length === 0) {
-      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+      fetchFeedPosts(state);
     }
   });
 

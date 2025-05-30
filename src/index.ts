@@ -44,6 +44,7 @@ const main = () => {
     isLoggedIn: false,
     username: null,
     query: '/r/all',
+    feedFetchTime: Date.now(),
     lastFeedFetchTime: Date.now(),
     landingPage: '/list',
     feedPosts: [],
@@ -80,6 +81,7 @@ const main = () => {
       'refreshToken',
       'username',
       'query',
+      'feedFetchTime',
       'lastFeedFetchTime',
       'landingPage',
       'feedPosts',
@@ -87,9 +89,8 @@ const main = () => {
       'sortMode',
       'showOnlyNewPosts',
     ],
-    // logStateUpdates: true,
     theme: Theme,
-    // debugStateUpdates: true,
+    debug: true,
   };
 
   fabricate.app(App, initialState, options);

@@ -25,7 +25,7 @@ type VoteButtonProps = {
 const VoteButton = ({
   id, type, isUpvoted, upvotes,
 }: VoteButtonProps) => {
-  const canVote = fabricate.getRouteHistory().pop()! === '/post';
+  const canVote = fabricate.getRoute() === '/post';
 
   const upvoteButton = fabricate('Image', {
     src: isUpvoted ? 'assets/upvote_activated.png' : 'assets/upvote.png',

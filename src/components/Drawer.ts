@@ -88,7 +88,7 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     fabricate.update({ drawerOpen: false, query: url });
 
     fetchPosts(accessToken, url, sortMode);
-    if (fabricate.getRouteHistory().pop()! !== '/list') {
+    if (fabricate.getRoute() !== '/list') {
       fabricate.navigate('/list');
     }
   };
@@ -119,14 +119,14 @@ export const DrawerToggle = () => ImageButton({ src: 'assets/drawer.png' })
     zIndex: '1000',
   })
   .onUpdate((el) => {
-    const route = fabricate.getRouteHistory().pop()!;
+    const route = fabricate.getRoute();
     const enabled = ['/list', '/feed'].includes(route);
 
     el.setStyles({ filter: `brightness(${enabled ? 1 : 0.5})` });
   }, [fabricate.StateKeys.Route])
   .displayWhen((state) => !['/settings', '/post'].includes(state[fabricate.StateKeys.Route]))
   .onClick((el, state) => {
-    const route = fabricate.getRouteHistory().pop()!;
+    const route = fabricate.getRoute();
     if (route === '/init') return;
 
     const { drawerOpen } = state;
@@ -266,7 +266,7 @@ const FeedButton = () => {
    */
   const updateLayout = (
     el:FabricateComponent<AppState>,
-  ) => setSelectedStyles(el, label, fabricate.getRouteHistory().pop()! === '/feed');
+  ) => setSelectedStyles(el, label, fabricate.getRoute() === '/feed');
 
   return fabricate('Row')
     .setStyles(({ palette }) => ({

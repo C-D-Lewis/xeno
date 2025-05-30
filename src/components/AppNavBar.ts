@@ -16,7 +16,7 @@ export const APP_NAV_BAR_HEIGHT = 45;
  * @returns {string} Subtitle.
  */
 const getSubtitle = ({ subreddit }: AppState) => {
-  const route = fabricate.getRouteHistory().pop()!;
+  const route = fabricate.getRoute();
 
   if (route === '/login') return 'Login';
   if (route === '/feed') return 'Feed';
@@ -50,19 +50,17 @@ const ReloadButton = () => ImageButton({ src: 'assets/reload.png' })
   })
   .onClick((el, state) => {
     const {
-      accessToken, query, sortMode, subreddits,
+      accessToken, query, sortMode,
     } = state;
-    const route = fabricate.getRouteHistory().pop()!;
+    const route = fabricate.getRoute();
 
     if (route === '/list') {
       fetchPosts(accessToken!, query, sortMode);
+      return;
     }
 
     if (route === '/feed') {
-      fabricate.update({ showAllPostsNow: false });
-
-      // TODO: Pass state, do subreddit mapping in there
-      fetchFeedPosts(accessToken!, subreddits.map((s) => s.url), sortMode);
+      fetchFeedPosts(state);
     }
   });
 
