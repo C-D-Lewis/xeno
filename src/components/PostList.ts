@@ -101,7 +101,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
           const createdTime = new Date(created).getTime();
           const isNew = createdTime > lastFeedFetchTime;
-          return showAllPostsNow || (showOnlyNewPosts && isNew);
+          return (!showOnlyNewPosts || showAllPostsNow) || (showOnlyNewPosts && isNew);
         })
         .map((post) => getPostComponentByDisplayMode(post, displayMode));
 

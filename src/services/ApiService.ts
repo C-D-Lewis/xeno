@@ -572,6 +572,8 @@ export const fetchFeedPosts = async (state: AppState) => {
   try {
     fabricate.update({
       posts: [],
+      landingPage: '/feed',
+      query: '/r/all',
       feedPosts: [],
       postsLoading: true,
       postsLoadingProgress: 0,

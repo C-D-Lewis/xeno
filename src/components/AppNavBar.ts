@@ -49,9 +49,7 @@ const ReloadButton = () => ImageButton({ src: 'assets/reload.png' })
     return isListLikePage && !postsLoading;
   })
   .onClick((el, state) => {
-    const {
-      accessToken, query, sortMode,
-    } = state;
+    const { accessToken, query, sortMode } = state;
     const route = fabricate.getRoute();
 
     if (route === '/list') {

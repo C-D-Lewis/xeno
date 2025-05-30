@@ -61,6 +61,7 @@ const PostImage = ({
 }) => {
   const indexKey = fabricate.buildKey('imageListIndex', id);
   const loadedKey = fabricate.buildKey('imageLoaded', id);
+  // Cause of slowdown?
   // fabricate.update(loadedKey, false);
 
   /**
