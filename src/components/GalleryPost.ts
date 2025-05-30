@@ -65,7 +65,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   return Card()
     .setStyles({
       width: fabricate.isNarrow() ? '100vw' : '60vw',
-      minHeight: '128px',
+      minHeight: '100px',
     })
     .setChildren([
       PostHeader({ post }),
