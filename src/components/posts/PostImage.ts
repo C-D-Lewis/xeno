@@ -2,6 +2,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, GalleryImageItem } from '../../types.ts';
 import ImageListControls from './ImageListControls.ts';
+import AppLoader from '../AppLoader.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -32,7 +33,7 @@ const ImageLoader = () => fabricate('Row')
     justifyContent: 'center',
   })
   .setChildren([
-    fabricate('Loader'),
+    AppLoader(),
   ]);
 
 /**
