@@ -29,6 +29,8 @@ const App = () => fabricate('Column')
       '/feed': FeedPage,
       '/post': PostPage,
       '/settings': SettingsPage,
+    }, {
+      asyncReplace: true,
     }),
     ScrollTopButton(),
   ]);
@@ -90,7 +92,7 @@ const main = () => {
       'showOnlyNewPosts',
     ],
     theme: Theme,
-    debug: true,
+    // debug: true,
   };
 
   fabricate.app(App, initialState, options);

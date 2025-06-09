@@ -2,7 +2,7 @@
   "name": "xeno",
   "version": "1.0.0",
   "dependencies": {
-    "fabricate.js": "^3.7.0"
+    "fabricate.js": "^3.8.0"
   },
   "type": "module",
   "devDependencies": {
