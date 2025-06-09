@@ -26,6 +26,8 @@ const FeedPage = () => AppPage()
     // Allow revisiting from another page
     if (feedPosts.length === 0) {
       fetchFeedPosts(state);
+    } else {
+      fabricate.update({ postsLoading: false });
     }
   });
 
