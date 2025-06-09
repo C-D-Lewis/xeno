@@ -598,8 +598,6 @@ export const fetchFeedPosts = async (state: AppState) => {
       await Promise.all(group.map(
         // eslint-disable-next-line no-loop-func
         async (query) => {
-          counter += 1;
-
           try {
             const posts = await fetchQueryPosts(accessToken!, query, sortMode);
             allPosts.push(
@@ -609,6 +607,8 @@ export const fetchFeedPosts = async (state: AppState) => {
                 .filter((p) => p.upvotes > MIN_FEED_UPVOTES)
                 .filter((p) => now - p.created < ONE_WEEK_AGO),
             );
+
+            counter += 1;
           } catch (e: unknown) {
             console.log(`Failed to fetch feed posts for ${query}`);
           }

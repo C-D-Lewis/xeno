@@ -5,6 +5,7 @@ import { fetchFeedPosts } from '../services/ApiService.ts';
 import PostList from '../components/PostList.ts';
 import AppLoader from '../components/AppLoader.ts';
 import FeedHeader from '../components/FeedHeader.ts';
+import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -16,8 +17,17 @@ declare const fabricate: Fabricate<AppState>;
 const FeedPage = () => AppPage()
   .setChildren([
     fabricate.conditional(({ postsLoading }) => !postsLoading, FeedHeader),
+    fabricate('HorizontalProgress', {
+      stateKey: 'postsLoadingProgress',
+      color: Theme.palette.primary,
+      height: '4px',
+      backgroundColor: Theme.palette.widgetBackground,
+      borderRadius: '1px',
+    })
+      .setStyles({ marginTop: '32px auto', width: '60%' })
+      .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading && !seekingLastPost),
     AppLoader()
-      .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading || seekingLastPost),
+      .displayWhen(({ seekingLastPost }) => seekingLastPost),
     PostList({ listStateKey: 'feedPosts' }),
   ])
   .onCreate((el, state) => {
