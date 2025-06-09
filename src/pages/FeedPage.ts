@@ -24,7 +24,7 @@ const FeedPage = () => AppPage()
       backgroundColor: Theme.palette.widgetBackground,
       borderRadius: '1px',
     })
-      .setStyles({ marginTop: '32px auto', width: '60%' })
+      .setStyles({ margin: '32px auto', width: '60%' })
       .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading && !seekingLastPost),
     AppLoader()
       .displayWhen(({ seekingLastPost }) => seekingLastPost),
