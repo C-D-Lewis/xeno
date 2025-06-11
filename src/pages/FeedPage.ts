@@ -10,6 +10,20 @@ import Theme from '../theme.ts';
 declare const fabricate: Fabricate<AppState>;
 
 /**
+ * LoadingHeader component.
+ *
+ * @returns {FabricateComponent} LoadingHeader component.
+ */
+const LoadingHeader = () => fabricate('Text')
+  .setText('Aggregating posts...')
+  .setStyles(({ palette }) => ({
+    color: palette.text,
+    fontSize: '1rem',
+    textAlign: 'center',
+    marginTop: '20px',
+  }));
+
+/**
  * FeedPage component.
  *
  * @returns {FabricateComponent} FeedPage component.
@@ -17,6 +31,7 @@ declare const fabricate: Fabricate<AppState>;
 const FeedPage = () => AppPage()
   .setChildren([
     fabricate.conditional(({ postsLoading }) => !postsLoading, FeedHeader),
+    fabricate.conditional(({ postsLoading }) => postsLoading, LoadingHeader),
     fabricate('HorizontalProgress', {
       stateKey: 'postsLoadingProgress',
       color: Theme.palette.primary,
