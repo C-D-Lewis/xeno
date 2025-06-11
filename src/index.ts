@@ -48,9 +48,12 @@ const main = () => {
     lastFeedFetchTime: Date.now(),
     landingPage: '/list',
     feedPosts: [],
+    // Settings
     displayMode: 'gallery',
     sortMode: 'hot',
     showOnlyNewPosts: false,
+    minKarma: 20,
+    maxPostsPerSubreddit: 10,
 
     // Other
     posts: [],
@@ -88,6 +91,8 @@ const main = () => {
       'displayMode',
       'sortMode',
       'showOnlyNewPosts',
+      'minKarma',
+      'maxPostsPerSubreddit',
     ],
     theme: Theme,
     // debug: true,

@@ -29,9 +29,7 @@ const GROUP_SIZE = 100;
 /** One week ago in ms */
 const ONE_WEEK_AGO = 1000 * 60 * 60 * 24 * 7;
 /** Max feed items */
-const MAX_FEED_LENGTH = 128;
-/** Minimum upvotes for feed posts, despite 'applied' hot or top sort order... */
-const MIN_FEED_UPVOTES = 20;
+const MAX_FEED_LENGTH = 256;
 
 /** Login URL */
 export const LOGIN_URL = `https://www.reddit.com/api/v1/authorize?client_id=${CLIENT_ID}&response_type=code&
@@ -568,7 +566,7 @@ export const getUserSubscriptions = async (accessToken: string) => {
  */
 export const fetchFeedPosts = async (state: AppState) => {
   const {
-    accessToken, sortMode, feedFetchTime, subreddits,
+    accessToken, sortMode, feedFetchTime, subreddits, minKarma, maxPostsPerSubreddit,
   } = state;
   try {
     fabricate.update({
@@ -584,9 +582,6 @@ export const fetchFeedPosts = async (state: AppState) => {
     });
 
     const queries = subreddits.map((s) => s.url);
-
-    // Don't have a super huge final list
-    const maxPerQuery = queries.length > 20 ? 10 : 20;
 
     // For each in the queries, fetch posts.
     const allPosts: Post[] = [];
@@ -604,8 +599,8 @@ export const fetchFeedPosts = async (state: AppState) => {
             allPosts.push(
               ...posts
                 .sort(sortByDate)
-                .slice(0, maxPerQuery)
-                .filter((p) => p.upvotes > MIN_FEED_UPVOTES)
+                .slice(0, maxPostsPerSubreddit)
+                .filter((p) => p.upvotes >= minKarma)
                 .filter((p) => now - p.created < ONE_WEEK_AGO),
             );
 

@@ -4,6 +4,13 @@ import ImageButton from '../ImageButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
+const arrowStyles = {
+  margin: '0px',
+  width: '100%',
+  objectFit: 'contain',
+  height: '32px',
+};
+
 /**
  * ImageListControls component.
  *
@@ -16,15 +23,8 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
   const numImages = imageList.length;
   if (numImages < 2) return fabricate('div');
 
+  // Use default here to avoid needing .update() on every component build
   const indexKey = fabricate.buildKey('imageListIndex', id);
-  fabricate.update(indexKey, 0);
-
-  const arrowStyles = {
-    margin: '0px',
-    width: '100%',
-    objectFit: 'contain',
-    height: '32px',
-  };
 
   const leftArrowImg = ImageButton({ src: 'assets/arrow-left.png' })
     .setStyles({
@@ -35,9 +35,10 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       el.setStyles({ filter: `brightness(${state[indexKey] === 0 ? '0.5' : '1'})` });
     }, [indexKey])
     .onClick((el, state) => {
-      if (state[indexKey] === 0) return;
+      const index = state[indexKey] || 0;
+      if (index === 0) return;
 
-      fabricate.update(indexKey, state[indexKey] - 1);
+      fabricate.update(indexKey, index - 1);
     });
 
   const currentIndexText = fabricate('Text')
@@ -49,7 +50,7 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
     }))
     .setText(`1/${numImages}`)
     .onUpdate(
-      (el, state) => el.setText(`${state[indexKey] + 1}/${numImages}`),
+      (el, state) => el.setText(`${(state[indexKey] || 0) + 1}/${numImages}`),
       [indexKey],
     );
 
@@ -61,11 +62,12 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       });
     }, [indexKey])
     .onClick((el, state) => {
-      if (state[indexKey] === numImages - 1) return;
+      const index = state[indexKey] || 0;
+      if (index === numImages - 1) return;
 
       fabricate.update(
         indexKey,
-        Math.min(state[indexKey] + 1, numImages),
+        Math.min(index + 1, numImages),
       );
     });
 

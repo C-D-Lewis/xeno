@@ -5,6 +5,7 @@ import Card from '../components/Card.ts';
 import RateLimitBar from '../components/RateLimitBar.ts';
 import Theme from '../theme.ts';
 import TextButton from '../components/TextButton.ts';
+import Input from '../components/Input.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -172,6 +173,60 @@ const OnlyNewSetting = () => SettingsWrapper({
 });
 
 /**
+ * TextOption component.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.setting - The setting name.
+ * @returns {FabricateComponent} TextOption component.
+ */
+const TextOption = ({ setting }: { setting: keyof AppState }) => Input({ placeholder: 'Enter value' })
+  .setStyles({
+    width: '60%',
+    margin: '5px auto',
+  })
+  .onEvent('input', (el) => {
+    const { value } = (el as unknown as HTMLInputElement);
+
+    try {
+      const parsedValue = parseInt(value, 10);
+      const isValid = !Number.isNaN(parsedValue) && parsedValue >= 0;
+      if (!isValid) return;
+
+      fabricate.update(setting as string, String(parsedValue));
+    } catch (e) {
+      alert(e);
+    }
+  })
+  .onCreate((el, state) => {
+    const value = state[setting] || '0';
+    (el as unknown as HTMLInputElement).value = value;
+  });
+
+/**
+ * MinKarmaSetting component.
+ *
+ * @returns {FabricateComponent} MinKarmaSetting comment.
+ */
+const MinKarmaSetting = () => SettingsWrapper({
+  title: 'Feed minimum upvotes',
+  children: [
+    TextOption({ setting: 'minKarma' }),
+  ],
+});
+
+/**
+ * MaxPostsPerSubredditSetting component.
+ *
+ * @returns {FabricateComponent} MaxPostsPerSubredditSetting comment.
+ */
+const MaxPostsPerSubredditSetting = () => SettingsWrapper({
+  title: 'Max feed posts per subreddit',
+  children: [
+    TextOption({ setting: 'maxPostsPerSubreddit' }),
+  ],
+});
+
+/**
  * SettingsCard component.
  *
  * @returns {FabricateComponent} SettingsCard component.
@@ -185,6 +240,8 @@ const SettingsCard = () => Card()
     ViewModeSetting(),
     SortModeSetting(),
     OnlyNewSetting(),
+    MinKarmaSetting(),
+    MaxPostsPerSubredditSetting(),
   ]);
 
 /**

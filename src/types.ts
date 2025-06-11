@@ -84,6 +84,8 @@ export type AppState = {
   displayMode: DisplayMode;
   sortMode: SortMode;
   showOnlyNewPosts: boolean;
+  minKarma: number;
+  maxPostsPerSubreddit: number;
 
   // Other
   selectedPost: Post | null;
