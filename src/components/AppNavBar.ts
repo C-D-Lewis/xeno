@@ -18,7 +18,6 @@ export const APP_NAV_BAR_HEIGHT = 45;
 const getSubtitle = ({ subreddit }: AppState) => {
   const route = fabricate.getRoute();
 
-  if (route === '/login') return 'Login';
   if (route === '/feed') return 'Feed';
   if (route === '/settings') return 'Settings';
   if (['/list', '/post'].includes(route) && subreddit) return subreddit?.displayNamePrefixed;

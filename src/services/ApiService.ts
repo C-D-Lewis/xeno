@@ -282,7 +282,8 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
         });
       }
     } catch (e) {
-      console.warn(`source get from media_metadata failed: ${JSON.stringify(media_metadata)}`);
+      // Uncomment to debug new media sources
+      // console.warn(`source get from media_metadata failed: ${JSON.stringify(media_metadata)}`);
     }
   }
 

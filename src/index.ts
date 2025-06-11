@@ -1,7 +1,6 @@
 import { Fabricate, FabricateOptions } from 'fabricate.js';
 import AppNavBar from './components/AppNavBar.ts';
 import { Drawer } from './components/Drawer.ts';
-import LoginPage from './pages/LoginPage.ts';
 import ListPage from './pages/ListPage.ts';
 import FeedPage from './pages/FeedPage.ts';
 import PostPage from './pages/PostPage.ts';
@@ -24,7 +23,6 @@ const App = () => fabricate('Column')
     Drawer(),
     fabricate.router({
       '/': InitPage,
-      '/login': LoginPage,
       '/list': ListPage,
       '/feed': FeedPage,
       '/post': PostPage,

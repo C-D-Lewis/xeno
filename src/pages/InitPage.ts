@@ -1,13 +1,32 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types.ts';
 import AppLoader from '../components/AppLoader.ts';
-import { ensureAccessToken, getAppOnlyToken, getUserSubscriptions } from '../services/ApiService.ts';
+import {
+  ensureAccessToken, getAccessToken, getAppOnlyToken, getUsername, getUserSubscriptions,
+} from '../services/ApiService.ts';
 import AppPage from '../components/AppPage.ts';
 import { getQueryParam } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
-const codeParam = getQueryParam('code');
+/**
+ * Handle 'code' query param to process login.
+ *
+ * @param {string} codeParam - 'code' query param from URL.
+ */
+const handleLogin = async (codeParam: string) => {
+  try {
+    const { accessToken, refreshToken } = await getAccessToken(codeParam);
+    const username = await getUsername(accessToken);
+    fabricate.update({ accessToken, refreshToken, username });
+
+    // Proceed
+    [window.location.href] = window.location.href.split('?'); // Remove query params
+  } catch (e: unknown) {
+    console.log(e);
+    alert('Failed to get login data');
+  }
+};
 
 /**
  * When app initialises.
@@ -21,20 +40,19 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
     accessToken, refreshToken, landingPage, query,
   } = state;
 
+  // Process login redirection from Reddit
+  const codeParam = getQueryParam('code');
   if (codeParam) {
-    fabricate.navigate('/login');
+    await handleLogin(codeParam);
     return;
   }
 
   // Not logged in, not logging in
   if (!(accessToken && refreshToken)) {
-    // Get App-only token
-    const appOnlyToken = await getAppOnlyToken();
-
     fabricate.update({
       query: query || '/r/all',
       subreddits: [],
-      accessToken: appOnlyToken,
+      accessToken: await getAppOnlyToken(),
       isLoggedIn: false,
     });
     fabricate.navigate('/list');
@@ -43,13 +61,10 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
 
   // Logged in
   try {
-    // Test stored credentials
     const testedToken = await ensureAccessToken(accessToken, refreshToken);
-
-    // Populate list in Drawer
     const subreddits = await getUserSubscriptions(testedToken);
 
-    // Proceed to app - commit this update with await before others
+    // Proceed to app
     fabricate.update({
       query: query || '/r/all',
       subreddits,
@@ -60,8 +75,9 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
   } catch (e) {
     console.log(e);
 
-    // Stored credentials were invalid
-    fabricate.navigate('/login');
+    // Stored credentials were invalid, start from scratch
+    localStorage.clear();
+    window.location.href = '/';
   }
 };
 
