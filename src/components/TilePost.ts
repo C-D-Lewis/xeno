@@ -2,7 +2,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, Post } from '../types.ts';
 import Card from './Card.ts';
-import PostTitle from './PostTitle.ts';
+import PostTitle from './posts/PostTitle.ts';
 import { openPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;

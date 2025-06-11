@@ -1,7 +1,7 @@
 import { Fabricate } from 'fabricate.js';
-import { AppState } from '../types.ts';
-import { castVote } from '../services/ApiService.ts';
-import { roughNumber } from '../utils.ts';
+import { AppState } from '../../types.ts';
+import { castVote } from '../../services/ApiService.ts';
+import { roughNumber } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

@@ -3,11 +3,11 @@ import { Fabricate } from 'fabricate.js';
 import { AppState, Post } from '../types.ts';
 import Card from './Card.ts';
 import { decodeHtml } from '../utils.ts';
-import PostHeader from './PostHeader.ts';
-import PostVideo from './posts/PostVideo.ts';
+import PostHeader from './posts/PostHeader.ts';
+import PostVideo from './media/PostVideo.ts';
 import BodyText from './posts/BodyText.ts';
-import { CloseMediaButton, RevealMediaButton } from './posts/RevealMediaButtons.ts';
-import PostImage from './posts/PostImage.ts';
+import { CloseMediaButton, RevealMediaButton } from './media/RevealMediaButtons.ts';
+import PostImage from './media/PostImage.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

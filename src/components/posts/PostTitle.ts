@@ -1,8 +1,6 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, Post } from '../types.ts';
-import {
-  openPost,
-} from '../utils.ts';
+import { AppState, Post } from '../../types.ts';
+import { openPost } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

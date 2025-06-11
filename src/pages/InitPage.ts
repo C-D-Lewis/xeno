@@ -74,7 +74,7 @@ export const InitPage = () => AppPage()
   .setChildren([AppLoader()])
   .onCreate((el, state) => {
     // Unique case, happens before fabricate:init for some reason
-    setTimeout(() => onCreate(el, state), 100);
+    setTimeout(() => onCreate(el, state), 20);
   });
 
 export default InitPage;

@@ -1,9 +1,9 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import Theme from '../theme.ts';
-import { AppState } from '../types.ts';
+import Theme from '../../theme.ts';
+import { AppState } from '../../types.ts';
 import {
   getTimeAgoStr,
-} from '../utils.ts';
+} from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

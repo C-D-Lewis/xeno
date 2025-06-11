@@ -1,12 +1,12 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { fetchPostComments } from '../services/ApiService.ts';
-import { AppState, Comment } from '../types.ts';
-import { decodeHtml, parseMarkdown } from '../utils.ts';
-import AppLoader from './AppLoader.ts';
-import Theme from '../theme.ts';
+import { fetchPostComments } from '../../services/ApiService.ts';
+import { AppState, Comment } from '../../types.ts';
+import { decodeHtml, parseMarkdown } from '../../utils.ts';
+import AppLoader from '../AppLoader.ts';
+import Theme from '../../theme.ts';
 import VoteButton from './VoteButton.ts';
-import PostAuthorLink from './PostAuthorLink.ts';
-import PostAgeView from './PostAgeView.ts';
+import PostAuthorLink from './AuthorLink.ts';
+import PostAgeView from './AgeView.ts';
 
 declare const fabricate: Fabricate<AppState>;
 

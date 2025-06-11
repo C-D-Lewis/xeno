@@ -1,9 +1,9 @@
 import { Fabricate } from 'fabricate.js';
-import { AppState, Post } from '../types.ts';
-import LinkButton from './LinkButton.ts';
-import PostMetrics from './PostMetrics.ts';
-import PostAgeView from './PostAgeView.ts';
-import PostAuthorLink from './PostAuthorLink.ts';
+import { AppState, Post } from '../../types.ts';
+import LinkButton from '../LinkButton.ts';
+import PostMetrics from './Metrics.ts';
+import PostAgeView from './AgeView.ts';
+import PostAuthorLink from './AuthorLink.ts';
 import PostTitle from './PostTitle.ts';
 import SubredditPill from './SubredditPill.ts';
 
