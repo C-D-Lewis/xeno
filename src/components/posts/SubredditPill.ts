@@ -42,6 +42,7 @@ const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate('Pill'
     if (fabricate.getRoute() !== '/list') {
       fabricate.navigate('/list');
     }
+    console.log('SubredditPill onClick');
     fetchPosts(accessToken!, newQuery, sortMode);
   });
 

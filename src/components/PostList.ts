@@ -101,7 +101,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
           const createdTime = new Date(created).getTime();
           const isNew = createdTime > lastFeedFetchTime;
-          return (!showOnlyNewPosts || showAllPostsNow) || (showOnlyNewPosts && isNew);
+          return !showOnlyNewPosts || showAllPostsNow || isNew;
         })
         .map((post) => getPostComponentByDisplayMode(post, displayMode));
 
@@ -157,7 +157,6 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
       margin: 'auto',
       opacity: '0',
     })
-    .displayWhen(({ postsLoading }) => !postsLoading)
     .onCreate(onCreate)
     .onUpdate(updateLayout, [listStateKey, 'seekingLastPost', 'showAllPostsNow']);
 };

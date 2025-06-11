@@ -33,6 +33,8 @@ const FeedPage = () => AppPage()
   .onCreate((el, state) => {
     const { feedPosts } = state;
 
+    fabricate.update({ landingPage: '/feed' });
+
     // Allow revisiting from another page
     if (feedPosts.length === 0) {
       fetchFeedPosts(state);
