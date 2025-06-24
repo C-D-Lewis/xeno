@@ -37,6 +37,7 @@ export type Post = {
   mediaEmbedHtml?: string;
   isUpvoted: boolean;
   nsfw: boolean;
+  isNew: boolean;
 };
 
 /** Refined comment object */

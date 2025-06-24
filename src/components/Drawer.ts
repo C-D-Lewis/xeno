@@ -80,14 +80,12 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
    */
   const onClick = (
     el: FabricateComponent<AppState>,
-    { accessToken, sortMode }: AppState,
+    state: AppState,
   ) => {
-    if (!accessToken) return;
-
     delayedScrollTop();
     fabricate.update({ drawerOpen: false, query: url });
 
-    fetchPosts(accessToken, url, sortMode);
+    fetchPosts({ ...state, query: url });
     if (fabricate.getRoute() !== '/list') {
       fabricate.navigate('/list');
     }
@@ -211,9 +209,7 @@ const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
     // Sync for search button
     fabricate.update({ queryInput: input.value });
   }, ['query'])
-  .onEvent('keyup', async (el, { accessToken, sortMode }, event) => {
-    if (!accessToken) return;
-
+  .onEvent('keyup', async (el, state, event) => {
     const input = el as FabricateComponent<AppState> & HTMLInputElement;
     const query = input.value;
     fabricate.update({ queryInput: query });
@@ -221,7 +217,7 @@ const SearchInput = () => Input({ placeholder: '/r/sub or /u/user' })
     const e = event as KeyboardEvent;
     if (e.key !== 'Enter') return;
 
-    submitQuery(accessToken, query, sortMode);
+    submitQuery({ ...state, query });
     input.blur();
   });
 
@@ -241,10 +237,9 @@ const SearchRow = () => fabricate('Row')
     SearchInput(),
     ImageButton({ src: 'assets/search.png' })
       .setStyles({ width: '24px', height: '24px' })
-      .onClick((el, { accessToken, queryInput, sortMode }) => {
-        if (!accessToken) return;
-
-        submitQuery(accessToken, queryInput, sortMode);
+      .onClick((el, state) => {
+        const { queryInput } = state;
+        return submitQuery({ ...state, query: queryInput });
       }),
   ]);
 

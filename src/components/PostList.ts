@@ -84,7 +84,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     keys: string[],
   ) => {
     const {
-      displayMode, seekingLastPost, showOnlyNewPosts, lastFeedFetchTime, showAllPostsNow,
+      displayMode, seekingLastPost, showOnlyNewPosts, showAllPostsNow,
     } = state;
 
     const list = state[listStateKey] as Post[];
@@ -94,13 +94,11 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
     if ([listStateKey, 'showAllPostsNow'].some((key) => keys.includes(key))) {
       const visiblePosts = list
-        .filter(({ created }) => {
+        .filter(({ isNew }) => {
           // Only feed page filters based on new and this setting
           const route = fabricate.getRoute();
           if (route !== '/feed') return true;
 
-          const createdTime = new Date(created).getTime();
-          const isNew = createdTime > lastFeedFetchTime;
           return !showOnlyNewPosts || showAllPostsNow || isNew;
         })
         .map((post) => getPostComponentByDisplayMode(post, displayMode));

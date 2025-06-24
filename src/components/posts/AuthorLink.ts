@@ -38,15 +38,13 @@ const PostAuthorLink = ({
         : palette.transparent,
     }))
     .onClick((el, state) => {
-      const { accessToken, sortMode } = state;
-
       fabricate.update({ query: fullAuthor });
       delayedScrollTop();
 
       if (fabricate.getRoute() !== '/list') {
         fabricate.navigate('/list');
       }
-      fetchPosts(accessToken!, fullAuthor, sortMode);
+      fetchPosts({ ...state, query: fullAuthor });
     });
 };
 

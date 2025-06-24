@@ -18,7 +18,7 @@ declare const fabricate: Fabricate<AppState>;
  */
 const PostHeader = ({ post }: { post: Post }) => {
   const {
-    subreddit, created, author, fallbackSource,
+    subreddit, created, author, fallbackSource, isNew,
   } = post;
 
   const postMetadataRow = fabricate('Row')
@@ -44,11 +44,8 @@ const PostHeader = ({ post }: { post: Post }) => {
       backgroundColor: palette.widgetPanel,
       padding: '8px',
     }))
-    .onCreate((el, { lastFeedFetchTime }) => {
+    .onCreate((el) => {
       const route = fabricate.getRoute();
-      const createdTime = new Date(created).getTime();
-      const isNew = createdTime > lastFeedFetchTime;
-
       if (route === '/feed' && isNew) {
         el.setStyles(({ palette }) => ({
           borderTop: `${palette.primary} 4px solid`,

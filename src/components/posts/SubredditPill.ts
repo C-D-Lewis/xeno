@@ -33,8 +33,6 @@ const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate('Pill'
     });
   })
   .onClick((el, state) => {
-    const { accessToken, sortMode } = state;
-
     const newQuery = `/r/${subreddit}`;
     fabricate.update({ query: newQuery });
     delayedScrollTop();
@@ -42,8 +40,7 @@ const SubredditPill = ({ subreddit }: { subreddit: string }) => fabricate('Pill'
     if (fabricate.getRoute() !== '/list') {
       fabricate.navigate('/list');
     }
-    console.log('SubredditPill onClick');
-    fetchPosts(accessToken!, newQuery, sortMode);
+    fetchPosts({ ...state, query: newQuery });
   });
 
 export default SubredditPill;

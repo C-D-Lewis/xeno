@@ -211,11 +211,12 @@ const getVideoSource = (source: string) => {
 /**
  * Extract used post data.
  *
- * @param {object} item - Item to process.
- * @param {RedditApiPost} item.data - Item data.
+ * @param {RedditApiPost} data - Item data.
+ * @param {AppState} state - Current app state.
  * @returns {object} Post data for UI.
  */
-const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined => {
+const extractPostData = (data: RedditApiPost, state: AppState): Post | undefined => {
+  const { lastFeedFetchTime } = state;
   const {
     id,
     author,
@@ -325,6 +326,9 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     mediaEmbedHtml = media_embed.content;
   }
 
+  const createdTime = new Date(created).getTime();
+  const isNew = createdTime > lastFeedFetchTime;
+
   const post: Post = {
     id,
     author,
@@ -343,6 +347,7 @@ const extractPostData = ({ data }: { data: RedditApiPost }): Post | undefined =>
     selfTextHtml: selftext_html,
     isUpvoted: !!likes,
     nsfw: over_18,
+    isNew,
 
     // Media
     thumbnail: thumbnail || backupThumbnail,
@@ -416,20 +421,19 @@ export const fetchSubreddit = async (accessToken: string, query: string) => {
 /**
  * Fetch a list of posts for a user or subreddit and return them.
  *
- * @param {string} accessToken - Access token.
- * @param {string} query - A '/u/user' or '/r/subreddit' name.
- * @param {SortMode} sortMode - Sort mode.
+ * @param {AppState} state - Current app state.
  * @returns {Promise<Post[]>} Fetch posts.
  */
-export const fetchQueryPosts = async (
-  accessToken: string,
-  query: string,
-  sortMode: SortMode,
-): Promise<Post[]> => {
+const fetchQueryPosts = async (state: AppState): Promise<Post[]> => {
+  const { accessToken, query, sortMode } = state;
+
   const finalPath = getFinalPath(query, sortMode);
-  const res = await apiRequest(accessToken, finalPath);
+  const res = await apiRequest(accessToken!, finalPath);
   return res.data.children
-    .map(extractPostData)
+    .map((item: unknown) => {
+      const { data } = (item as { data: RedditApiPost });
+      return extractPostData(data, state);
+    })
     .filter((p: Post | undefined) => !!p)
     .sort(sortByDate);
 };
@@ -437,12 +441,11 @@ export const fetchQueryPosts = async (
 /**
  * Fetch a list of posts for a user or subreddit.
  *
- * @param {string} accessToken - Access token.
- * @param {string} query - A '/u/user' or '/r/subreddit' name.
- * @param {SortMode} sortMode - Sort mode.
+ * @param {AppState} state - Current app state.
  * @returns {Promise<void>}
  */
-export const fetchPosts = async (accessToken: string, query: string, sortMode: SortMode) => {
+export const fetchPosts = async (state: AppState) => {
+  const { accessToken, query } = state;
   try {
     fabricate.update({
       posts: [],
@@ -451,8 +454,8 @@ export const fetchPosts = async (accessToken: string, query: string, sortMode: S
       subreddit: null,
     });
 
-    const posts = await fetchQueryPosts(accessToken, query, sortMode);
-    const subreddit = await fetchSubreddit(accessToken, query);
+    const posts = await fetchQueryPosts(state);
+    const subreddit = await fetchSubreddit(accessToken!, query);
 
     fabricate.update({
       posts,
@@ -566,7 +569,7 @@ export const getUserSubscriptions = async (accessToken: string) => {
  */
 export const fetchFeedPosts = async (state: AppState) => {
   const {
-    accessToken, sortMode, feedFetchTime, subreddits, minKarma, maxPostsPerSubreddit,
+    feedFetchTime, subreddits, minKarma, maxPostsPerSubreddit,
   } = state;
   try {
     fabricate.update({
@@ -595,7 +598,7 @@ export const fetchFeedPosts = async (state: AppState) => {
         // eslint-disable-next-line no-loop-func
         async (query) => {
           try {
-            const posts = await fetchQueryPosts(accessToken!, query, sortMode);
+            const posts = await fetchQueryPosts({ ...state, query });
             allPosts.push(
               ...posts
                 .sort(sortByDate)
@@ -629,11 +632,11 @@ export const fetchFeedPosts = async (state: AppState) => {
 /**
  * Submit the current query or query text.
  *
- * @param {string} accessToken - Access token.
- * @param {string} query - Query or queryInput
- * @param {SortMode} sortMode - sort mode.
+ * @param {AppState} state - Current app state.
  */
-export const submitQuery = (accessToken: string, query: string, sortMode: SortMode) => {
+export const submitQuery = (state: AppState) => {
+  const { query } = state;
+
   // Validate input
   if (!query || query.length < 6) return;
 
@@ -645,7 +648,7 @@ export const submitQuery = (accessToken: string, query: string, sortMode: SortMo
 
   fabricate.update({ drawerOpen: false, query: finalQuery });
   fabricate.navigate('/list');
-  fetchPosts(accessToken, finalQuery, sortMode);
+  fetchPosts(state);
 };
 
 /**

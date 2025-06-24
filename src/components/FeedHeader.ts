@@ -37,10 +37,11 @@ const FeedHeader = () => {
    * @param {AppState} state - App state.
    */
   const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
-    const { feedPosts, subreddits } = state;
+    const { feedPosts, subreddits, showAllPostsNow } = state;
 
     title.setText('Your feed');
-    description.setText(`Loaded ${feedPosts.length} posts from ${subreddits.length} subreddits.`);
+    const newCount = feedPosts.filter((post) => showAllPostsNow || post.isNew).length;
+    description.setText(`Showing ${newCount} posts from ${subreddits.length} subreddits.`);
   };
 
   return fabricate('Row')
@@ -62,7 +63,7 @@ const FeedHeader = () => {
       fabricate('Column')
         .setChildren([title, description]),
     ])
-    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'postsLoading']);
+    .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'postsLoading', 'showAllPostsNow']);
 };
 
 export default FeedHeader;
