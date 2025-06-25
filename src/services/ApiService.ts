@@ -326,7 +326,7 @@ const extractPostData = (data: RedditApiPost, state: AppState): Post | undefined
     mediaEmbedHtml = media_embed.content;
   }
 
-  const createdTime = new Date(created).getTime();
+  const createdTime = new Date(created * 1000).getTime();
   const isNew = createdTime > lastFeedFetchTime;
 
   const post: Post = {

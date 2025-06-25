@@ -3,19 +3,11 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState, GalleryImageItem } from '../../types.ts';
 import ImageListControls from './ImageListControls.ts';
 import AppLoader from '../AppLoader.ts';
+import { buildIntersectionObserver } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
-// Lazy load images since some tags include a lot of posts
-const imgObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.intersectionRatio <= 0) return;
-
-    const img = entry.target as HTMLImageElement;
-    img.src = img.dataset.src!;
-    imgObserver.unobserve(img);
-  });
-}, { root: null, rootMargin: '100px', threshold: 1 });
+const imgObserver = buildIntersectionObserver();
 
 /**
  * ImageLoader component to show a loading indicator while the image is loading.

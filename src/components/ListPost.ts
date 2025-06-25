@@ -10,17 +10,6 @@ import SubredditPill from './posts/SubredditPill.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
-// Lazy load images since some tags include a lot of posts
-const imgObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.intersectionRatio <= 0) return;
-
-    const img = entry.target as HTMLImageElement;
-    img.src = img.dataset.src!;
-    imgObserver.unobserve(img);
-  });
-}, { root: null, rootMargin: '0px', threshold: 0.5 });
-
 /**
  * PostSummary component.
  *

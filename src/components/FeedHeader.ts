@@ -1,5 +1,6 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../types.ts';
+import { shouldShowPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
 
@@ -37,10 +38,10 @@ const FeedHeader = () => {
    * @param {AppState} state - App state.
    */
   const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
-    const { feedPosts, subreddits, showAllPostsNow } = state;
+    const { feedPosts, subreddits } = state;
 
     title.setText('Your feed');
-    const newCount = feedPosts.filter((post) => showAllPostsNow || post.isNew).length;
+    const newCount = feedPosts.filter((post) => shouldShowPost(post, state)).length;
     description.setText(`Showing ${newCount} posts from ${subreddits.length} subreddits.`);
   };
 

@@ -4,7 +4,9 @@ import {
 } from '../types.ts';
 import GalleryPost from './GalleryPost.ts';
 import ListPost from './ListPost.ts';
-import { MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort } from '../utils.ts';
+import {
+  MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort, shouldShowPost,
+} from '../utils.ts';
 import TilePost from './TilePost.ts';
 import TextButton from './TextButton.ts';
 
@@ -83,9 +85,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     state: AppState,
     keys: string[],
   ) => {
-    const {
-      displayMode, seekingLastPost, showOnlyNewPosts, showAllPostsNow,
-    } = state;
+    const { displayMode, seekingLastPost } = state;
 
     const list = state[listStateKey] as Post[];
 
@@ -94,13 +94,7 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
     if ([listStateKey, 'showAllPostsNow'].some((key) => keys.includes(key))) {
       const visiblePosts = list
-        .filter(({ isNew }) => {
-          // Only feed page filters based on new and this setting
-          const route = fabricate.getRoute();
-          if (route !== '/feed') return true;
-
-          return !showOnlyNewPosts || showAllPostsNow || isNew;
-        })
+        .filter((post) => shouldShowPost(post, state))
         .map((post) => getPostComponentByDisplayMode(post, displayMode));
 
       // Allow page to be created and navigated, then add lots of children

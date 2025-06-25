@@ -249,3 +249,39 @@ export const getRevealText = (
   
   return 'Show';
 };
+
+/**
+ * Build a standard IntersectionObserver for lazy loading images.
+ * 
+ * @returns {IntersectionObserver} IntersectionObserver instance. 
+ */
+export const buildIntersectionObserver = () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.intersectionRatio <= 0) return;
+
+      const img = entry.target as HTMLImageElement;
+      img.src = img.dataset.src!;
+      observer.unobserve(img);
+    });
+  }, { root: null, rootMargin: '100%', threshold: 1 });
+  return observer;
+};
+
+/**
+ * Determine if a post should be shown based on current state.
+ *
+ * @param {Post} post - Post to check. 
+ * @param {AppState} state - Current app state.
+ * @returns {boolean} True if post should be shown.
+ */
+export const shouldShowPost = (post: Post, state: AppState) => {
+  const { showAllPostsNow, showOnlyNewPosts } = state;
+  const { isNew } = post;
+  
+  // Only feed page filters based on new and this setting
+  const route = fabricate.getRoute();
+  if (route !== '/feed') return true;
+
+  return !showOnlyNewPosts || showAllPostsNow || isNew;
+};
