@@ -10,6 +10,7 @@ import { CloseMediaButton, RevealMediaButton } from './media/RevealMediaButtons.
 import PostImage from './media/PostImage.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * GalleryPost component.
@@ -35,7 +36,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
   const revealImmediately = route === '/post' && shouldRevealMedia;
 
   const iframeEl = hasIframeEmbed
-    ? fabricate('div')
+    ? fab('div')
       .onUpdate(
         (el, { visibleMediaPostId }) => el.setHtml(visibleMediaPostId === id ? iframe! : ''),
         ['visibleMediaPostId'],
@@ -44,8 +45,7 @@ const GalleryPost = ({ post }: { post: Post }) => {
 
   // At least YouTube
   const mediaEmbedEl = hasMediaEmbed
-    ? fabricate('Row')
-      .setStyles({ justifyContent: 'center' })
+    ? fab('Row', { justifyContent: 'center' })
       .onUpdate(
         (el, { visibleMediaPostId }) => {
           el.innerHTML = visibleMediaPostId === id ? decodeHtml(mediaEmbedHtml)! : '';

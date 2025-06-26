@@ -6,6 +6,7 @@ import { fetchSubreddit, getUserSubscriptions, modifySubscription } from '../ser
 import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * SubredditHeader component.
@@ -113,13 +114,10 @@ const SubredditHeader = () => {
     })
     .setChildren([
       icon,
-      fabricate('Column')
-        .setChildren([
-          fabricate('Row')
-            .setStyles({ alignItems: 'center' })
-            .setChildren([title, subscribeButton]),
-          description,
-        ]),
+      fab('Column', {}, [
+        fab('Row', { alignItems: 'center' }, [title, subscribeButton]),
+        description,
+      ]),
     ])
     .onCreate(updateLayout)
     .onUpdate(updateLayout, ['query', 'subreddit', 'posts']);

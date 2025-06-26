@@ -9,6 +9,7 @@ import PostTitle from './posts/PostTitle.ts';
 import SubredditPill from './posts/SubredditPill.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * PostSummary component.
@@ -27,19 +28,15 @@ const PostSummary = ({ post }: { post: Post }) => {
       padding: '8px', backgroundColor: palette.widgetPanel,
     }))
     .setChildren([
-      fabricate('Row')
-        .setStyles({ alignItems: 'center' })
-        .setChildren([
-          PostTitle({ post }),
-          LinkButton({ href: fallbackSource }),
-        ]),
-      fabricate('Row')
-        .setStyles({ marginTop: 'auto', flexWrap: 'wrap' })
-        .setChildren([
-          PostAuthorLink({ author }),
-          SubredditPill({ subreddit }),
-          PostAgeView({ created }),
-        ]),
+      fab('Row', { alignItems: 'center' }, [
+        PostTitle({ post }),
+        LinkButton({ href: fallbackSource }),
+      ]),
+      fab('Row', { marginTop: 'auto', flexWrap: 'wrap' }, [
+        PostAuthorLink({ author }),
+        SubredditPill({ subreddit }),
+        PostAgeView({ created }),
+      ]),
       PostMetrics({ post }),
     ]);
 };

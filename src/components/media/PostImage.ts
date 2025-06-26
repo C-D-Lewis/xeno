@@ -6,6 +6,7 @@ import AppLoader from '../AppLoader.ts';
 import { buildIntersectionObserver } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 const imgObserver = buildIntersectionObserver();
 
@@ -14,19 +15,17 @@ const imgObserver = buildIntersectionObserver();
  *
  * @returns {FabricateComponent} ImageLoader component.
  */
-const ImageLoader = () => fabricate('Row')
-  .setStyles({
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    left: '0',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-  })
-  .setChildren([
-    AppLoader(),
-  ]);
+const ImageLoader = () => fab('Row', {
+  position: 'absolute',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  left: '0',
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+}, [
+  AppLoader(),
+]);
 
 /**
  * Image component for gallery posts.
@@ -72,20 +71,19 @@ const PostImage = ({
     fabricate.update(loadedKey, true);
   };
 
-  const imageEl = fabricate('img')
-    .setStyles({
-      cursor: 'pointer',
-      width: '100%',
-      minHeight: '240px',
-      height: 'auto',
-      objectFit: 'contain',
-      maxHeight: fabricate.isNarrow() ? '90vh' : '75vh',
-      margin: 'auto',
-      opacity: '0',
-      borderBottomLeftRadius: '5px',
-      borderBottomRightRadius: '5px',
-      transition: '0.3s',
-    })
+  const imageEl = fab('img', {
+    cursor: 'pointer',
+    width: '100%',
+    minHeight: '240px',
+    height: 'auto',
+    objectFit: 'contain',
+    maxHeight: fabricate.isNarrow() ? '90vh' : '75vh',
+    margin: 'auto',
+    opacity: '0',
+    borderBottomLeftRadius: '5px',
+    borderBottomRightRadius: '5px',
+    transition: '0.3s',
+  })
     .onClick(() => window.open(imageSource, '_blank'))
     .onUpdate((el, state) => {
       if (!imageList.length) return;
@@ -104,15 +102,13 @@ const PostImage = ({
       el.removeEventListener('load', onImageLoad);
     });
 
-  return fabricate('Column')
-    .setStyles({ position: 'relative' })
-    .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id)
-    .setChildren([
-      imageEl,
-      ImageLoader()
-        .displayWhen((state) => !state[loadedKey]),
-      ImageListControls({ id, imageList }),
-    ]);
+  return fab('Column', { position: 'relative' }, [
+    imageEl,
+    ImageLoader()
+      .displayWhen((state) => !state[loadedKey]),
+    ImageListControls({ id, imageList }),
+  ])
+    .displayWhen((state) => !(isGif || nsfw) || state.visibleMediaPostId === id);
 };
 
 export default PostImage;

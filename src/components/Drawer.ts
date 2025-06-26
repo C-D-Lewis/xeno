@@ -9,6 +9,7 @@ import Input from './Input.ts';
 import LoginButton from './LoginButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /** Fixed row item height */
 const ROW_HEIGHT = 30;
@@ -52,13 +53,12 @@ const setSelectedStyles = (
 const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
   const { url, primaryColor } = subreddit;
 
-  const label = fabricate('Text')
-    .setText(url)
-    .setStyles({
-      color: Theme.DrawerItem.unselected,
-      margin: '0px',
-      fontSize: '1rem',
-    });
+  const label = fab('Text', {
+    color: Theme.DrawerItem.unselected,
+    margin: '0px',
+    fontSize: '1rem',
+  })
+    .setText(url);
 
   /**
    * When created or updated.
@@ -91,15 +91,13 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     }
   };
 
-  return fabricate('Row')
-    .setChildren([label])
-    .setStyles({
-      cursor: 'pointer',
-      padding: '7px 0px 7px 10px',
-      margin: '0px',
-      alignItems: 'center',
-      borderLeft: `solid 6px ${primaryColor}`,
-    })
+  return fab('Row', {
+    cursor: 'pointer',
+    padding: '7px 0px 7px 10px',
+    margin: '0px',
+    alignItems: 'center',
+    borderLeft: `solid 6px ${primaryColor}`,
+  }, [label])
     .onClick(onClick)
     .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query']);
 };
@@ -249,8 +247,10 @@ const SearchRow = () => fabricate('Row')
  * @returns {HTMLElement} Fabricate component.
  */
 const FeedButton = () => {
-  const label = fabricate('Text')
-    .setStyles({ color: Theme.DrawerItem.unselected, fontSize: '1rem' })
+  const label = fab('Text', {
+    color: Theme.DrawerItem.unselected,
+    fontSize: '1rem',
+  })
     .setText('Feed');
 
   /**
@@ -288,17 +288,13 @@ const FeedButton = () => {
  *
  * @returns {FabricateComponent} LoginPrompt commponent.
  */
-const LoginPrompt = () => fabricate('Column')
-  .setStyles({
-    textAlign: 'center',
-    marginTop: '12px',
-  })
-  .setChildren([
-    fabricate('Text')
-      .setStyles({ color: 'white' })
-      .setText('Log in to see your subreddits'),
-    LoginButton(),
-  ]);
+const LoginPrompt = () => fab('Column', {
+  textAlign: 'center',
+  marginTop: '12px',
+}, [
+  fab('Text', { color: 'white' }).setText('Log in to see your subreddits'),
+  LoginButton(),
+]);
 
 /**
  * Drawer component.
@@ -306,26 +302,23 @@ const LoginPrompt = () => fabricate('Column')
  * @returns {FabricateComponent} Drawer component.
  */
 export const Drawer = () => {
-  const subredditList = fabricate('Column')
-    .setStyles({ overflowY: 'scroll' });
+  const subredditList = fab('Column', { overflowY: 'scroll' });
 
-  return fabricate('Column')
-    .setStyles({
-      position: 'fixed',
-      top: `${APP_NAV_BAR_HEIGHT}px`,
-      left: '-300px',
-      width: '300px',
-      transition: '0.3s',
-      height: `calc(100vh - ${2 * ROW_HEIGHT}px + ${ROW_HEIGHT / 2}px)`,
-      backgroundColor: '#222',
-      zIndex: '1',
-    })
-    .setChildren([
-      UserInfoRow(),
-      SearchRow(),
-      subredditList.displayWhen(subredditsLoaded),
-      LoginPrompt().displayWhen((state) => !state.isLoggedIn),
-    ])
+  return fab('Column', {
+    position: 'fixed',
+    top: `${APP_NAV_BAR_HEIGHT}px`,
+    left: '-300px',
+    width: '300px',
+    transition: '0.3s',
+    height: `calc(100vh - ${2 * ROW_HEIGHT}px + ${ROW_HEIGHT / 2}px)`,
+    backgroundColor: '#222',
+    zIndex: '1',
+  }, [
+    UserInfoRow(),
+    SearchRow(),
+    subredditList.displayWhen(subredditsLoaded),
+    LoginPrompt().displayWhen((state) => !state.isLoggedIn),
+  ])
     .onUpdate((el, { drawerOpen, subreddits }, keys) => {
       if (keys.includes('drawerOpen')) {
         el.setStyles({

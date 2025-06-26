@@ -11,27 +11,27 @@ import Theme from './theme.ts';
 import ScrollTopButton from './components/ScrollTopButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * App top-level component.
  *
  * @returns {HTMLElement} Fabricate component
  */
-const App = () => fabricate('Column')
-  .setChildren([
-    AppNavBar(),
-    Drawer(),
-    fabricate.router({
-      '/': InitPage,
-      '/list': ListPage,
-      '/feed': FeedPage,
-      '/post': PostPage,
-      '/settings': SettingsPage,
-    }, {
-      asyncReplace: true,
-    }),
-    ScrollTopButton(),
-  ]);
+const App = () => fab('Column', {}, [
+  AppNavBar(),
+  Drawer(),
+  fabricate.router({
+    '/': InitPage,
+    '/list': ListPage,
+    '/feed': FeedPage,
+    '/post': PostPage,
+    '/settings': SettingsPage,
+  }, {
+    asyncReplace: true,
+  }),
+  ScrollTopButton(),
+]);
 
 /**
  * The main function.

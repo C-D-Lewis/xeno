@@ -11,6 +11,7 @@ import TilePost from './TilePost.ts';
 import TextButton from './TextButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 let searchStart = Date.now();
 
@@ -141,14 +142,13 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
     }
   };
 
-  return fabricate('Column')
-    .setStyles({
-      padding: '5px 0px',
-      flex: '1',
-      flexWrap: 'wrap',
-      margin: 'auto',
-      opacity: '0',
-    })
+  return fab('Column', {
+    padding: '5px 0px',
+    flex: '1',
+    flexWrap: 'wrap',
+    margin: 'auto',
+    opacity: '0',
+  })
     .onCreate(onCreate)
     .onUpdate(updateLayout, [listStateKey, 'seekingLastPost', 'showAllPostsNow']);
 };

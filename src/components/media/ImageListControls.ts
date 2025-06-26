@@ -3,6 +3,7 @@ import { AppState, GalleryImageItem } from '../../types.ts';
 import ImageButton from '../ImageButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 const arrowStyles = {
   margin: '0px',
@@ -21,7 +22,7 @@ const arrowStyles = {
  */
 const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryImageItem[] }) => {
   const numImages = imageList.length;
-  if (numImages < 2) return fabricate('div');
+  if (numImages < 2) return fab('div');
 
   // Use default here to avoid needing .update() on every component build
   const indexKey = fabricate.buildKey('imageListIndex', id);
@@ -71,18 +72,16 @@ const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryIm
       );
     });
 
-  return fabricate('Row')
-    .setStyles({
-      alignItems: 'center',
-      margin: '0px auto',
-      width: '100%',
-    })
-    .displayWhen(() => !!numImages)
-    .setChildren([
-      leftArrowImg,
-      currentIndexText,
-      rightArrowImg,
-    ]);
+  return fab('Row', {
+    alignItems: 'center',
+    margin: '0px auto',
+    width: '100%',
+  }, [
+    leftArrowImg,
+    currentIndexText,
+    rightArrowImg,
+  ])
+    .displayWhen(() => !!numImages);
 };
 
 export default ImageListControls;

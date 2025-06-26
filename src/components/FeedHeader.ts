@@ -3,6 +3,7 @@ import { AppState } from '../types.ts';
 import { shouldShowPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * FeedHeader component.
@@ -61,8 +62,7 @@ const FeedHeader = () => {
     })
     .setChildren([
       icon,
-      fabricate('Column')
-        .setChildren([title, description]),
+      fab('Column', {}, [title, description]),
     ])
     .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'postsLoading', 'showAllPostsNow']);
 };

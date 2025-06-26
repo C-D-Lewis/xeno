@@ -6,6 +6,7 @@ import PostTitle from './posts/PostTitle.ts';
 import { buildIntersectionObserver, openPost } from '../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 const imgObserver = buildIntersectionObserver();
 
@@ -45,19 +46,18 @@ const TilePost = ({ post }: { post: Post }) => {
   };
 
   const imageEl = hasImage
-    ? fabricate('img')
-      .setStyles({
-        cursor: 'pointer',
-        width: '100%',
-        height: 'auto',
-        objectFit: 'contain',
-        maxHeight: fabricate.isNarrow() ? '100vh' : '75vh',
-        margin: '2px',
-        opacity: '0.2',
-        transition: '0.3s',
-        borderRadius: '5px',
-        overflow: 'hidden',
-      })
+    ? fab('img', {
+      cursor: 'pointer',
+      width: '100%',
+      height: 'auto',
+      objectFit: 'contain',
+      maxHeight: fabricate.isNarrow() ? '100vh' : '75vh',
+      margin: '2px',
+      opacity: '0.2',
+      transition: '0.3s',
+      borderRadius: '5px',
+      overflow: 'hidden',
+    })
       .setAttributes({ id: `post-${post.id}` })
       .onClick(() => openPost(post))
       .onCreate((el) => {
