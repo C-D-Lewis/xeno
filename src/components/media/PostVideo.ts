@@ -2,6 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import { AppState } from '../../types.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 declare const dashjs: {
   MediaPlayer: () => ({
     create: () => ({
@@ -29,8 +30,11 @@ const PostVideo = ({
   videoSourceData?: { dashUrl?: string; fallbackUrl?: string };
 }) => fabricate.conditional(
   (state) => state.visibleMediaPostId === id,
-  () => fabricate('video')
-    .setStyles({ width: '100%', objectFit: 'contain', maxHeight: '75vh' })
+  () => fab('video', {
+    width: '100%',
+    objectFit: 'contain',
+    maxHeight: '75vh',
+  })
     .setAttributes({ controls: 'controls', muted: false })
     .onCreate((el) => {
       if (!videoSourceData) {

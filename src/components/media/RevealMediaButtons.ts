@@ -4,6 +4,7 @@ import ImageButton from '../ImageButton.ts';
 import { getRevealText } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * RevealMediaButton component.
@@ -31,26 +32,24 @@ export const RevealMediaButton = ({
   hasIframeEmbed: boolean;
   hasVideo: boolean;
   hasMediaEmbed: boolean;
-}) => fabricate('Row')
-  .setStyles({
-    alignItems: 'center',
-    textAlign: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-  })
+}) => fab('Row', {
+  alignItems: 'center',
+  textAlign: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+}, [
+  ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
+    .setStyles({ margin: '12px 0px' }),
+  fabricate('Text')
+    .setStyles(({ palette }) => ({ color: palette.text }))
+    .setText(getRevealText(isGif, hasIframeEmbed, hasVideo, hasMediaEmbed, nsfw)),
+])
   .onClick(() => {
     fabricate.update({ visibleMediaPostId: id });
 
     const found = document.getElementById(`post-${id}`) as FabricateComponent<AppState>;
     if (found) found.scrollIntoView({ behavior: 'smooth' });
-  })
-  .setChildren([
-    ImageButton({ src: `assets/play-${isGif ? 'gif' : 'video'}.png` })
-      .setStyles({ margin: '12px 0px' }),
-    fabricate('Text')
-      .setStyles(({ palette }) => ({ color: palette.text }))
-      .setText(getRevealText(isGif, hasIframeEmbed, hasVideo, hasMediaEmbed, nsfw)),
-  ]);
+  });
 
 /**
  * CloseMediaButton component.
@@ -65,19 +64,16 @@ export const CloseMediaButton = ({
   id: string;
 }) => fabricate.conditional(
   (state) => state.visibleMediaPostId === id,
-  () => fabricate('Row')
-    .setStyles({
-      alignItems: 'center',
-      textAlign: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-    })
-    .onClick(() => fabricate.update({ visibleMediaPostId: null }))
-    .setChildren([
-      ImageButton({ src: 'assets/close.png' })
-        .setStyles({ margin: '12px 0px' }),
-      fabricate('Text')
-        .setStyles(({ palette }) => ({ color: palette.text }))
-        .setText('Close media'),
-    ]),
+  () => fab('Row', {
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+  }, [
+    ImageButton({ src: 'assets/close.png' }).setStyles({ margin: '12px 0px' }),
+    fabricate('Text')
+      .setStyles(({ palette }) => ({ color: palette.text }))
+      .setText('Close media'),
+  ])
+    .onClick(() => fabricate.update({ visibleMediaPostId: null })),
 );

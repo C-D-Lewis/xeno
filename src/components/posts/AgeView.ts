@@ -5,7 +5,7 @@ import {
   getTimeAgoStr,
 } from '../../utils.ts';
 
-declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * PostAgeView component.
@@ -16,14 +16,13 @@ declare const fabricate: Fabricate<AppState>;
  */
 const PostAgeView = ({ created }: { created: number }) => {
   let updateHandle: NodeJS.Timer;
-  const ageText = fabricate('Text')
+  const ageText = fab('Text', {
+    color: Theme.PostHeader.date,
+    fontSize: '0.9rem',
+    cursor: 'default',
+    margin: '0px 5px',
+  })
     .setText(getTimeAgoStr(created))
-    .setStyles({
-      color: Theme.PostHeader.date,
-      fontSize: '0.9rem',
-      cursor: 'default',
-      margin: '0px 5px',
-    })
     .onCreate(() => {
       updateHandle = setInterval(() => {
         ageText.setText(getTimeAgoStr(created));
@@ -31,9 +30,7 @@ const PostAgeView = ({ created }: { created: number }) => {
     })
     .onDestroy(() => clearInterval(updateHandle));
 
-  return fabricate('Row')
-    .setStyles({ alignItems: 'center' })
-    .setChildren([ageText]);
+  return fab('Row', { alignItems: 'center' }, [ageText]);
 };
 
 export default PostAgeView;

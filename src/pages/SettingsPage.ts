@@ -8,6 +8,7 @@ import TextButton from '../components/TextButton.ts';
 import Input from '../components/Input.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * Header component.
@@ -92,12 +93,12 @@ type SettingsWrapperProps = {
  * @param {SettingsWrapperProps} props - Component props.
  * @returns {FabricateComponent} SettingsWrapper component.
  */
-const SettingsWrapper = ({ title, children }: SettingsWrapperProps) => fabricate('Column')
-  .setStyles({ padding: '0px 8px' })
-  .setChildren([
-    Header().setText(title),
-    fabricate('Row').setChildren(children),
-  ]);
+const SettingsWrapper = ({ title, children }: SettingsWrapperProps) => fab('Column', {
+  padding: '0px 8px',
+}, [
+  Header().setText(title),
+  fab('Row', {}, children),
+]);
 
 /**
  * ViewModeSetting component.

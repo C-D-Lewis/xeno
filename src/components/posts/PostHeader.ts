@@ -8,6 +8,7 @@ import PostTitle from './PostTitle.ts';
 import SubredditPill from './SubredditPill.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 /**
  * PostHeader component.
@@ -21,23 +22,19 @@ const PostHeader = ({ post }: { post: Post }) => {
     subreddit, created, author, fallbackSource, isNew,
   } = post;
 
-  const postMetadataRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
-    .setChildren([
-      PostAuthorLink({ author }),
-      SubredditPill({ subreddit }),
-      PostAgeView({ created }),
-    ]);
+  const postMetadataRow = fab('Row', { alignItems: 'center' }, [
+    PostAuthorLink({ author }),
+    SubredditPill({ subreddit }),
+    PostAgeView({ created }),
+  ]);
 
-  const postTitleRow = fabricate('Row')
-    .setStyles({ alignItems: 'center' })
-    .setChildren([
-      PostTitle({ post }),
-      LinkButton({ href: fallbackSource })
-        .displayWhen(
-          (state) => state[fabricate.StateKeys.Route] === '/post',
-        ),
-    ]);
+  const postTitleRow = fab('Row', { alignItems: 'center' }, [
+    PostTitle({ post }),
+    LinkButton({ href: fallbackSource })
+      .displayWhen(
+        (state) => state[fabricate.StateKeys.Route] === '/post',
+      ),
+  ]);
 
   return fabricate('Column')
     .setStyles(({ palette }) => ({

@@ -4,6 +4,7 @@ import { castVote } from '../../services/ApiService.ts';
 import { roughNumber } from '../../utils.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const fab: Fabricate<AppState>;
 
 type VoteButtonProps = {
   id: string;
@@ -62,16 +63,16 @@ const VoteButton = ({
     }
   };
 
-  upvoteButton
-    .onClick(handleClick);
+  upvoteButton.onClick(handleClick);
 
   const upvoteCount = fabricate('Text')
     .setStyles(({ palette }) => ({ color: palette.textSecondary, fontSize: '0.8rem' }))
     .setText(roughNumber(upvotes));
 
-  return fabricate('Row')
-    .setStyles({ padding: '0px 5px', alignItems: 'center' })
-    .setChildren([upvoteButton, upvoteCount])
+  return fab('Row', {
+    padding: '0px 5px',
+    alignItems: 'center',
+  }, [upvoteButton, upvoteCount])
     .onUpdate((el, state) => {
       const { localUpvoteIds } = state;
       const finalIsUpvoted = isUpvoted || localUpvoteIds.includes(id);
