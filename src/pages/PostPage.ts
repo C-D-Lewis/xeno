@@ -17,7 +17,7 @@ const FloatingBackButton = () => fabricate('Image', {
   .setStyles(({ palette }) => ({
     position: 'fixed',
     bottom: '20px',
-    left: '20px',
+    right: '20px',
     width: '32px',
     height: '32px',
     cursor: 'pointer',
