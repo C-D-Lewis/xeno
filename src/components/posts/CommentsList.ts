@@ -122,7 +122,7 @@ const PostCommentTree = ({
  * @returns {FabricateComponent} CommentsList component.
  */
 const CommentsList = () => fab('Column', {
-  width: fabricate.isNarrow() ? '100vw' : '60vw',
+  width: fabricate.isNarrow() ? '100vw' : '50vw',
   margin: '0px auto',
   borderTopRightRadius: '5px',
   borderTopLeftRadius: '5px',

@@ -36,6 +36,7 @@ const TilePost = ({ post }: { post: Post }) => {
   const onImageLoad = (e: Event) => {
     const el = e.target as FabricateComponent<AppState>;
     const img = e.target as HTMLImageElement;
+
     const portraitWidth = fabricate.isNarrow() ? '48%' : '24%';
     const landscapeWidth = fabricate.isNarrow() ? '100%' : '48%';
 
@@ -74,7 +75,10 @@ const TilePost = ({ post }: { post: Post }) => {
     : undefined;
 
   const nonImageTile = Card()
-    .setStyles({ width: '47%', margin: '4px' })
+    .setStyles({
+      width: fabricate.isNarrow() ? '47%' : '30%',
+      margin: '4px',
+    })
     .setChildren([
       PostTitle({ post })
         .setStyles({ fontSize: '0.9rem', margin: '8px' }),

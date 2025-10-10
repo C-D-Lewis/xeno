@@ -8,8 +8,8 @@ export type VideoSourceData = {
   fallbackUrl?: string;
 };
 
-/** Gallery image list type */
-export type GalleryImageItem = {
+/** Card image list type */
+export type CardImageItem = {
   mediaId: string;
   url: string;
 }
@@ -26,7 +26,7 @@ export type Post = {
   width?: number;
   height?: number;
   imageSource?: string;
-  imageList: GalleryImageItem[];
+  imageList: CardImageItem[];
   videoSourceData?: VideoSourceData | undefined;
   thumbnail?: string;
   fallbackSource?: string;
@@ -66,7 +66,7 @@ export type Subreddit = {
 };
 
 /** Available display modes */
-export type DisplayMode = 'gallery' | 'list' | 'tiles';
+export type DisplayMode = 'card' | 'list' | 'tiles';
 
 /** App state type */
 export type AppState = {

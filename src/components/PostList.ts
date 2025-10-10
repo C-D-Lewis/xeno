@@ -2,7 +2,7 @@ import { Fabricate, FabricateComponent } from 'fabricate.js';
 import {
   AppState, DisplayMode, ListStateKey, Post,
 } from '../types.ts';
-import GalleryPost from './GalleryPost.ts';
+import CardPost from './CardPost.ts';
 import ListPost from './ListPost.ts';
 import {
   MAX_JUMP_TO_TIME_MS, SCROLL_INTERVAL_MS, isInViewPort, shouldShowPost,
@@ -23,7 +23,7 @@ let searchStart = Date.now();
  * @returns {FabricateComponent} The preferred component.
  */
 const getPostComponentByDisplayMode = (post: Post, displayMode: DisplayMode) => {
-  if (displayMode === 'gallery') return GalleryPost({ post });
+  if (displayMode === 'card') return CardPost({ post });
   if (displayMode === 'tiles') return TilePost({ post });
 
   return ListPost({ post });
@@ -88,6 +88,11 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
   ) => {
     const { displayMode, seekingLastPost } = state;
 
+    // Show as flex row on Desktop
+    if (!fabricate.isNarrow()) {
+      el.setStyles({ flexDirection: 'row' });
+    }
+
     const list = state[listStateKey] as Post[];
 
     // Only visibly show if not seeking last post
@@ -144,7 +149,6 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
   return fab('Column', {
     padding: '5px 0px',
-    flex: '1',
     flexWrap: 'wrap',
     margin: 'auto',
     opacity: '0',

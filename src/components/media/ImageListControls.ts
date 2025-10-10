@@ -1,5 +1,5 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, GalleryImageItem } from '../../types.ts';
+import { AppState, CardImageItem } from '../../types.ts';
 import ImageButton from '../ImageButton.ts';
 
 declare const fabricate: Fabricate<AppState>;
@@ -17,10 +17,10 @@ const arrowStyles = {
  *
  * @param {object} props - Component props.
  * @param {string} props.id - Post ID.
- * @param {GalleryImageItem[]} props.imageList - Image URL list.
+ * @param {CardImageItem[]} props.imageList - Image URL list.
  * @returns {FabricateComponent} ImageListControls component.
  */
-const ImageListControls = ({ id, imageList }: { id: string, imageList: GalleryImageItem[] }) => {
+const ImageListControls = ({ id, imageList }: { id: string, imageList: CardImageItem[] }) => {
   const numImages = imageList.length;
   if (numImages < 2) return fab('div');
 

@@ -1,7 +1,7 @@
 import { Fabricate, FabricateComponent } from 'fabricate.js';
 import CommentsList from '../components/posts/CommentsList.ts';
 import { AppState } from '../types.ts';
-import GalleryPost from '../components/GalleryPost.ts';
+import CardPost from '../components/CardPost.ts';
 import AppPage from '../components/AppPage.ts';
 
 declare const fabricate: Fabricate<AppState>;
@@ -41,7 +41,7 @@ export const PostPage = () => AppPage()
     if (!selectedPost) return;
 
     el.setChildren([
-      GalleryPost({ post: selectedPost }),
+      CardPost({ post: selectedPost }),
       CommentsList(),
       FloatingBackButton(),
     ]);

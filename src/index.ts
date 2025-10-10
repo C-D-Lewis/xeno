@@ -49,7 +49,7 @@ const main = () => {
     landingPage: '/list',
     feedPosts: [],
     // Settings
-    displayMode: 'gallery',
+    displayMode: 'card',
     sortMode: 'hot',
     showOnlyNewPosts: false,
     minKarma: 20,

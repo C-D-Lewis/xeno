@@ -49,7 +49,7 @@ const PostSummary = ({ post }: { post: Post }) => {
  * @returns {HTMLElement} Fabricate component.
  */
 const ListPost = ({ post }: { post: Post }) => Card()
-  .setStyles({ width: '100%' })
+  .setStyles({ width: fabricate.isNarrow() ? '100%' : '50vw' })
   .setChildren([PostSummary({ post })]);
 
 export default ListPost;

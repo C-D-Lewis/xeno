@@ -114,9 +114,9 @@ const ViewModeSetting = () => SettingsWrapper({
       value: 'list',
     }),
     Option({
-      label: 'Gallery',
+      label: 'Card',
       setting: 'displayMode',
-      value: 'gallery',
+      value: 'card',
     }),
     Option({
       label: 'Tiles',

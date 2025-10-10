@@ -4,7 +4,7 @@ import { Fabricate } from 'fabricate.js';
 import {
   AppState,
   Comment,
-  GalleryImageItem,
+  CardImageItem,
   Post,
   RedditApiComment,
   RedditApiCommentTree,
@@ -244,7 +244,7 @@ const extractPostData = (data: RedditApiPost, state: AppState): Post | undefined
   let backupThumbnail;
   let width;
   let height;
-  const imageList: GalleryImageItem[] = [];
+  const imageList: CardImageItem[] = [];
   try {
     ({ width, height } = preview && preview.images[0].source);
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { Fabricate, FabricateComponent } from 'fabricate.js';
-import { AppState, GalleryImageItem } from '../../types.ts';
+import { AppState, CardImageItem } from '../../types.ts';
 import ImageListControls from './ImageListControls.ts';
 import AppLoader from '../AppLoader.ts';
 import { buildIntersectionObserver } from '../../utils.ts';
@@ -28,15 +28,15 @@ const ImageLoader = () => fab('Row', {
 ]);
 
 /**
- * Image component for gallery posts.
+ * Image component for Card posts.
  *
  * @param {object} props - Component props.
  * @param {string} props.id - Post ID.
  * @param {string} props.imageSource - Image source URL.
- * @param {GalleryImageItem[]} props.imageList - List of images in the gallery.
+ * @param {CardImageItem[]} props.imageList - List of images in the card.
  * @param {boolean} props.isGif - Whether the post is a GIF.
  * @param {boolean} props.nsfw - Whether the post is marked as NSFW.
- * @returns {FabricateComponent} GalleryImage component.
+ * @returns {FabricateComponent} CardImage component.
  */
 const PostImage = ({
   id,
@@ -47,7 +47,7 @@ const PostImage = ({
 }: {
   id: string;
   imageSource: string;
-  imageList: GalleryImageItem[];
+  imageList: CardImageItem[];
   isGif: boolean;
   nsfw: boolean;
 }) => {

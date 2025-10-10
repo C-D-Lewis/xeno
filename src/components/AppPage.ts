@@ -12,7 +12,7 @@ declare const fab: Fabricate<AppState>;
  * @returns {FabricateComponent} AppPage component.
  */
 const AppPage = () => fab('Column', {
-  width: fabricate.isNarrow() ? '100vw' : '60vw',
+  width: fabricate.isNarrow() ? '100vw' : '95vw',
   margin: '0px auto',
   overflowY: 'scroll',
   minHeight: `calc(100vh - ${APP_NAV_BAR_HEIGHT})`,
