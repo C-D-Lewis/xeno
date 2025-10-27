@@ -54,6 +54,7 @@ const main = () => {
     showOnlyNewPosts: false,
     minKarma: 20,
     maxPostsPerSubreddit: 10,
+    wordFilter: '',
 
     // Other
     posts: [],
@@ -93,6 +94,7 @@ const main = () => {
       'showOnlyNewPosts',
       'minKarma',
       'maxPostsPerSubreddit',
+      'wordFilter',
     ],
     theme: Theme,
     // debug: true,

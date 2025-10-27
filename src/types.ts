@@ -87,6 +87,7 @@ export type AppState = {
   showOnlyNewPosts: boolean;
   minKarma: number;
   maxPostsPerSubreddit: number;
+  wordFilter: string;
 
   // Other
   selectedPost: Post | null;

@@ -425,7 +425,9 @@ export const fetchSubreddit = async (accessToken: string, query: string) => {
  * @returns {Promise<Post[]>} Fetch posts.
  */
 const fetchQueryPosts = async (state: AppState): Promise<Post[]> => {
-  const { accessToken, query, sortMode } = state;
+  const {
+    accessToken, query, sortMode, wordFilter,
+  } = state;
 
   const finalPath = getFinalPath(query, sortMode);
   const res = await apiRequest(accessToken!, finalPath);
@@ -435,6 +437,12 @@ const fetchQueryPosts = async (state: AppState): Promise<Post[]> => {
       return extractPostData(data, state);
     })
     .filter((p: Post | undefined) => !!p)
+    .filter((p: Post) => {
+      if (!wordFilter || wordFilter.trim() === '') return true;
+
+      const filters = wordFilter.split(',').map((w) => w.trim().toLowerCase());
+      return !filters.some((f) => p.title.toLowerCase().includes(f));
+    })
     .sort(sortByDate);
 };
 

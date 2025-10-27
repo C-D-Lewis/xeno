@@ -174,13 +174,13 @@ const OnlyNewSetting = () => SettingsWrapper({
 });
 
 /**
- * TextOption component.
+ * NumberOption component.
  *
  * @param {object} props - Component props.
  * @param {string} props.setting - The setting name.
- * @returns {FabricateComponent} TextOption component.
+ * @returns {FabricateComponent} NumberOption component.
  */
-const TextOption = ({ setting }: { setting: keyof AppState }) => Input({ placeholder: 'Enter value' })
+const NumberOption = ({ setting }: { setting: keyof AppState }) => Input({ placeholder: 'Enter value' })
   .setStyles({
     width: '60%',
     margin: '5px auto',
@@ -204,6 +204,35 @@ const TextOption = ({ setting }: { setting: keyof AppState }) => Input({ placeho
   });
 
 /**
+ * StringOption component.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.setting - The setting name.
+ * @returns {FabricateComponent} StringOption component.
+ */
+const StringOption = ({ setting }: { setting: keyof AppState }) => Input({ placeholder: 'Enter value' })
+  .setStyles({
+    width: '60%',
+    margin: '5px auto',
+  })
+  .onEvent('input', (el) => {
+    const { value } = (el as unknown as HTMLInputElement);
+
+    try {
+      const isValid = value.length >= 0;
+      if (!isValid) return;
+
+      fabricate.update(setting as string, value);
+    } catch (e) {
+      alert(e);
+    }
+  })
+  .onCreate((el, state) => {
+    const value = state[setting] || '';
+    (el as unknown as HTMLInputElement).value = value;
+  });
+
+/**
  * MinKarmaSetting component.
  *
  * @returns {FabricateComponent} MinKarmaSetting comment.
@@ -211,7 +240,7 @@ const TextOption = ({ setting }: { setting: keyof AppState }) => Input({ placeho
 const MinKarmaSetting = () => SettingsWrapper({
   title: 'Feed minimum upvotes',
   children: [
-    TextOption({ setting: 'minKarma' }),
+    NumberOption({ setting: 'minKarma' }),
   ],
 });
 
@@ -223,7 +252,19 @@ const MinKarmaSetting = () => SettingsWrapper({
 const MaxPostsPerSubredditSetting = () => SettingsWrapper({
   title: 'Max feed posts per subreddit',
   children: [
-    TextOption({ setting: 'maxPostsPerSubreddit' }),
+    NumberOption({ setting: 'maxPostsPerSubreddit' }),
+  ],
+});
+
+/**
+ * WordFilterSetting component.
+ *
+ * @returns {FabricateComponent} WordFilterSetting comment.
+ */
+const WordFilterSetting = () => SettingsWrapper({
+  title: 'Word filter (comma separated)',
+  children: [
+    StringOption({ setting: 'wordFilter' }),
   ],
 });
 
@@ -243,6 +284,7 @@ const SettingsCard = () => Card()
     OnlyNewSetting(),
     MinKarmaSetting(),
     MaxPostsPerSubredditSetting(),
+    WordFilterSetting(),
   ]);
 
 /**
