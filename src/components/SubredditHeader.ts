@@ -51,6 +51,16 @@ const SubredditHeader = () => {
     })
     .displayWhen((state) => state.isLoggedIn);
 
+  const pinButton = ImageButton({ src: 'assets/pin.png' })
+    .setStyles({ width: '22px', height: '22px' })
+    .onClick(async (el, { query, pinList }) => {
+      const newList = pinList.includes(query)
+        ? pinList.filter((p) => p !== query)
+        : [...pinList, query];
+      fabricate.update({ pinList: newList });
+    })
+    .displayWhen((state) => state.isLoggedIn);
+
   const description = fabricate('Text')
     .setStyles(({ palette }) => ({
       color: palette.text,
@@ -64,7 +74,7 @@ const SubredditHeader = () => {
    * @param {AppState} state - App state.
    */
   const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
-    const { subreddit, query } = state;
+    const { subreddit, query, pinList } = state;
     if (!subreddit) {
       title.setText(query);
       description.setText('No description');
@@ -75,6 +85,7 @@ const SubredditHeader = () => {
     const {
       displayNamePrefixed, iconImg, primaryColor, publicDescription, isSubscribed,
     } = subreddit;
+    const isPinned = pinList.includes(query);
 
     const finalColor = primaryColor || Theme.palette.widgetBackground;
 
@@ -93,6 +104,9 @@ const SubredditHeader = () => {
     title.setStyles({ color });
     subscribeButton.setStyles(({ palette }) => ({
       backgroundColor: isSubscribed ? palette.primary : palette.transparent,
+    }));
+    pinButton.setStyles(({ palette }) => ({
+      backgroundColor: isPinned ? palette.primary : palette.transparent,
     }));
     description.setText(publicDescription.trim());
     description.setStyles({ color });
@@ -115,12 +129,12 @@ const SubredditHeader = () => {
     .setChildren([
       icon,
       fab('Column', {}, [
-        fab('Row', { alignItems: 'center' }, [title, subscribeButton]),
+        fab('Row', { alignItems: 'center' }, [title, subscribeButton, pinButton]),
         description,
       ]),
     ])
     .onCreate(updateLayout)
-    .onUpdate(updateLayout, ['query', 'subreddit', 'posts']);
+    .onUpdate(updateLayout, ['query', 'subreddit', 'posts', 'pinList']);
 };
 
 export default SubredditHeader;

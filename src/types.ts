@@ -88,6 +88,7 @@ export type AppState = {
   minKarma: number;
   maxPostsPerSubreddit: number;
   wordFilter: string;
+  pinList: string[];
 
   // Other
   selectedPost: Post | null;

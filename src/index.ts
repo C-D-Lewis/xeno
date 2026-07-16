@@ -55,6 +55,7 @@ const main = () => {
     minKarma: 20,
     maxPostsPerSubreddit: 10,
     wordFilter: '',
+    pinList: [],
 
     // Other
     posts: [],
@@ -95,6 +96,7 @@ const main = () => {
       'minKarma',
       'maxPostsPerSubreddit',
       'wordFilter',
+      'pinList',
     ],
     theme: Theme,
     // debug: true,

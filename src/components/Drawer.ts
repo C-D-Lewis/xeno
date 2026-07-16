@@ -44,13 +44,26 @@ const setSelectedStyles = (
 };
 
 /**
+ * Determine if a Subreddit is pinned.
+ *
+ * @param {string[]} pinList - List of pinned subreddits.
+ * @param {Subreddit} subreddit - Subreddit to check.
+ * @returns {boolean} true if the subreddit is pinned.
+ */
+const isPinnedSubreddit = (
+  pinList: string[],
+  { displayName }: Subreddit,
+) => pinList.includes(`/r/${displayName}`);
+
+/**
  * DrawerItem component.
  *
  * @param {object} props - Component props.
  * @param {string} props.subreddit - Subreddit for this row.
+ * @param {boolean} props.pinned - If the subreddit is pinned.
  * @returns {FabricateComponent} Fabricate component.
  */
-const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
+const DrawerItem = ({ subreddit, pinned = false }: { subreddit: Subreddit, pinned?: boolean }) => {
   const { url, primaryColor } = subreddit;
 
   const label = fab('Text', {
@@ -59,6 +72,14 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     fontSize: '1rem',
   })
     .setText(url);
+
+  const pinIcon = ImageButton({ src: 'assets/pinned.png' })
+    .setStyles({
+      width: '22px',
+      height: '22px',
+      marginLeft: 'auto',
+      marginRight: '8px',
+    });
 
   /**
    * When created or updated.
@@ -97,7 +118,10 @@ const DrawerItem = ({ subreddit }: { subreddit: Subreddit }) => {
     margin: '0px',
     alignItems: 'center',
     borderLeft: `solid 6px ${primaryColor}`,
-  }, [label])
+  }, [
+    label,
+    ...pinned ? [pinIcon] : [],
+  ])
     .onClick(onClick)
     .onUpdate(updateLayout, [fabricate.StateKeys.Created, 'query']);
 };
@@ -268,7 +292,7 @@ const FeedButton = () => {
       padding: '4px',
       alignItems: 'center',
       cursor: 'pointer',
-      borderBottom: `solid 1px ${palette.widgetBackground}`,
+      borderBottom: `solid 4px ${palette.widgetBackground}`,
     }))
     .setChildren([
       ImageButton({ src: 'assets/feed.png' })
@@ -297,6 +321,17 @@ const LoginPrompt = () => fab('Column', {
 ]);
 
 /**
+ * Separator component.
+ *
+ * @returns {FabricateComponent} Separator component.
+ */
+const Separator = () => fab('div')
+  .setStyles(({ palette }) => ({
+    width: '100%',
+    borderBottom: `solid 4px ${palette.widgetBackground}`,
+  }));
+
+/**
  * Drawer component.
  *
  * @returns {FabricateComponent} Drawer component.
@@ -319,7 +354,7 @@ export const Drawer = () => {
     subredditList.displayWhen(subredditsLoaded),
     LoginPrompt().displayWhen((state) => !state.isLoggedIn),
   ])
-    .onUpdate((el, { drawerOpen, subreddits }, keys) => {
+    .onUpdate((el, { drawerOpen, subreddits, pinList }, keys) => {
       if (keys.includes('drawerOpen')) {
         el.setStyles({
           left: drawerOpen ? '0px' : '-300px',
@@ -327,13 +362,17 @@ export const Drawer = () => {
         });
       }
 
-      // Don't recreate items when drawerOpen changes
-      const createItems = ['subreddits', fabricate.StateKeys.Init].some((k) => keys.includes(k));
-      if (subreddits.length && createItems) {
+      if (subreddits.length) {
         subredditList.setChildren([
           FeedButton().displayWhen(subredditsLoaded),
-          ...subreddits.map((subreddit: Subreddit) => DrawerItem({ subreddit })),
+          ...subreddits
+            .filter((subreddit: Subreddit) => isPinnedSubreddit(pinList, subreddit))
+            .map((subreddit: Subreddit) => DrawerItem({ subreddit, pinned: true })),
+          Separator(),
+          ...subreddits
+            .filter((subreddit: Subreddit) => !isPinnedSubreddit(pinList, subreddit))
+            .map((subreddit: Subreddit) => DrawerItem({ subreddit })),
         ]);
       }
-    }, [fabricate.StateKeys.Init, 'drawerOpen', 'subreddits']);
+    }, [fabricate.StateKeys.Init, 'drawerOpen', 'subreddits', 'pinList']);
 };
