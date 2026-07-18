@@ -15,7 +15,7 @@ const ScrollTopButton = () => {
   let lastScrollY = window.scrollY;
 
   const root = fabricate('Row')
-    .setStyles(({ palette }) => ({
+    .setStyles(({ palette, styles }) => ({
       justifyContent: 'center',
       textAlign: 'center',
       alignItems: 'center',
@@ -24,7 +24,7 @@ const ScrollTopButton = () => {
       position: 'fixed',
       top: '-100px',
       left: fabricate.isNarrow() ? '33%' : '45%',
-      borderRadius: '5px',
+      borderRadius: styles.borderRadius,
       minWidth: '120px',
       zIndex: '9999',
       padding: '4px 8px',

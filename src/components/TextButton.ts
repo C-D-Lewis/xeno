@@ -11,14 +11,14 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} TextButton component.
  */
 const TextButton = ({ label }: { label: string }) => fabricate('Text')
-  .setStyles(({ palette }) => ({
+  .setStyles(({ palette, styles }) => ({
     fontSize: '1rem',
     color: palette.text,
     cursor: 'pointer',
     flex: '1',
     margin: '5px',
     padding: '8px 10px',
-    borderRadius: '5px',
+    borderRadius: styles.borderRadius,
     textAlign: 'center',
     backgroundColor: palette.widgetPanel,
   }))

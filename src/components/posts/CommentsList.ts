@@ -21,14 +21,15 @@ declare const fab: Fabricate<AppState>;
 const CollapseButton = ({ id }: { id: string }) => {
   const isCollapsedKey = fabricate.buildKey('isCollapsed', id);
 
-  return fab('img', {
-    backgroundColor: Theme.CollapseButton.background,
-    width: '15px',
-    height: '15px',
-    padding: '2px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  })
+  return fabricate('img')
+    .setStyles(({ styles }) => ({
+      backgroundColor: Theme.CollapseButton.background,
+      width: '15px',
+      height: '15px',
+      padding: '2px',
+      borderRadius: styles.borderRadius,
+      cursor: 'pointer',
+    }))
     .setAttributes({ src: 'assets/minus.png' })
     .onHover((el, state, isHovered) => el.setStyles({ filter: `brightness(${isHovered ? '1.2' : '1'})` }))
     .onClick((el, state) => {

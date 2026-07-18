@@ -9,10 +9,10 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {HTMLElement} Card component.
  */
 const Card = () => fabricate('Column')
-  .setStyles(({ palette }) => ({
+  .setStyles(({ palette, styles }) => ({
     margin: '10px auto',
     backgroundColor: palette.widgetBackground,
-    borderRadius: '5px',
+    borderRadius: styles.borderRadius,
     overflow: 'hidden',
     height: 'fit-content',
   }));

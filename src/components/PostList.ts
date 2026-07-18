@@ -9,6 +9,7 @@ import {
 } from '../utils.ts';
 import TilePost from './TilePost.ts';
 import TextButton from './TextButton.ts';
+import { SkeletonPost } from './SkeletonPost.ts';
 
 declare const fabricate: Fabricate<AppState>;
 declare const fab: Fabricate<AppState>;
@@ -105,13 +106,22 @@ const PostList = ({ listStateKey }: { listStateKey: ListStateKey }) => {
 
       // Allow page to be created and navigated, then add lots of children
       el.empty();
-      setTimeout(() => {
-        // FIXME: TilePage initially adds too many images and are observed at once
-        el.setChildren([
-          ...visiblePosts,
-          ...visiblePosts.length !== list.length ? [ShowAllPostsButton()] : [],
-        ]);
-      }, 100);
+      // If no posts, show skeletons
+      console.log(`PostList: list length = ${list.length}, keys = ${keys.join(', ')}`);
+      if (!list.length) {
+        el.setChildren([...[1, 2, 3].map(SkeletonPost)]);
+      }
+
+      if (visiblePosts.length) {
+        setTimeout(() => {
+          const start = performance.now();
+          el.setChildren([
+            ...visiblePosts,
+            ...visiblePosts.length !== list.length ? [ShowAllPostsButton()] : [],
+          ]);
+          console.log(`PostList: Added ${visiblePosts.length} children in ${performance.now() - start}ms`);
+        }, 100);
+      }
     }
 
     if (state.displayMode === 'tiles') {

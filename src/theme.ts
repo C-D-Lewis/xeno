@@ -15,6 +15,7 @@ const Theme = {
   },
   styles: {
     boxShadow: '0px 4px 4px #111A',
+    borderRadius: '5px',
   },
   DrawerItem: {
     unselected: '#888',

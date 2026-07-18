@@ -11,14 +11,14 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} ImageButton component.
  */
 const ImageButton = ({ src }: { src: string }) => fabricate('Image', { src })
-  .setStyles({
-    borderRadius: '5px',
+  .setStyles(({ styles }) => ({
+    borderRadius: styles.borderRadius,
     width: '24px',
     height: '24px',
     cursor: 'pointer',
     padding: '4px',
     marginLeft: '10px',
-  })
+  }))
   .onHover((el, state, isHovering) => {
     if (fabricate.isNarrow()) return;
 

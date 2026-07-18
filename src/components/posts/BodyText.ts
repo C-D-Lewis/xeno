@@ -12,11 +12,11 @@ declare const fabricate: Fabricate<AppState>;
  * @returns {FabricateComponent} BodyText component.
  */
 const BodyText = ({ text }: { text: string }) => fabricate('Text')
-  .setStyles(({ palette }) => ({
+  .setStyles(({ palette, styles }) => ({
     fontSize: '0.9rem',
     color: palette.text,
     padding: '8px',
-    borderRadius: '5px',
+    borderRadius: styles.borderRadius,
     backgroundColor: palette.widgetBackground,
   }))
   .setHtml(decodeHtml(text) || 'Failed to load text post');
