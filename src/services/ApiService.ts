@@ -62,18 +62,24 @@ const rateLimit = () => {
  * @returns {string} App only access_token.
  */
 export const getAppOnlyToken = async () => {
-  const res = await fetch('https://www.reddit.com/api/v1/access_token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
-    },
-    body: 'grant_type=client_credentials',
-  });
-  if (res.status >= 400) throw new Error(`getAppOnlyToken failed: ${res.status} ${(await res.text()).slice(0, 64)}`);
+  try {
+    const res = await fetch('https://www.reddit.com/api/v1/access_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+      },
+      body: 'grant_type=client_credentials',
+    });
+    if (res.status >= 400) throw new Error(`getAppOnlyToken failed: ${res.status} ${(await res.text()).slice(0, 64)}`);
 
-  const json = await res.json();
-  return json.access_token;
+    const json = await res.json();
+    return json.access_token;
+  } catch (e) {
+    console.log(e);
+    console.log('Failed to get app only token');
+    throw e;
+  }
 };
 
 /**

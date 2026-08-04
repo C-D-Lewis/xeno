@@ -10,3 +10,5 @@ env.js
 env-prod.js
 env-local.js
 deploy.sh
+config.json
+feed*

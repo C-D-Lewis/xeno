@@ -49,14 +49,22 @@ const onCreate = async (el: FabricateComponent<AppState>, state: AppState) => {
 
   // Not logged in, not logging in
   if (!(accessToken && refreshToken)) {
-    fabricate.update({
-      query: query || '/r/all',
-      subreddits: [],
-      accessToken: await getAppOnlyToken(),
-      isLoggedIn: false,
-    });
-    fabricate.navigate('/list');
-    return;
+    try {
+      const appOnlyToken = await getAppOnlyToken();
+      fabricate.update({
+        query: query || '/r/all',
+        subreddits: [],
+        accessToken: appOnlyToken,
+        isLoggedIn: false,
+      });
+      fabricate.navigate('/list');
+      return;
+    } catch (e) {
+      // Reddit stopped unprofitable API clients :(
+      fabricate.update({ useFeedFile: true });
+      fabricate.navigate('/feed');
+      return;
+    }
   }
 
   // Logged in

@@ -78,6 +78,7 @@ const main = () => {
     usernameVisible: false,
     localUpvoteIds: [],
     showAllPostsNow: false,
+    useFeedFile: false,
   };
 
   const options: FabricateOptions = {

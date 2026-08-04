@@ -7,6 +7,7 @@ import FeedHeader from '../components/FeedHeader.ts';
 import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const FEED_FILE_URL_PREFIX: string;
 
 /**
  * FeedPage component.
@@ -27,12 +28,23 @@ const FeedPage = () => AppPage()
       .displayWhen(({ postsLoading, seekingLastPost }) => postsLoading && !seekingLastPost),
     PostList({ listStateKey: 'feedPosts' }),
   ])
-  .onCreate((el, state) => {
-    const { feedPosts } = state;
+  .onCreate(async (el, state) => {
+    const { feedPosts, useFeedFile } = state;
 
     fabricate.update({ landingPage: '/feed' });
 
-    // Allow revisiting from another page
+    if (useFeedFile) {
+      // Use feed from file, don't try and get posts
+      const username = prompt('Username');
+      const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json`).then((r) => r.json());
+
+      fabricate.update({
+        postsLoading: false,
+        feedPosts: json,
+      });
+      return;
+    }
+
     if (feedPosts.length === 0) {
       fetchFeedPosts(state);
     } else {

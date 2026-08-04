@@ -112,6 +112,7 @@ export type AppState = {
   usernameVisible: boolean;
   localUpvoteIds: string[];
   showAllPostsNow: boolean;
+  useFeedFile: boolean;
 };
 
 /** Reddit API post type */
