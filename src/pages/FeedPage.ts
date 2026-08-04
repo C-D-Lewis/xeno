@@ -29,18 +29,22 @@ const FeedPage = () => AppPage()
     PostList({ listStateKey: 'feedPosts' }),
   ])
   .onCreate(async (el, state) => {
-    const { feedPosts, useFeedFile } = state;
+    const { feedPosts, useFeedFile, feedFileUsername } = state;
 
     fabricate.update({ landingPage: '/feed' });
 
     if (useFeedFile) {
       // Use feed from file, don't try and get posts
-      const username = prompt('Username');
+      let username;
+      if (!feedFileUsername) {
+        username = prompt('Username');
+      }
       const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json`).then((r) => r.json());
 
       fabricate.update({
         postsLoading: false,
         feedPosts: json,
+        feedFileUsername: username,
       });
       return;
     }

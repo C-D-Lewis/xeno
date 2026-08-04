@@ -56,6 +56,7 @@ const main = () => {
     maxPostsPerSubreddit: 10,
     wordFilter: '',
     pinList: [],
+    feedFileUsername: '',
 
     // Other
     posts: [],
@@ -98,6 +99,7 @@ const main = () => {
       'maxPostsPerSubreddit',
       'wordFilter',
       'pinList',
+      'feedFileUsername',
     ],
     theme: Theme,
     // debug: true,
