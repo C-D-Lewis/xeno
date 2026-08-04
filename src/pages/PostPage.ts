@@ -42,7 +42,10 @@ export const PostPage = () => AppPage()
 
     el.setChildren([
       CardPost({ post: selectedPost }),
-      CommentsList(),
+      fabricate.conditional(
+        (state) => !state.useFeedFile,
+        CommentsList,
+      ),
       FloatingBackButton(),
     ]);
   });

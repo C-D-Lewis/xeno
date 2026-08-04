@@ -104,11 +104,17 @@ const AppNavBar = () => {
       boxShadow: styles.boxShadow,
     }))
     .addChildren([
-      DrawerToggle(),
+      fabricate.conditional(
+        (state) => !state.useFeedFile,
+        DrawerToggle,
+      ),
       BackButton(),
       title,
       subtitle,
-      ReloadButton(),
+      fabricate.conditional(
+        (state) => !state.useFeedFile,
+        ReloadButton,
+      ),
     ])
     .onUpdate((el: FabricateComponent<AppState>, state: AppState) => {
       subtitle.setText(getSubtitle(state));
