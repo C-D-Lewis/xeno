@@ -39,7 +39,9 @@ const FeedPage = () => AppPage()
       if (!feedFileUsername) {
         username = prompt('Username');
       }
-      const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json`).then((r) => r.json());
+      const now = Date.now();
+      const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json?ts=${now}`)
+        .then((r) => r.json());
 
       fabricate.update({
         postsLoading: false,
