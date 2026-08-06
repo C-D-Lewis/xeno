@@ -35,8 +35,8 @@ const FeedPage = () => AppPage()
 
     if (useFeedFile) {
       // Use feed from file, don't try and get posts
-      let username;
-      if (!feedFileUsername) {
+      let username = feedFileUsername;
+      if (!username) {
         username = prompt('Username');
       }
       const now = Date.now();
