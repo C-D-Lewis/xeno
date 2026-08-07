@@ -39,11 +39,12 @@ const FeedHeader = () => {
    * @param {AppState} state - App state.
    */
   const updateLayout = (el: FabricateComponent<AppState>, state: AppState) => {
-    const { feedPosts, subreddits } = state;
+    const { feedPosts } = state;
 
     title.setText('Your feed');
     const newCount = feedPosts.filter((post) => shouldShowPost(post, state)).length;
-    description.setText(`Showing ${newCount} posts from ${subreddits.length} subreddits.`);
+    // description.setText(`Showing ${newCount} posts from ${subreddits.length} subreddits.`);
+    description.setText(`Showing ${newCount} posts.`);
   };
 
   return fabricate('Row')

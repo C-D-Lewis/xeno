@@ -7,7 +7,6 @@ import FeedHeader from '../components/FeedHeader.ts';
 import Theme from '../theme.ts';
 
 declare const fabricate: Fabricate<AppState>;
-declare const FEED_FILE_URL_PREFIX: string;
 
 /**
  * FeedPage component.
@@ -29,27 +28,12 @@ const FeedPage = () => AppPage()
     PostList({ listStateKey: 'feedPosts' }),
   ])
   .onCreate(async (el, state) => {
-    const { feedPosts, useFeedFile, feedFileUsername } = state;
+    const { feedPosts, useFeedFile } = state;
 
     fabricate.update({ landingPage: '/feed' });
 
-    if (useFeedFile) {
-      // Use feed from file, don't try and get posts
-      let username = feedFileUsername;
-      if (!username) {
-        username = prompt('Username');
-      }
-      const now = Date.now();
-      const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json?ts=${now}`)
-        .then((r) => r.json());
-
-      fabricate.update({
-        postsLoading: false,
-        feedPosts: json,
-        feedFileUsername: username,
-      });
-      return;
-    }
+    // Can't use oauth, wait for reload button press
+    if (useFeedFile) return;
 
     if (feedPosts.length === 0) {
       fetchFeedPosts(state);

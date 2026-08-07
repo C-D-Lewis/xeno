@@ -5,6 +5,7 @@ import ImageButton from './ImageButton.ts';
 import { fetchFeedPosts, fetchPosts } from '../services/ApiService.ts';
 
 declare const fabricate: Fabricate<AppState>;
+declare const FEED_FILE_URL_PREFIX: string;
 
 /** Height of the nav bar */
 export const APP_NAV_BAR_HEIGHT = 45;
@@ -47,8 +48,27 @@ const ReloadButton = () => ImageButton({ src: 'assets/reload.png' })
     const isListLikePage = ['/list', '/feed'].includes(state[fabricate.StateKeys.Route]);
     return isListLikePage && !postsLoading;
   })
-  .onClick((el, state) => {
+  .onClick(async (el, state) => {
+    const { feedFileUsername, useFeedFile } = state;
     const route = fabricate.getRoute();
+
+    // Can't use oauth, get file from S3
+    if (useFeedFile) {
+      let username = feedFileUsername;
+      if (!username) {
+        username = prompt('Username');
+      }
+      const now = Date.now();
+      const json = await fetch(`${FEED_FILE_URL_PREFIX}/feed-${username}.json?ts=${now}`)
+        .then((r) => r.json());
+
+      fabricate.update({
+        postsLoading: false,
+        feedPosts: json,
+        feedFileUsername: username,
+      });
+      return;
+    }
 
     if (route === '/list') {
       fetchPosts(state);
@@ -111,10 +131,7 @@ const AppNavBar = () => {
       BackButton(),
       title,
       subtitle,
-      fabricate.conditional(
-        (state) => !state.useFeedFile,
-        ReloadButton,
-      ),
+      ReloadButton(),
     ])
     .onUpdate((el: FabricateComponent<AppState>, state: AppState) => {
       subtitle.setText(getSubtitle(state));
